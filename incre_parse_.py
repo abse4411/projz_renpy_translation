@@ -35,7 +35,7 @@ def get_translated_text(rpy_file):
         if ttype == TEXT_TYPE.NEW:
             if not is_empty(text):
                 # raw text and new text must appear in pairs
-                assert raw_text is not None and i - raw_line == 1, f"unmatched new text({text}) in line {i}"
+                assert raw_text is not None and i - raw_line == 1, f"unmatched new text({text}) in line {i}. raw text({raw_text}, line {raw_line}) "
                 res[raw_text] = text
                 raw_text = None
                 raw_line = -1
