@@ -8,26 +8,27 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 
-# match the tag
-regex_tag = re.compile(r'\{[^}]*\}')
-
-
-def strip_tags(text):
-    return regex_tag.sub('', text)
+from misc import strip_tags, strip_breaks
 
 
 # Abstract translator
 class translator:
-    def __init__(self, browser):
-        self.browser = browser
 
     def translate(self, rawtext):
         return rawtext
 
+class dict_translator(translator):
+    def __init__(self, translated_text):
+        self.translated_text = translated_text
+
+    def translate(self, rawtext):
+        if rawtext in self.translated_text:
+            return self.translated_text[rawtext]
+        return rawtext
 
 class google(translator):
     def __init__(self, browser):
-        super().__init__(browser)
+        self.browser = browser
         browser.get('https://translate.google.com/')
         print('等待网页加载...')
         time.sleep(5)
@@ -42,8 +43,7 @@ class google(translator):
 
 
     def translate(self, rawtext):
-        rawtext= rawtext.replace('\r\n', '')
-        rawtext= rawtext.replace('\n', '')
+        rawtext = strip_breaks(rawtext)
         res = rawtext
         self.inputArea.send_keys(rawtext)
         xpath = '//*[@id="yDmH0d"]/c-wiz/div/div[2]/c-wiz/div[2]/c-wiz/div[1]/div[2]/div[3]/c-wiz[2]/div/div[8]/div/div[1]/span[1]'
@@ -66,14 +66,12 @@ class google(translator):
             self.inputArea.clear()  # 否则直接清空输入框
         # time.sleep(1)  # 等待清空延迟
         # time.sleep(1)
-        res = res.replace('\r\n', '')
-        res = res.replace('\n', '')
-        return res.strip()
+        return strip_breaks(res)
 
 
 class caiyun(translator):
     def __init__(self, browser):
-        super().__init__(browser)
+        self.browser = browser
         browser.get('https://fanyi.caiyunapp.com/')
         print('等待网页加载...')
         time.sleep(5)
@@ -82,8 +80,7 @@ class caiyun(translator):
         self.inputArea = browser.find_element(By.CLASS_NAME, 'textinput')
 
     def translate(self, rawtext):
-        rawtext= rawtext.replace('\r\n', '')
-        rawtext= rawtext.replace('\n', '')
+        rawtext = strip_breaks(rawtext)
         rawtext = strip_tags(rawtext)
         res = rawtext
         self.inputArea.send_keys(rawtext)
@@ -107,14 +104,12 @@ class caiyun(translator):
             self.inputArea.clear()  # 否则直接清空输入框
         # time.sleep(2)  # 等待清空延迟
         time.sleep(random.uniform(0, 1))
-        res = res.replace('\r\n', '')
-        res = res.replace('\n', '')
-        return res.strip()
+        return strip_breaks(res)
 
 
 class youdao(translator):
     def __init__(self, browser):
-        super().__init__(browser)
+        self.browser = browser
         browser.get('https://fanyi.youdao.com/')
         print('等待网页加载...')
         time.sleep(3)
@@ -136,8 +131,7 @@ class youdao(translator):
             pass
 
     def translate(self, rawtext):
-        rawtext= rawtext.replace('\r\n', '')
-        rawtext= rawtext.replace('\n', '')
+        rawtext = strip_breaks(rawtext)
         rawtext = strip_tags(rawtext)
         res = rawtext
         self.inputArea.send_keys(rawtext)
@@ -163,14 +157,12 @@ class youdao(translator):
             self.inputArea.clear()  # 否则直接清空输入框
         # time.sleep(1)  # 等待清空延迟
         time.sleep(random.uniform(0.5, 1))
-        res = res.replace('\r\n', '')
-        res = res.replace('\n', '')
-        return res.strip()
+        return strip_breaks(res)
 
 
 class deepl(translator):
     def __init__(self, browser):
-        super().__init__(browser)
+        self.browser = browser
         browser.get('https://www.deepl.com/translator')
         print('等待网页加载...')
         time.sleep(5)
@@ -188,8 +180,7 @@ class deepl(translator):
             pass
 
     def translate(self, rawtext):
-        rawtext= rawtext.replace('\r\n', '')
-        rawtext= rawtext.replace('\n', '')
+        rawtext = strip_breaks(rawtext)
         rawtext = strip_tags(rawtext)
         # res = rawtext
         self.inputArea.send_keys(rawtext)
@@ -210,6 +201,4 @@ class deepl(translator):
         except:
             self.inputArea.clear()  # 否则直接清空输入框
         time.sleep(random.uniform(0, 1))
-        res = res.replace('\r\n', '')
-        res = res.replace('\n', '')
-        return res.strip()
+        return strip_breaks(res)

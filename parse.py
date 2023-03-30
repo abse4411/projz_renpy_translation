@@ -12,6 +12,7 @@ from tqdm import tqdm
 
 import trans_engine
 from file import exists_file, file_name, mkdir, exists_dir
+from misc import var_list, text_type, TEXT_TYPE, is_empty
 
 
 class replacer:
@@ -62,25 +63,27 @@ regex_var = re.compile(r'(\[[A-Za-z_]+[A-Za-z1-9_]*\])')
 
 
 def parse_text(text: str, translator=None):
-    if not ('old "' in text or 'translate ' in text or '# ' in text or text == '\n'):
-        first_quote = text.find("\"")
-        last_quote = text.rfind("\"")
-        if first_quote == last_quote:
+    raw_text, ttype = text_type(text)
+    if ttype == TEXT_TYPE.NEW:
+        if is_empty(raw_text):
             return text
-        raw_text = text[first_quote + 1:last_quote]
-        if raw_text.strip() == "":
+        new_txt = raw_text.strip()
+        # the new text starts with "@$" which marked in the previous phase is required translation
+        if new_txt[:2] == '@$':
+            new_txt = new_txt[2:]
+        else:
             return text
-        res = regex_var.findall(raw_text)
+        res = var_list(new_txt)
         # replace the var by another name
         tmp_res = [f'T{i}V' for i in range(len(res))]
         for i in range(len(res)):
-            raw_text = raw_text.replace(res[i], tmp_res[i])
+            new_txt = new_txt.replace(res[i], tmp_res[i])
         if translator:
-            raw_text = translator.translate(raw_text)
+            new_txt = translator.translate(new_txt)
         for i in range(len(res)):
-            raw_text = raw_text.replace(tmp_res[i], res[i])
-            raw_text = raw_text.replace(tmp_res[i].lower(), res[i])
-        return text.replace(text[first_quote + 1:last_quote], raw_text)
+            new_txt = new_txt.replace(tmp_res[i], res[i])
+            new_txt = new_txt.replace(tmp_res[i].lower(), res[i])
+        return text.replace(raw_text, new_txt)
     return text
 
 
