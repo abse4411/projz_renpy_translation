@@ -119,7 +119,7 @@ def main():
                     # if the raw text is not empty or blank
                     if striped_text:
                         tran_text = translator.translate(raw_text)
-                        # if raw_text is not translated in old rpy
+                        # if raw text is not translated in old rpy, or contains alphas
                         if tran_text == raw_text and contain_alpha(raw_text):
                             # add special marks to the untranslated text,
                             # please remove these marks before translating the raw text in the next phase

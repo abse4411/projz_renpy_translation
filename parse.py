@@ -58,13 +58,10 @@ class replacer:
                 self.file_handle.flush()
 
 
-# match the variable
-regex_var = re.compile(r'(\[[A-Za-z_]+[A-Za-z1-9_]*\])')
-
-
 def parse_text(text: str, translator=None):
     raw_text, ttype = text_type(text)
     if ttype == TEXT_TYPE.NEW:
+        # if raw text is empty, just return original text
         if is_empty(raw_text):
             return text
         new_txt = raw_text.strip()
@@ -78,12 +75,17 @@ def parse_text(text: str, translator=None):
         tmp_res = [f'T{i}V' for i in range(len(res))]
         for i in range(len(res)):
             new_txt = new_txt.replace(res[i], tmp_res[i])
+        trans_txt = new_txt
         if translator:
-            new_txt = translator.translate(new_txt)
+            trans_txt = translator.translate(new_txt)
+        # if new txt is not translated, just return original text
+        if trans_txt == new_txt:
+            return text
+        # replace the var back
         for i in range(len(res)):
-            new_txt = new_txt.replace(tmp_res[i], res[i])
-            new_txt = new_txt.replace(tmp_res[i].lower(), res[i])
-        return text.replace(raw_text, new_txt)
+            trans_txt = trans_txt.replace(tmp_res[i], res[i])
+            trans_txt = trans_txt.replace(tmp_res[i].lower(), res[i])
+        return text.replace(raw_text, trans_txt)
     return text
 
 

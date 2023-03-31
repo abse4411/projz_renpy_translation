@@ -31,21 +31,27 @@ class google(translator):
         self.browser = browser
         browser.get('https://translate.google.com/')
         print('等待网页加载...')
-        time.sleep(5)
-        self.inputArea = browser.find_element(By.XPATH,
-                                              '//*[@id="yDmH0d"]/c-wiz/div/div[2]/c-wiz/div[2]/c-wiz/div[1]/div[2]/div[3]/c-wiz[1]/span/span/div/textarea')
+        time.sleep(4)
+        try:
+            # 关闭"继续使用 Google 前须知"框
+            browser.find_element(By.XPATH, '//*[@id="yDmH0d"]/c-wiz/div/div/div/div[2]/div[1]/div[3]/div[1]/div[1]/form[2]/div/div/button').click()
+            time.sleep(1)
+        except:
+            pass
         try:
             # 切换到英语
             browser.find_element(By.XPATH, '/html/body/c-wiz/div/div[2]/c-wiz/div[2]/c-wiz/div[1]/div[1]/c-wiz/div[1]/c-wiz/div[2]/div/div[2]/div/div/span/button[2]').click()
             time.sleep(1)
         except:
             pass
+        time.sleep(2)
+        self.inputArea = browser.find_element(By.XPATH,
+                                              '//*[@id="yDmH0d"]/c-wiz/div/div[2]/c-wiz/div[2]/c-wiz/div[1]/div[2]/div[3]/c-wiz[1]/span/span/div/textarea')
 
 
     def translate(self, rawtext):
-        rawtext = strip_breaks(rawtext)
-        res = rawtext
-        self.inputArea.send_keys(rawtext)
+        res = strip_breaks(rawtext)
+        self.inputArea.send_keys(res)
         xpath = '//*[@id="yDmH0d"]/c-wiz/div/div[2]/c-wiz/div[2]/c-wiz/div[1]/div[2]/div[3]/c-wiz[2]/div/div[8]/div/div[1]/span[1]'
         try:
             time.sleep(random.uniform(0, 1))  # 设置随机等待时间，防止触发反bot机制
@@ -80,10 +86,9 @@ class caiyun(translator):
         self.inputArea = browser.find_element(By.CLASS_NAME, 'textinput')
 
     def translate(self, rawtext):
-        rawtext = strip_breaks(rawtext)
-        rawtext = strip_tags(rawtext)
-        res = rawtext
-        self.inputArea.send_keys(rawtext)
+        res = strip_breaks(rawtext)
+        res = strip_tags(res)
+        self.inputArea.send_keys(res)
         xpath = '//*[@id="texttarget"]/div/span'
         try:
             # WebDriverWait(browser, 15).until(lambda broswer: browser.find_element_by_xpath(xpath))  #等待翻译结果，超时15秒
@@ -131,10 +136,9 @@ class youdao(translator):
             pass
 
     def translate(self, rawtext):
-        rawtext = strip_breaks(rawtext)
-        rawtext = strip_tags(rawtext)
-        res = rawtext
-        self.inputArea.send_keys(rawtext)
+        res = strip_breaks(rawtext)
+        res = strip_tags(res)
+        self.inputArea.send_keys(res)
         xpath = '//*[@id="js_fanyi_output_resultOutput"]/p/span'
         try:
             WebDriverWait(self.browser, 15).until(
@@ -180,10 +184,9 @@ class deepl(translator):
             pass
 
     def translate(self, rawtext):
-        rawtext = strip_breaks(rawtext)
-        rawtext = strip_tags(rawtext)
-        # res = rawtext
-        self.inputArea.send_keys(rawtext)
+        res = strip_breaks(rawtext)
+        res = strip_tags(res)
+        self.inputArea.send_keys(res)
         div_id = 'target-dummydiv'
         try:
             WebDriverWait(self.browser, 15).until(
