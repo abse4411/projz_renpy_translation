@@ -17,7 +17,7 @@
 2. `parse_.py`遍历上一个阶段的临时版本的rpy文件，如果某行文本含有特殊标记，则调用翻译API进行翻译，否则保持不变。完成后会生成一个翻译好的rpy文件。
 
 示意图：
-![](G:\Xuefeng\Downloads\RenPy-WebTranslator-main\imgs\pipline.jpg)
+![](./imgs/pipline.jpg)
 
 ## 3.运行环境准备
 
@@ -138,7 +138,7 @@ projz/
 
 对于新的rpy文件我们只要做的是提取原始文本然后用翻译字典中有进行替换就行了。注意，我们使用renpy SDK生成翻译文件时候需要保留原始文本，不要勾选未翻译生成空字符串的选项：
 
-![](G:\Xuefeng\Downloads\RenPy-WebTranslator-main\imgs\renpy.png)
+![](./imgs/renpy.png)
 
 之后生成的ryp文件应该是这样的：
 
@@ -234,7 +234,7 @@ python parse.py ./tmp --driver "G:\Admin\Downloads\chromedriver_win32\chromedriv
 
 #### 5.2.3 执行效果
 
-![](G:\Xuefeng\Downloads\RenPy-WebTranslator-main\imgs\stage2.jpg)
+![](./imgs/stage2.jpg)
 
 执行完毕后，代码目录会多出一个`tmp`文件夹下，里面的rpy文件名和`./new`文件夹的相同：
 
