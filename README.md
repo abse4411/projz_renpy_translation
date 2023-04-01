@@ -112,10 +112,10 @@ projz/
 
 同时，还会代码目录下生成一个`tran_summary.txt`文件，统计每个文件中复用旧版本的rpy文件翻译的行数和需要机翻行数，文件内容类似下面：
 
-> 2023-03-31 12:44:57 \
-> dayaievents.rpy[total line(s):2967] is translated with 2937 translated line(s) and 30 untranslated line(s). \
-> erukaevents.rpy[total line(s):18315] is translated with 18082 translated line(s) and 233 untranslated line(s). \
-> dreamevents.rpy[total line(s):1164] is translated with 1007 translated line(s) and 157 untranslated line(s). \
+> 2023-03-31 12:44:57 
+> dayaievents.rpy[total line(s):2967] is translated with 2937 translated line(s) and 30 untranslated line(s). 
+> erukaevents.rpy[total line(s):18315] is translated with 18082 translated line(s) and 233 untranslated line(s). 
+> dreamevents.rpy[total line(s):1164] is translated with 1007 translated line(s) and 157 untranslated line(s). 
 > 3 rpy files are translated with 22026 translated line(s) and 420 untranslated line(s). 
 
 然后我们就可以知道，我们复用多少行翻译和需要翻译多少行。
@@ -134,7 +134,7 @@ projz/
 >         # "She doesn’t pick up."
 >         "她没有接听。"
 
-我们可以把`old "selected"`中的原始文本`selected`当成字典的key，而`new "选择"`中的翻译文本`选择`当成字典的value，这样就可以得到一个原始文本到翻译文本的映射（`"selected"->"选择"`），因此我们在旧版本rpy文件就是如何识别原始文本和翻译文本，然后构建这个翻译字典即可。
+我们可以把`old "selected"`中的原始文本`selected`当成字典的key，而`new "选择"`中的翻译文本`选择`当成字典的value，这样就可以得到一个原始文本到翻译文本的映射（`"selected"->"选择"`），因此我们在旧版本rpy文件工作就是如何识别原始文本和翻译文本，然后构建这个翻译字典即可。
 
 对于新的rpy文件我们只要做的是提取原始文本然后用翻译字典中有进行替换就行了。注意，我们使用renpy SDK生成翻译文件时候需要保留原始文本，不要勾选未翻译生成空字符串的选项：
 
@@ -188,7 +188,7 @@ projz/
 python parse.py FILENAME/DIRNAME --driver DRIVER [-t API_NAME] [-s SAVE]
 ```
 
-- `FILENAME/DIRNAME`表示要进行机翻的rpy目录或者rpy文件路径，不会递归扫描文件。
+- `FILENAME/DIRNAME`表示要进行机翻的rpy目录或者rpy文件路径，不会递归扫描文件夹。
   
   例如：
   
@@ -208,7 +208,7 @@ python parse.py FILENAME/DIRNAME --driver DRIVER [-t API_NAME] [-s SAVE]
 parser.add_argument(
     "--driver",
     type=str,
-    default=r"G:\Admin\Downloads\chromedriver_win32\chromedriver.exer"
+    default=r"G:\Admin\Downloads\chromedriver_win32\chromedriver.exer",
     required=True,
     help="the executable path for the chrome driver",
 )
@@ -354,6 +354,14 @@ parser.add_argument(
     help="the translation API to use",
 )
 ```
+
+## 工具文件
+
+- `correct_rawtext.py` :见5.1.4 代码原理，它会把旧版本中`rwa text`末尾缺失引号加上去。没有参数，在代码中直接指定要添加缺失引号rpy文件的文件夹，默认为`./old`,保存到`./old_tmp`目录。
+
+- `revert.py`它将翻译的文本替换成原始文本，可以看作是`incre_parse_.py`的逆过程。
+  
+  参数：`-o`要含有翻译文本的rpy文件的文件夹，默认值`./source` 。`-s`保存替换原始文本的rpy文件的文件夹，默认值`./reverted`
 
 ## 其他问题
 
