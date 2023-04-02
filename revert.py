@@ -1,54 +1,10 @@
 import argparse
 import glob
 import os.path as osp
-import re
 import time
 
-import numpy as np
-from selenium import webdriver
-from selenium.common.exceptions import SessionNotCreatedException
-from selenium.webdriver.chrome.service import Service
-from tqdm import tqdm
-
-import trans_engine
-from file import exists_file, file_name, mkdir, exists_dir
-from misc import var_list, text_type, TEXT_TYPE, replacer, contain_alpha, is_empty
-
-def get_translated_text(rpy_file):
-    with open(rpy_file, 'r', encoding='utf-8') as f:
-        temp_data = f.readlines()
-    res = dict()
-    raw_text = None
-    raw_line = -1
-    # new_text = None
-    for i, line in enumerate(temp_data, 1):
-        text, ttype = text_type(line)
-        if ttype == TEXT_TYPE.RAW:
-            if is_empty(text):
-                print(f'=========================>warning, the empty raw text({text}) in line {i} is skipped!')
-                raw_text = None
-                raw_line = -1
-                continue
-            assert raw_text is None, f"unmatched raw text({text}) in line {i}, last raw text is \"{raw_text}\""
-            raw_text = text
-            raw_line = i
-        if ttype == TEXT_TYPE.NEW:
-            if not is_empty(text):
-                # raw text and new text must appear in pairs
-                assert raw_text is not None and i - raw_line == 1, f"unmatched new text({text}) in line {i}. raw text({raw_text}, line {raw_line}) "
-                res[raw_text] = text
-                raw_text = None
-                raw_line = -1
-            else:
-                if not is_empty(raw_text) and i - raw_line == 1:
-                    print(
-                        f'=========================>warning, the empty new text({text}) in line {i} is replaced by raw text({raw_text}) of line {raw_line}')
-                    res[raw_text] = text
-                    raw_text = None
-                    raw_line = -1
-                else:
-                    print(f'=========================>warning, the empty new text({text}) in line {i} is skipped!')
-    return res
+from file import exists_file, file_name, mkdir
+from misc import text_type, TEXT_TYPE, replacer
 
 
 def main():
@@ -105,7 +61,7 @@ def main():
                     raw_text = cur_text
                     raw_line = r.cur_line()
                 if ttype == TEXT_TYPE.NEW:
-                    assert raw_text is not None and r.cur_line() - raw_line == 1, f"unmatched new text({text}) in line {i}. raw text({raw_text}, line {raw_line}) "
+                    assert raw_text is not None and r.cur_line() - raw_line == 1, f"unmatched new text({text}) in line {r.cur_line()}. raw text({raw_text}, line {raw_line}) "
                     updated_text = updated_text.replace(cur_text, raw_text)
                     raw_text = None
                     raw_line = -1
