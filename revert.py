@@ -3,8 +3,8 @@ import glob
 import os.path as osp
 import time
 
-from file import exists_file, file_name, mkdir
-from misc import text_type, TEXT_TYPE, replacer
+from util.file import exists_file, file_name, mkdir
+from util.misc import text_type, TEXT_TYPE, replacer
 
 
 def main():

@@ -3,7 +3,7 @@ import os.path as osp
 
 import numpy as np
 
-from file import exists_file, file_name
+from .file import exists_file, file_name
 
 
 class TEXT_TYPE:

@@ -1,18 +1,21 @@
 import argparse
 import glob
 import os.path as osp
-import re
 import time
 
-import numpy as np
-from selenium import webdriver
-from selenium.common.exceptions import SessionNotCreatedException
-from selenium.webdriver.chrome.service import Service
-from tqdm import tqdm
+from trans.base import translator
+from util.file import exists_file, file_name, mkdir
+from util.misc import text_type, TEXT_TYPE, replacer, contain_alpha, is_empty
 
-import trans_engine
-from file import exists_file, file_name, mkdir, exists_dir
-from misc import var_list, text_type, TEXT_TYPE, replacer, contain_alpha, is_empty
+
+class dict_translator(translator):
+    def __init__(self, translated_text):
+        self.translated_text = translated_text
+
+    def translate(self, rawtext):
+        if rawtext in self.translated_text:
+            return self.translated_text[rawtext]
+        return rawtext
 
 def get_translated_text(rpy_file):
     with open(rpy_file, 'r', encoding='utf-8') as f:
@@ -104,7 +107,7 @@ def main():
                 print(f'{old_rpy} not found, no translated text is available.')
                 translated_text = dict()
             # build the selected translator
-            translator = trans_engine.__dict__["dict_translator"](translated_text)
+            translator = dict_translator(translated_text)
             r = replacer(new_rpy, args.save)
             untrans_count, trans_count = 0, 0
             # start translation

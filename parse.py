@@ -1,61 +1,16 @@
 import argparse
 import glob
 import os.path as osp
-import re
 import time
 
 import numpy as np
-from selenium import webdriver
-from selenium.common.exceptions import SessionNotCreatedException
-from selenium.webdriver.chrome.service import Service
+
 from tqdm import tqdm
 
-import trans_engine
-from file import exists_file, file_name, mkdir, exists_dir
-from misc import var_list, text_type, TEXT_TYPE, is_empty
-
-
-class replacer:
-    def __init__(self, target_file, save_dir):
-        with open(target_file, 'r', encoding='utf-8') as f:
-            self.data = f.readlines()
-        assert exists_file(target_file)
-        self.save_file = osp.join(save_dir, file_name(target_file))
-        self.start_idx = 0
-        if exists_file(self.save_file):
-            with open(self.save_file, 'r', encoding='utf-8') as f:
-                temp_data = f.readlines()
-                self.start_idx = len(temp_data)
-
-    def start(self, force=False):
-        if force:
-            self.start_idx = 0
-            self.file_handle = open(self.save_file, 'w', encoding='utf-8', newline='')
-        else:
-            if self.start_idx < len(self.data):
-                self.file_handle = open(self.save_file, 'a', encoding='utf-8', newline='')
-        return self.start_idx < len(self.data)
-
-    def cur_line(self):
-        return self.start_idx + 1
-
-    def __len__(self):
-        return len(self.data)
-
-    def next(self):
-        if self.start_idx < len(self.data):
-            return self.data[self.start_idx]
-        else:
-            if hasattr(self, "file_handle"):
-                self.file_handle.close()
-        return None
-
-    def update(self, text):
-        if self.start_idx < len(self.data):
-            self.file_handle.write(text)
-            self.start_idx += 1
-            if np.random.rand() > 0.99:
-                self.file_handle.flush()
+from trans import web_trans
+from trans.web_trans import wrap_web_trans
+from util.file import exists_file, file_name, mkdir, exists_dir
+from util.misc import var_list, text_type, TEXT_TYPE, is_empty, replacer
 
 
 def parse_text(text: str, translator=None):
@@ -111,20 +66,7 @@ def parse_files(rpy_files, save_dir, translator):
             print(f'skipping the nonexistent file:{rpy_file}')
 
 
-def init_chrome(driver_path):
-    options = webdriver.ChromeOptions()
-    options.add_argument("window-size=1920x1080")
-    print("正在启动chromedriver...")
-    # driver_path = r'D:\Users\Surface Book2\Downloads\chromedriver_win32\chromedriver.exe'
-    try:
-        s = Service(driver_path)
-        browser = webdriver.Chrome(service=s, options=options)
-    except SessionNotCreatedException as err:
-        print(
-            "\nchromedriver版本不对，请到 https://registry.npmmirror.com/binary.html?path=chromedriver/ 下载对应版本（Chrome版本信息如下）\n",
-            err)
-        exit(1)
-    return browser
+
 
 
 def main():
@@ -165,26 +107,22 @@ def main():
     print(args)
     # create the dir of translated files
     mkdir(args.save)
-    # build the browser
-    browser = init_chrome(args.driver)
     # build the selected translator
-    translator = trans_engine.__dict__[args.trans_api](browser)
-    # parse each file/dir in each given files/dirs
-    for i, rpy_dir in enumerate(args.files):
-        print(f'current dir: {i + 1}/{len(args.files)}：{rpy_dir}')
-        if exists_dir(rpy_dir):
-            rpy_files = sorted(glob.glob(osp.join(rpy_dir, "*.rpy")))
-            # using the last name of rpy_dir as the subdir of save_dir
-            save_dir = osp.join(args.save, osp.basename(rpy_dir))
-            mkdir(save_dir)
-            parse_files(rpy_files, save_dir, translator)
-        elif exists_file(rpy_dir):
-            # parse given files
-            parse_files([rpy_dir], args.save, translator)
-        else:
-            print(f'skipping the nonexistent item:{rpy_dir}')
-    browser.quit()
-    browser.stop_client()
+    with wrap_web_trans(web_trans.__dict__[args.trans_api](args.driver)) as translator:
+        # parse each file/dir in each given files/dirs
+        for i, rpy_dir in enumerate(args.files):
+            print(f'current dir: {i + 1}/{len(args.files)}：{rpy_dir}')
+            if exists_dir(rpy_dir):
+                rpy_files = sorted(glob.glob(osp.join(rpy_dir, "*.rpy")))
+                # using the last name of rpy_dir as the subdir of save_dir
+                save_dir = osp.join(args.save, osp.basename(rpy_dir))
+                mkdir(save_dir)
+                parse_files(rpy_files, save_dir, translator)
+            elif exists_file(rpy_dir):
+                # parse given files
+                parse_files([rpy_dir], args.save, translator)
+            else:
+                print(f'skipping the nonexistent item:{rpy_dir}')
     time_end = time.time()
     print("生成完毕，耗时{:.0f}min".format((time_end - time_start) / 60))
     # input("按回车键退出")

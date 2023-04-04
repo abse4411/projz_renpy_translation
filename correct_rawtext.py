@@ -1,7 +1,7 @@
 import glob
 import  os.path as osp
 
-from file import mkdir, file_name
+from util.file import mkdir, file_name
 
 old_dir = r'./old'
 output_new = r'./old_tmp'

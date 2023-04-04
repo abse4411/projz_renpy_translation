@@ -12,7 +12,7 @@
 
 本工具分成两个阶段的流程：
 
-1. `incre_parse_.py` 将新版本的rpy文件中可以在旧版rpy文件找到的翻译文本进行进行替换，而对于没有旧版rpy文件没有翻译文本，进行标记，交给下一个阶段进行机翻。此时会生成一个临时版本的rpy文件，其格式按照新版本的rpy，但是如果文本的翻译可以在旧版rpy文件找到，则使用旧版rpy文件的翻译文本，如果找不到对应的翻译文本则对该文本进行特殊标记。
+1. `incre_parse.py` 将新版本的rpy文件中可以在旧版rpy文件找到的翻译文本进行进行替换，而对于没有旧版rpy文件没有翻译文本，进行标记，交给下一个阶段进行机翻。此时会生成一个临时版本的rpy文件，其格式按照新版本的rpy，但是如果文本的翻译可以在旧版rpy文件找到，则使用旧版rpy文件的翻译文本，如果找不到对应的翻译文本则对该文本进行特殊标记。
 
 2. `parse_.py`遍历上一个阶段的临时版本的rpy文件，如果某行文本含有特殊标记，则调用翻译API进行翻译，否则保持不变。完成后会生成一个翻译好的rpy文件。
 
@@ -43,11 +43,13 @@ projz/
     ├── dayaievents.rpy
     ├── erukaevents.rpy
     └── ...(新版本rpy)
-├── file.py
-├── incre_parse_.py
-├── misc.py
+├── trans/
+├── util/
+├── correct_rawtext.py
+├── incre_parse.py
 ├── parse.py
-└── trans_engine.py
+├── README.md
+└── revert.py
 ```
 
 ## 5.运行
@@ -56,10 +58,10 @@ projz/
 
 #### 5.1.1 参数说明
 
-`incre_parse_.py`参数如下
+`incre_parse.py`参数如下
 
 ```shell
-python incre_parse_.py [-o OLD_DIR] [-n NEW_DIR] [-s SAVE]
+python incre_parse.py [-o OLD_DIR] [-n NEW_DIR] [-s SAVE]
 ```
 
 - `-o OLD_DIR`表示第4节 `4.文件准备` 的旧版本的ryp文件目录，默认为`./old`
@@ -73,16 +75,16 @@ python incre_parse_.py [-o OLD_DIR] [-n NEW_DIR] [-s SAVE]
 因此，如果如果按第4节 `4.文件准备`放置好ryp文件后，直接运行下面命令就行了：
 
 ```shell
-python incre_parse_.py
+python incre_parse.py
 ```
 
 上面的命令和下面的命令是等价的：
 
 ```shell
-python incre_parse_.py -o ./old -n ./new -s ./tmp
+python incre_parse.py -o ./old -n ./new -s ./tmp
 ```
 
-**注意**：`incre_parse_.py`不会对文件夹进行递归扫描，只扫描一级目录下的rpy文件。
+**注意**：`incre_parse.py`不会对文件夹进行递归扫描，只扫描一级目录下的rpy文件。
 
 #### 5.1.3 执行效果
 
@@ -102,12 +104,13 @@ projz/
     ├── dayaievents.rpy
     ├── erukaevents.rpy
     └── ...(临时rpy，包含来自旧版本翻译和未翻译的文本)
-├── file.py
-├── incre_parse_.py
-├── misc.py
+├── trans/
+├── util/
+├── correct_rawtext.py
+├── incre_parse.py
 ├── parse.py
-├── tran_summary.txt
-└── trans_engine.py
+├── README.md
+└── revert.py
 ```
 
 同时，还会代码目录下生成一个`tran_summary.txt`文件，统计每个文件中复用旧版本的rpy文件翻译的行数和需要机翻行数，文件内容类似下面：
@@ -182,7 +185,7 @@ projz/
 
 #### 5.2.1 参数说明
 
-`incre_parse_.py`参数如下
+`parse.py`参数如下
 
 ```shell
 python parse.py FILENAME/DIRNAME --driver DRIVER [-t API_NAME] [-s SAVE]
@@ -190,7 +193,7 @@ python parse.py FILENAME/DIRNAME --driver DRIVER [-t API_NAME] [-s SAVE]
 
 - `FILENAME/DIRNAME`表示要进行机翻的rpy目录或者rpy文件路径，不会递归扫描文件夹。
   
-  例如：
+  例如(下面命令会机翻文件夹`./tmp`和文件夹`./my_typs`下的所有rpy文件和当前目录下的一个rpy文件`a.rpy`)：
   
   ```
   python parse.py ./tmp a.rpy ./my_typs
@@ -202,7 +205,7 @@ python parse.py FILENAME/DIRNAME --driver DRIVER [-t API_NAME] [-s SAVE]
 --driver "G:\Admin\Downloads\chromedriver_win32\chromedriver.exe"
 ```
 
-如果觉得每次都要指定很麻烦，请在`incre_parse_.py`设置该参数的默认值：
+如果觉得每次都要指定很麻烦，请在`parse.py`设置该参数的默认值：
 
 ```python
 parser.add_argument(
@@ -257,12 +260,13 @@ projz/
         ├── dayaievents.rpy
         ├── erukaevents.rpy
         └── ...(机翻rpy)
-├── file.py
-├── incre_parse_.py
-├── misc.py
+├── trans/
+├── util/
+├── correct_rawtext.py
+├── incre_parse.py
 ├── parse.py
-├── tran_summary.txt
-└── trans_engine.py
+├── README.md
+└── revert.py
 ```
 
 #### 5.1.4 代码原理
@@ -323,19 +327,16 @@ projz/
 
 ## 6.自定义翻译引擎API
 
-在`trans_engine.py`创建一个类，并继承抽象类`translator`即可，然后重写里面的`translate`方法。
+在`./trans/web_trans.py`创建一个类，并继承抽象类`web_translator`即可，然后重写里面的`translate`方法。
 
 ```python
 # Abstract translator
-class translator:
+class web_translator(translator):
+    # ...
 
-    def translate(self, rawtext):
-        return rawtext
-
-
-class mytransapi(translator):
-    def __init__(self, browser):
-        self.browser = browser
+class mytransapi(web_translator):
+    def __init__(self, driver_path):
+        super().__init__(driver_path)
         # Your code here
 
     def translate(self, rawtext):
@@ -359,13 +360,13 @@ parser.add_argument(
 
 - `correct_rawtext.py` :见5.1.4 代码原理，它会把旧版本中`rwa text`末尾缺失引号加上去。没有参数，在代码中直接指定要添加缺失引号rpy文件的文件夹，默认为`./old`,保存到`./old_tmp`目录。
 
-- `revert.py`它将翻译的文本替换成原始文本，可以看作是`incre_parse_.py`的逆过程。
+- `revert.py`它将翻译的文本替换成原始文本，可以看作是`incre_parse.py`的逆过程。
   
   参数：`-o`要含有翻译文本的rpy文件的文件夹，默认值`./source` 。`-s`保存替换原始文本的rpy文件的文件夹，默认值`./reverted`
 
 ## 其他问题
 
-- 虽然在 `5.1.4 代码原理` 说过Google翻译可以翻译带标签的文本，但是标签如果有参数之类的可能会在标签加空格导致代码出错。因此，如果想要去除标签，在`trans_engine.py`代码中的`google`类的`translate`方法调用`strip_tags(res)`即可：
+- 虽然在 `5.1.4 代码原理` 说过Google翻译可以翻译带标签的文本，但是标签如果有参数之类的可能会在标签加空格导致代码出错。因此，如果想要去除标签，在`./trans/web_trans.py`代码中的`google`类的`translate`方法调用`strip_tags(res)`即可：
   
   ```python
   def translate(self, rawtext):
