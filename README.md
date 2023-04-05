@@ -4,6 +4,16 @@
 
 部分代码来自[Maooookai(Mirage)](https://github.com/Maooookai/WebTranslator), [DrDRR](https://github.com/DrDRR/RenPy-WebTranslator/commits?author=DrDRR "View all commits by DrDRR")，Salute!
 
+***
+
+## <mark> 新的工具类已经推出!!!</mark>
+
+`compare.py`:可以检测旧版本rpy和新版本rpy中，处于在脚本代码同位置的文本变化情况，并输出两个版本之间的差异信息到excel表格中。详细说明请看后面的`工具文件`章节。
+
+---
+
+
+
 ## 1.目的
 
 在同一个RenPy游戏中，对于一个已经精翻的rpy文件（比如，来自某个版本V0.28），里面的翻译文本其实在新版本的rpy文件（V0.29）中是可以复用的。因此我们可以先把旧版本可用翻译文本替换到新版本中，然后对于那些没有替换的文本再进行机翻，大大地节省时间。
@@ -362,7 +372,13 @@ parser.add_argument(
 
 - `revert.py`它将翻译的文本替换成原始文本，可以看作是`incre_parse.py`的逆过程。
   
-  参数：`-o`要含有翻译文本的rpy文件的文件夹，默认值`./source` 。`-s`保存替换原始文本的rpy文件的文件夹，默认值`./reverted`
+  参数：`-o`要含有翻译文本的rpy文件的文件夹，默认值`./source` ；`-s`保存替换原始文本的rpy文件的文件夹，默认值`./reverted`
+
+- `compare.py`:游戏作者可能在新版本中校正旧版本的某些文本，这对导致我们第一阶段`incre_parse.py`某些文本得不到复用，因此这个工具类根据文本在原代码中的位置(叫做<mark>翻译索引</mark>)作为key，而对应原始文本作为value，构建字典。然后我们分别为新旧版本的rpy文件构建这样字典，然后根据两者共有的<mark>翻译索引</mark>进行对相应原始文本进行比较，然后把那些原始文本不一样的项目到处到excel中，方便查看。
+  
+  示意图：
+  
+  ![](C:\Users\Surface%20Book2\AppData\Roaming\marktext\images\2023-04-05-21-12-35-compare.jpg)参数：`-o`含有旧版本的rpy文件的文件夹，默认值`./old_ver` ；`-n`含有新版本的rpy文件的文件夹，默认值`./old_ver`；`-s`保存excel文件保存位置，默认值`./fc_res`
 
 ## 其他问题
 
