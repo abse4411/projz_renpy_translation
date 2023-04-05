@@ -368,7 +368,7 @@ parser.add_argument(
 
 ## 工具文件
 
-- `correct_rawtext.py` :见5.1.4 代码原理，它会把旧版本中`rwa text`末尾缺失引号加上去。没有参数，在代码中直接指定要添加缺失引号rpy文件的文件夹，默认为`./old`,保存到`./old_tmp`目录。
+- `correct_rawtext.py`:见5.1.4 代码原理，它会把旧版本中`rwa text`末尾缺失引号加上去。没有参数，在代码中直接指定要添加缺失引号rpy文件的文件夹，默认为`./old`,保存到`./old_tmp`目录。
 
 - `revert.py`它将翻译的文本替换成原始文本，可以看作是`incre_parse.py`的逆过程。
   
@@ -378,7 +378,7 @@ parser.add_argument(
   
   示意图：
   
-  ![](C:\Users\Surface%20Book2\AppData\Roaming\marktext\images\2023-04-05-21-12-35-compare.jpg)参数：`-o`含有旧版本的rpy文件的文件夹，默认值`./old_ver` ；`-n`含有新版本的rpy文件的文件夹，默认值`./old_ver`；`-s`保存excel文件保存位置，默认值`./fc_res`
+  ![](./imgs/compare.jpg)参数：`-o`含有旧版本的rpy文件的文件夹，默认值`./old_ver` ；`-n`含有新版本的rpy文件的文件夹，默认值`./old_ver`；`-s`保存excel文件保存位置，默认值`./fc_res`
 
 ## 其他问题
 
