@@ -81,6 +81,7 @@ class google(web_translator):
 
     def translate(self, rawtext):
         res = strip_breaks(rawtext)
+        res = strip_tags(res)
         self.inputArea.send_keys(res)
         xpath = '//*[@id="yDmH0d"]/c-wiz/div/div[2]/c-wiz/div[2]/c-wiz/div[1]/div[2]/div[3]/c-wiz[2]/div/div[8]/div/div[1]/span[1]'
         try:
