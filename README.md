@@ -309,13 +309,13 @@ projz/
   I love you, [player].
   ```
   
-   送入翻译API前，会把`[player]`替换为`T0V`:
+  送入翻译API前，会把`[player]`替换为`T0V`:
   
   ```
   I love you, T0V.
   ```
   
-   替换后再送入翻译API后，再把翻译结果的`T0V`替换为`[player]`:
+  替换后再送入翻译API后，再把翻译结果的`T0V`替换为`[player]`:
   
   ```
   我爱你, [player].
@@ -346,7 +346,7 @@ class web_translator(translator):
 
 class mytransapi(web_translator):
     def __init__(self, driver_path):
-        super().__init__(driver_path)
+        super().__init__(driver_path)
         # Your code here
 
     def translate(self, rawtext):
@@ -389,6 +389,7 @@ parser.add_argument(
         res = strip_breaks(rawtext)
         res = strip_tags(res)  # 加上这个
   ```
+- 翻译文本中含有Emoji表情将导致第二阶段崩溃，请手动翻译在`./tmp`文件夹下的对应文件含有带有Emoji表情的文本，并去除特殊标记`@$`，然后在再执行第二阶段的代码。
 
 ## Todo
 
