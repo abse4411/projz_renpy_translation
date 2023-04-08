@@ -12,8 +12,6 @@
 
 ---
 
-
-
 ## 1.目的
 
 在同一个RenPy游戏中，对于一个已经精翻的rpy文件（比如，来自某个版本V0.28），里面的翻译文本其实在新版本的rpy文件（V0.29）中是可以复用的。因此我们可以先把旧版本可用翻译文本替换到新版本中，然后对于那些没有替换的文本再进行机翻，大大地节省时间。
@@ -24,7 +22,7 @@
 
 1. `incre_parse.py` 将新版本的rpy文件中可以在旧版rpy文件找到的翻译文本进行进行替换，而对于没有旧版rpy文件没有翻译文本，进行标记，交给下一个阶段进行机翻。此时会生成一个临时版本的rpy文件，其格式按照新版本的rpy，但是如果文本的翻译可以在旧版rpy文件找到，则使用旧版rpy文件的翻译文本，如果找不到对应的翻译文本则对该文本进行特殊标记。
 
-2. `parse_.py`遍历上一个阶段的临时版本的rpy文件，如果某行文本含有特殊标记，则调用翻译API进行翻译，否则保持不变。完成后会生成一个翻译好的rpy文件。
+2. `parse_.py`遍历上一个阶段的临时版本的rpy文件，如果某行文本含有特殊标记，则调用翻译API进行翻译，否则保持不变。完成后会生成一个翻译好的rpy文件。(<mark>为了辨别机翻文本，第二阶段后的机翻文本仍在文本前进行特殊标记`@@`，方便后期手动润色</mark>)
 
 示意图：
 ![](./imgs/pipline.jpg)
@@ -198,7 +196,7 @@ projz/
 `parse.py`参数如下
 
 ```shell
-python parse.py FILENAME/DIRNAME --driver DRIVER [-t API_NAME] [-s SAVE]
+python parse.py FILENAME/DIRNAME --driver DRIVER [-t API_NAME] [--no_mark] [-s SAVE]
 ```
 
 - `FILENAME/DIRNAME`表示要进行机翻的rpy目录或者rpy文件路径，不会递归扫描文件夹。
@@ -210,32 +208,36 @@ python parse.py FILENAME/DIRNAME --driver DRIVER [-t API_NAME] [-s SAVE]
   ```
 
 - `--driver DRIVER`表示第3节 `4.文件准备` 中解压好的chrom edriver文件的路径，例如：
+  
+  ```
+  --driver "G:\Admin\Downloads\chromedriver_win32\chromedriver.exe"
+  ```
+  
+  如果觉得每次都要指定很麻烦，请在`parse.py`设置该参数的默认值：
+  
+  ```python
+  parser.add_argument(
+      "--driver",
+      type=str,
+      default=r"G:\Admin\Downloads\chromedriver_win32\chromedriver.exer",
+      required=True,
+      help="the executable path for the chrome driver",
+  )
+  ```
 
-```
---driver "G:\Admin\Downloads\chromedriver_win32\chromedriver.exe"
-```
+- `-t API_NAME`表示使用翻译API，默认为`caiyun`，可选的有：`['caiyun', 'youdao', 'deepl', 'google', 'baidu']`，~~建议使用google翻译，对于文本的中字符格式化标签能保留下来，即"{i}Hello world{/i}"翻译后”{i}你好世界{/i}“。对于其他翻译API我在翻译前手动去除了这些标签：~~
+  
+  ```python
+  def translate(self, rawtext):
+      res = strip_breaks(rawtext) # 去除换行符，和文本头尾的空白字符
+      res = strip_tags(res)  # 去除字符格式化标签
+  ```
+  
+  注意：由于存在问题，google翻译前也去除了这些标签。
 
-如果觉得每次都要指定很麻烦，请在`parse.py`设置该参数的默认值：
+- `-s SAVE`表示保存机翻ryp文件目录，默认为`./translated`。如果`FILENAME/DIRNAME`参数含有文件夹，则会在`./translated`目录生成一个同名的文件夹，然后保存机翻的rpy文件到这个同名的文件夹里面；如果`FILENAME/DIRNAME`参数含文件，则直接在`./translated``生成同名的机翻的rpy文件。
 
-```python
-parser.add_argument(
-    "--driver",
-    type=str,
-    default=r"G:\Admin\Downloads\chromedriver_win32\chromedriver.exer",
-    required=True,
-    help="the executable path for the chrome driver",
-)
-```
-
-- `-t API_NAME`表示使用翻译API，默认为`google`，可选的有：`['caiyun', 'youdao', 'deepl', 'google', 'baidu']`，建议使用google翻译，对于文本的中字符格式化标签能保留下来，即"{i}Hello world{/i}"翻译后”{i}你好世界{/i}“。对于其他翻译API我在翻译前手动去除了这些标签：
-
-```python
-def translate(self, rawtext):
-    res = strip_breaks(rawtext) # 去除换行符，和文本头尾的空白字符
-    res = strip_tags(res)  # 去除字符格式化标签
-```
-
-`-s SAVE`表示保存机翻ryp文件目录，默认为`./translated`。如果`FILENAME/DIRNAME`参数含有文件夹，则会在`./translated`目录生成一个同名的文件夹，然后保存机翻的rpy文件到这个同名的文件夹里面；如果`FILENAME/DIRNAME`参数含文件，则直接在`./translated``生成同名的机翻的rpy文件。
+- `--no_mark`表示是否去除机翻文本前面特殊标记`@@`，如果指定该参数则会去除，默认不会去除。如果是为了后期润色翻译文本，请不要指定该参数，后面通过查找`@@`标记来手工润色文本。
 
 #### 5.2.2 执行命令
 
@@ -378,7 +380,7 @@ parser.add_argument(
   
   示意图：
   
-  ![](./imgs/compare.jpg)参数：`-o`含有旧版本的rpy文件的文件夹，默认值`./old_ver` ；`-n`含有新版本的rpy文件的文件夹，默认值`./old_ver`；`-s`保存excel文件保存位置，默认值`./fc_res`
+  ![](./imgs/compare.jpg)参数：`-o`含有旧版本的rpy文件的文件夹，默认值`./old` ；`-n`含有新版本的rpy文件的文件夹，默认值`./old`；`-s`保存excel文件保存位置，默认值`./fc_res`
 
 ## 其他问题
 
@@ -389,6 +391,7 @@ parser.add_argument(
         res = strip_breaks(rawtext)
         res = strip_tags(res)  # 加上这个
   ```
+
 - 翻译文本中含有Emoji表情将导致第二阶段崩溃，请手动翻译在`./tmp`文件夹下的对应文件含有带有Emoji表情的文本，并去除特殊标记`@$`，然后在再执行第二阶段的代码。
 
 ## Todo

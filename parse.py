@@ -12,7 +12,7 @@ from trans.web_trans import wrap_web_trans
 from util.file import exists_file, file_name, mkdir, exists_dir
 from util.misc import var_list, text_type, TEXT_TYPE, is_empty, replacer
 
-
+keep_mark = True
 def parse_text(text: str, translator=None):
     raw_text, ttype = text_type(text)
     if ttype == TEXT_TYPE.NEW:
@@ -40,6 +40,8 @@ def parse_text(text: str, translator=None):
         for i in range(len(res)):
             trans_txt = trans_txt.replace(tmp_res[i], res[i])
             trans_txt = trans_txt.replace(tmp_res[i].lower(), res[i])
+        if keep_mark:
+            trans_txt = '@@' + trans_txt
         return text.replace(raw_text, trans_txt)
     return text
 
@@ -68,7 +70,6 @@ def parse_files(rpy_files, save_dir, translator):
 
 
 
-
 def main():
     time_start = time.time()
     print("RenPy rpy文件机翻工具")
@@ -83,6 +84,11 @@ def main():
         nargs="+",
     )
     parser.add_argument(
+        "--no_mark",
+        action='store_true',
+        help="not adding '@@' to the front of translated texts",
+    )
+    parser.add_argument(
         "--driver",
         type=str,
         required=True,
@@ -92,7 +98,7 @@ def main():
         "-t",
         "--trans_api",
         type=str,
-        default='google',
+        default='caiyun',
         choices=['caiyun', 'youdao', 'deepl', 'google', 'baidu'],
         help="the translation API to use",
     )
@@ -105,6 +111,8 @@ def main():
     )
     args = parser.parse_args()
     print(args)
+    global keep_mark
+    keep_mark = not args.no_mark
     # create the dir of translated files
     mkdir(args.save)
     # build the selected translator
