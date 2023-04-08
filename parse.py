@@ -71,8 +71,8 @@ def parse_files(rpy_files, save_dir, translator):
 
 def main():
     time_start = time.time()
-    print("RenPy翻译文件机翻工具")
-    print("By Koshiro, version 1.4")
+    print("RenPy rpy文件机翻工具")
+    print("By abse4411(Github), version 1.0")
     # print("使用前请确认待翻译文件trans.txt已放在本目录")
     parser = argparse.ArgumentParser(prog="name", description="description")
     parser.add_argument(

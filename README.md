@@ -1,12 +1,12 @@
-# RenPy翻译文件机翻工具
+# RenPy rpy翻译文件机翻工具
 
-##### 用于自动生成RenPy翻译文件（*.rpy）的机翻文件。
+##### 用于迁移旧版本的rpy翻译文件和自动翻译rpy翻译文件。
 
 部分代码来自[Maooookai(Mirage)](https://github.com/Maooookai/WebTranslator), [DrDRR](https://github.com/DrDRR/RenPy-WebTranslator/commits?author=DrDRR "View all commits by DrDRR")，Salute!
 
 ***
 
-## <mark> 新的工具类已经推出!!!</mark>
+## <mark>新的工具类已经推出!!!</mark>
 
 `compare.py`:可以检测旧版本rpy和新版本rpy中，处于在脚本代码同位置的文本变化情况，并输出两个版本之间的差异信息到excel表格中。详细说明请看后面的`工具文件`章节。
 
