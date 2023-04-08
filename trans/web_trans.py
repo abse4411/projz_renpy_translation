@@ -84,13 +84,14 @@ class google(web_translator):
         res = strip_tags(res)
         self.inputArea.send_keys(res)
         xpath = '//*[@id="yDmH0d"]/c-wiz/div/div[2]/c-wiz/div[2]/c-wiz/div[1]/div[2]/div[3]/c-wiz[2]/div/div[8]/div/div[1]/span[1]'
+        success = False
         try:
             time.sleep(random.uniform(0, 1))  # 设置随机等待时间，防止触发反bot机制
             WebDriverWait(self.browser, 15).until(
                 lambda broswer: self.browser.find_element(By.XPATH, xpath))  # 等待翻译结果，超时15秒
-            time.sleep(random.uniform(0, 1))  # 设置随机等待时间，防止触发反bot机制
             text = self.browser.find_element(By.XPATH, xpath)
             res = text.text
+            success = True
         except Exception as e:  # 如果超时则不替换，直接写入原句
             print(e, rawtext)
         full_xpath = '/html/body/c-wiz/div/div[2]/c-wiz/div[2]/c-wiz/div[1]/div[2]/div[3]/c-wiz[1]/div[1]/div/div[1]/span/button'
@@ -101,6 +102,10 @@ class google(web_translator):
             # inputArea.send_keys(Keys.BACKSPACE)
         except:
             self.inputArea.clear()  # 否则直接清空输入框
+        # time.sleep(2)  # 等待清空延迟
+        time.sleep(random.uniform(0, 1))
+        if not success:
+            return rawtext
         # time.sleep(1)  # 等待清空延迟
         # time.sleep(1)
         return strip_breaks(res)
@@ -121,16 +126,20 @@ class caiyun(web_translator):
         res = strip_tags(res)
         self.inputArea.send_keys(res)
         xpath = '//*[@id="texttarget"]/div/span'
+        success = False
         try:
+            # 点击翻译按钮
+            self.browser.find_element(By.XPATH, '//*[@id="app"]/div[2]/div[1]/div[2]/div/div[1]/div[3]').click()
+            time.sleep(random.uniform(0, 1))  # 设置随机等待时间，防止触发反bot机制
             # WebDriverWait(browser, 15).until(lambda broswer: browser.find_element_by_xpath(xpath))  #等待翻译结果，超时15秒
             WebDriverWait(self.browser, 15).until(
                 lambda broswer: self.browser.find_element(By.XPATH, xpath))  # 等待翻译结果，超时15秒
             # text = browser.find_element_by_xpath(xpath)
             text = self.browser.find_element(By.XPATH, xpath)
             res = text.text
+            success = True
         except Exception as e:  # 如果超时则不替换，直接写入原句
             print(e, rawtext)
-        time.sleep(random.uniform(0, 1))  # 设置随机等待时间，防止触发反bot机制
         try:
             # browser.find_element_by_class_name('text-delete').click()  #试图通过叉键清空
             self.inputArea.click()
@@ -140,8 +149,19 @@ class caiyun(web_translator):
             self.inputArea.clear()  # 否则直接清空输入框
         # time.sleep(2)  # 等待清空延迟
         time.sleep(random.uniform(0, 1))
+        if not success:
+            return rawtext
         return strip_breaks(res)
 
+def wait_until_no_appending(browser, by, value, wait_time=0.1):
+    WebDriverWait(browser, 15).until(
+        lambda b: b.find_element(by, value))  # 等待翻译结果，超时15秒
+    pre = -1
+    cur = len(browser.find_elements(by, value))
+    while cur != pre:
+        pre = cur
+        time.sleep(wait_time)
+        cur = len(browser.find_elements(by, value))
 
 class youdao(web_translator):
     def __init__(self, driver_path):
@@ -151,6 +171,11 @@ class youdao(web_translator):
         time.sleep(3)
         # inputArea = browser.find_element_by_id('inputOriginal')
         self.inputArea = self.browser.find_element(By.ID, 'js_fanyi_input')
+        try:
+            # 消除弹出的提示框
+            self.browser.find_element(By.XPATH, '/html/body/div[4]/div/img[2]').click()
+        except:
+            pass
         try:
             # 消除弹出的提示框
             self.browser.find_element(By.XPATH, '//*[@id="inner-box"]/div/div[2]/span').click()
@@ -166,24 +191,25 @@ class youdao(web_translator):
         except:
             pass
 
+
     def translate(self, rawtext):
         res = strip_breaks(rawtext)
         res = strip_tags(res)
         self.inputArea.send_keys(res)
         xpath = '//*[@id="js_fanyi_output_resultOutput"]/p/span'
+        time.sleep(random.uniform(0, 1))  # 设置随机等待时间，防止触发反bot机制
+        success = False
         try:
-            WebDriverWait(self.browser, 15).until(
-                lambda broswer: self.browser.find_element(By.ID, xpath))  # 等待翻译结果，超时15秒
-            # text = browser.find_elements_by_xpath(xpath)
-            text = self.browser.find_elements(By.XPATH, xpath)
-            joinedtext = ''
-            for index in range(len(text)):
-                joinedtext += text[index].text
-            if joinedtext != '':
-                res = joinedtext
+            wait_until_no_appending(self.browser, By.XPATH, xpath)
+            text = self.browser.find_element(By.XPATH, '//*[@id="js_fanyi_output_resultOutput"]/p').text
+            # joinedtext = ''
+            # for index in range(len(text)):
+            #     joinedtext += text[index].text
+            # if joinedtext != '':
+            res = text
+            success = True
         except Exception as e:  # 如果超时则不替换，直接写入原句
             print(e, rawtext)
-        time.sleep(random.uniform(0.5, 1))  # 设置随机等待时间，防止触发反bot机制
         try:
             # browser.find_element_by_class_name('input__original_delete').click() #试图通过叉键清空
             self.browser.find_element(By.XPATH,
@@ -191,14 +217,25 @@ class youdao(web_translator):
         except:
             self.inputArea.clear()  # 否则直接清空输入框
         # time.sleep(1)  # 等待清空延迟
-        time.sleep(random.uniform(0.5, 1))
+        time.sleep(random.uniform(0, 1))
+        if not success:
+            return rawtext
         return strip_breaks(res)
 
+def wait_until_no_extending(browser, by, value, wait_time=0.1):
+    WebDriverWait(browser, 15).until(
+        lambda b: b.find_element(by, value))  # 等待翻译结果，超时15秒
+    pre = -1
+    cur = len(browser.find_element(by, value).text)
+    while cur != pre:
+        pre = cur
+        time.sleep(wait_time)
+        cur = len(browser.find_element(by, value).text)
 
 class deepl(web_translator):
     def __init__(self, driver_path):
         super().__init__(driver_path)
-        self.browser.get('https://www.deepl.com/translator')
+        self.browser.get('https://www.deepl.com/zh/translator')
         print('等待网页加载...')
         time.sleep(5)
         # inputArea = browser.find_element_by_class_name('lmt__textarea.lmt__source_textarea.lmt__textarea_base_style')
@@ -220,16 +257,16 @@ class deepl(web_translator):
         res = strip_tags(res)
         self.inputArea.send_keys(res)
         div_id = 'target-dummydiv'
+        xpath = '//*[@id="panelTranslateText"]/div[1]/div[2]/section[2]/div[3]/div[1]/d-textarea/div/p'
+        time.sleep(random.uniform(0, 1))
+        success = False
         try:
-            WebDriverWait(self.browser, 15).until(
-                lambda broswer: self.browser.find_element(By.XPATH,
-                                                          '//*[@id="panelTranslateText"]/div[1]/div[2]/section[2]/div[3]/div[1]/d-textarea/div/p').text)  # 等待翻译结果，超时15秒
-            time.sleep(1)
+            wait_until_no_extending(self.browser, By.XPATH, xpath, wait_time=0.7)
+            res = self.browser.find_element(By.ID, div_id).get_attribute('innerHTML').strip()
+            success = True
         except Exception as e:  # 如果超时则不替换，直接写入原句
             print(e, rawtext)
             pass
-        time.sleep(2)
-        res = self.browser.find_element(By.ID, div_id).get_attribute('innerHTML').strip('\r\n')
         # res = text
         try:
             self.browser.find_element(By.XPATH,
@@ -237,4 +274,50 @@ class deepl(web_translator):
         except:
             self.inputArea.clear()  # 否则直接清空输入框
         time.sleep(random.uniform(0, 1))
+        if not success:
+            return rawtext
+        return strip_breaks(res)
+
+class baidu(web_translator):
+    def __init__(self, driver_path):
+        super().__init__(driver_path)
+        self.browser.get('https://fanyi.baidu.com/?aldtype=16047#en/zh/')
+        print('等待网页加载...')
+        time.sleep(5)
+        ActionChains(self.browser).move_by_offset(0, 0).click().perform()
+        # inputArea = browser.find_element_by_class_name('textinput')
+        try:
+            # 消除弹出的提示框
+            self.browser.find_element(By.XPATH, '//*[@id="app-guide"]/div/div/div[2]/span').click()
+        except:
+            pass
+        self.inputArea = self.browser.find_element(By.ID, 'baidu_translate_input')
+
+    def translate(self, rawtext):
+        res = strip_breaks(rawtext)
+        res = strip_tags(res)
+        self.inputArea.send_keys(res)
+        xpath = '//*[@id="main-outer"]/div/div/div[1]/div[2]/div[1]/div[2]/div/div/div[1]/p[2]'
+        success = False
+        try:
+            # if '.' not in res or '?' not in res or '!' not in res:
+            #     res += '.'
+            # 点击翻译按钮
+            self.browser.find_element(By.ID, 'translate-button').click()
+            time.sleep(random.uniform(0, 1))  # 设置随机等待时间，防止触发反bot机制
+            wait_until_no_extending(self.browser, By.XPATH, xpath, wait_time=0.7)
+            res = self.browser.find_element(By.XPATH, xpath).text.strip()
+            success = True
+        except Exception as e:  # 如果超时则不替换，直接写入原句
+            print(e, rawtext)
+        try:
+            # browser.find_element_by_class_name('input__original_delete').click() #试图通过叉键清空
+            self.browser.find_element(By.XPATH,
+                                      '//*[@id="main-outer"]/div/div/div[1]/div[2]/div[1]/div[1]/div/div[2]/a').click()  # 试图通过叉键清空
+        except:
+            self.inputArea.clear()  # 否则直接清空输入框
+        # time.sleep(1)  # 等待清空延迟
+        time.sleep(random.uniform(0, 1))
+        if not success:
+            return rawtext
         return strip_breaks(res)

@@ -1,8 +1,8 @@
 # RenPy rpy翻译文件机翻工具
 
-##### 用于迁移旧版本的rpy翻译文件和自动翻译rpy翻译文件。
-
-部分代码来自[Maooookai(Mirage)](https://github.com/Maooookai/WebTranslator), [DrDRR](https://github.com/DrDRR/RenPy-WebTranslator/commits?author=DrDRR "View all commits by DrDRR")，Salute!
+- 用于迁移旧版本的rpy翻译文件和自动翻译rpy翻译文件, 机翻采用Selenium调用Chrome访问网页进行翻译。
+- 可用的机翻引擎：Google翻译(速度较快，效果一般)，彩云小译(推荐，速度较快，效果好)，有道翻译(速度较快)，百度翻译(速度较快)，DeepL翻译器(不推荐，不稳定，速度慢)
+- 部分代码来自[Maooookai(Mirage)](https://github.com/Maooookai/WebTranslator), [DrDRR](https://github.com/DrDRR/RenPy-WebTranslator/commits?author=DrDRR "View all commits by DrDRR")，Salute!
 
 ***
 
@@ -227,7 +227,7 @@ parser.add_argument(
 )
 ```
 
-- `-t API_NAME`表示使用翻译API，默认为`google`，可选的有：`['caiyun', 'youdao', 'deepl', 'google']`，建议使用google翻译，对于文本的中字符格式化标签能保留下来，即"{i}Hello world{/i}"翻译后”{i}你好世界{/i}“。对于其他翻译API我在翻译前手动去除了这些标签：
+- `-t API_NAME`表示使用翻译API，默认为`google`，可选的有：`['caiyun', 'youdao', 'deepl', 'google', 'baidu']`，建议使用google翻译，对于文本的中字符格式化标签能保留下来，即"{i}Hello world{/i}"翻译后”{i}你好世界{/i}“。对于其他翻译API我在翻译前手动去除了这些标签：
 
 ```python
 def translate(self, rawtext):

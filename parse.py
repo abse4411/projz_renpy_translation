@@ -93,7 +93,7 @@ def main():
         "--trans_api",
         type=str,
         default='google',
-        choices=['caiyun', 'youdao', 'deepl', 'google'],
+        choices=['caiyun', 'youdao', 'deepl', 'google', 'baidu'],
         help="the translation API to use",
     )
     parser.add_argument(
