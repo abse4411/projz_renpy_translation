@@ -27,7 +27,7 @@ def parse_text(text: str, translator=None):
             return text
         res = var_list(new_txt)
         # replace the var by another name
-        tmp_res = [f'TC{i}V' for i in range(len(res))]
+        tmp_res = [f'TC{i}X' for i in range(len(res))]
         for i in range(len(res)):
             new_txt = new_txt.replace(res[i], tmp_res[i])
         trans_txt = new_txt
