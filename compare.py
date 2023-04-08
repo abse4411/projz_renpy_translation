@@ -201,14 +201,14 @@ def main():
         "-o",
         "--old-dir",
         type=str,
-        default='./old_ver',
+        default='./old',
         help="the dir containing translated rpy(s) from old version",
     )
     parser.add_argument(
         "-n",
         "--new-dir",
         type=str,
-        default='./new_ver',
+        default='./new',
         help="the dir containing untranslated rpy(s)",
     )
     parser.add_argument(
