@@ -32,7 +32,7 @@ def text_type(text: str):
 
 
 # match the variable
-regex_var = re.compile(r'(\[[A-Za-z_]+[A-Za-z1-9_]*\])')
+regex_var = re.compile(r'(\[[A-Za-z_]+[A-Za-z1-9_\.]*\])')
 # match the tag
 regex_tag = re.compile(r'\{[^}]*\}')
 # match any alpha
