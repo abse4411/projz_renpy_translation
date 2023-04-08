@@ -380,7 +380,7 @@ parser.add_argument(
   
   示意图：
   
-  ![](./imgs/compare.jpg)参数：`-o`含有旧版本的rpy文件的文件夹，默认值`./old` ；`-n`含有新版本的rpy文件的文件夹，默认值`./old`；`-s`保存excel文件保存位置，默认值`./fc_res`
+  ![](./imgs/compare.jpg)参数：`-o`含有旧版本的rpy文件的文件夹，默认值`./old` ；`-n`含有新版本的rpy文件的文件夹，默认值`./new`；`-s`保存excel文件保存位置，默认值`./fc_res`
 
 ## 其他问题
 
