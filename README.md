@@ -3,6 +3,7 @@
 - 用于迁移旧版本的rpy翻译文件和自动翻译rpy翻译文件, 机翻采用Selenium调用Chrome访问网页进行翻译。
 - 可用的机翻引擎：Google翻译(速度较快，效果一般)，彩云小译(推荐，速度较快，效果好)，有道翻译(速度较快)，百度翻译(速度较快)，DeepL翻译器(不推荐，不稳定，速度慢)
 - 部分代码来自[Maooookai(Mirage)](https://github.com/Maooookai/WebTranslator), [DrDRR](https://github.com/DrDRR/RenPy-WebTranslator/commits?author=DrDRR "View all commits by DrDRR")，Salute!
+- 该代码仅供学习使用。
 
 ***
 
