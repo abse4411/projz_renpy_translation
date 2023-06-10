@@ -103,7 +103,7 @@ class google(web_translator):
         except:
             self.inputArea.clear()  # 否则直接清空输入框
         # time.sleep(2)  # 等待清空延迟
-        time.sleep(random.uniform(0, 1))
+        time.sleep(random.uniform(0.2, 1))
         if not success:
             return rawtext
         # time.sleep(1)  # 等待清空延迟
@@ -148,7 +148,7 @@ class caiyun(web_translator):
         except:
             self.inputArea.clear()  # 否则直接清空输入框
         # time.sleep(2)  # 等待清空延迟
-        time.sleep(random.uniform(0, 1))
+        time.sleep(random.uniform(0.2, 1))
         if not success:
             return rawtext
         return strip_breaks(res)
@@ -217,7 +217,7 @@ class youdao(web_translator):
         except:
             self.inputArea.clear()  # 否则直接清空输入框
         # time.sleep(1)  # 等待清空延迟
-        time.sleep(random.uniform(0, 1))
+        time.sleep(random.uniform(0.2, 1))
         if not success:
             return rawtext
         return strip_breaks(res)
@@ -273,7 +273,7 @@ class deepl(web_translator):
                                       '//*[@id="translator-source-clear-button"]').click()  # 试图通过叉键清空
         except:
             self.inputArea.clear()  # 否则直接清空输入框
-        time.sleep(random.uniform(0, 1))
+        time.sleep(random.uniform(0.2, 1))
         if not success:
             return rawtext
         return strip_breaks(res)
@@ -317,7 +317,7 @@ class baidu(web_translator):
         except:
             self.inputArea.clear()  # 否则直接清空输入框
         # time.sleep(1)  # 等待清空延迟
-        time.sleep(random.uniform(0, 1))
+        time.sleep(random.uniform(0.2, 1))
         if not success:
             return rawtext
         return strip_breaks(res)
