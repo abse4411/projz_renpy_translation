@@ -377,7 +377,14 @@ parser.add_argument(
   
   参数：`-o`要含有翻译文本的rpy文件的文件夹，默认值`./source` ；`-s`保存替换原始文本的rpy文件的文件夹，默认值`./reverted`
 
-- `compare.py`:游戏作者可能在新版本中校正旧版本的某些文本，这对导致我们第一阶段`incre_parse.py`某些文本得不到复用，因此这个工具类根据文本在原代码中的位置(叫做<mark>翻译索引</mark>)作为key，而对应原始文本作为value，构建字典。然后我们分别为新旧版本的rpy文件构建这样字典，然后根据两者共有的<mark>翻译索引</mark>进行对相应原始文本进行比较，然后把那些原始文本不一样的项目到处到excel中，方便查看。
+- `compare.py`:游戏作者可能在新版本中校正旧版本的某些文本，这对导致我们第一阶段`incre_parse.py`某些文本得不到复用，因此这个工具类根据文本在原代码中的位置(叫做<mark>翻译索引</mark>)作为key，而对应原始文本作为value，构建字典。
+   然后我们分别为新旧版本的rpy文件构建这样字典，然后根据两者共有的<mark>翻译索引</mark>进行对相应原始文本进行比较，然后把那些原始文本不一样的项目到处到excel中，方便查看。
+   
+  注意：修改代码26行的`chinese`（生成翻译的文件名）来匹配原rpy文件的`translate chinese XXXX`
+  ```python
+  regex_trans = re.compile(r'^translate chinese ([^\r\n:]*):')
+  ```
+  
   
   示意图：
   

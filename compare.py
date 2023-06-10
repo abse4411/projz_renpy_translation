@@ -117,7 +117,14 @@ def get_translated_text(rpy_file):
                         # 手动去除最后一个引号
                         if raw_text and raw_text[-1] == "\"":
                             raw_text = raw_text[:-1]
-                        assert raw_line - code_line < 2, f'{rpy_file}:code行({code_text},line{code_line + 1})和raw_text行({raw_text},line{raw_line + 1})相隔太远'
+                        if raw_line - code_line >= 2:
+                            print(f'{rpy_file}:code行({code_text},line{code_line + 1})和raw_text行({raw_text},line{raw_line + 1})相隔太远，已跳过')
+                            code_text, code_line = None, -1
+                            trans_text, tran_line = None, -1
+                            raw_text, raw_line = None, -1
+                            i += 1
+                            continue
+                        # assert raw_line - code_line < 2, f'{rpy_file}:code行({code_text},line{code_line + 1})和raw_text行({raw_text},line{raw_line + 1})相隔太远'
                         assert code_text
                         # 这对这种重复的code行：
                         '''
@@ -171,16 +178,30 @@ def get_translated_text(rpy_file):
             if raw_text and raw_text[-1] == "\"":
                 raw_text = raw_text[:-1]
             if not raw_line - tran_line < 4:
-                print(f'{rpy_file}:translate行({trans_text},line{tran_line+1})和raw_text行({raw_text},line{raw_line+1})相隔太远')
-                pass
-            assert raw_line - tran_line < 4, f'{rpy_file}:translate行({trans_text},line{tran_line+1})和raw_text行({raw_text},line{raw_line+1})相隔太远'
-            assert raw_line - code_line < 4, f'{rpy_file}:code行({code_text},line{code_line+1})和raw_text行({raw_text},line{raw_line+1})相隔太远'
-            assert trans_text and trans_text not in res_dict
+                print(f'{rpy_file}:translate行({trans_text},line{tran_line+1})和raw_text行({raw_text},line{raw_line+1})相隔太远, 已跳过')
+                code_text, code_line = None, -1
+                trans_text, tran_line = None, -1
+                raw_text, raw_line = None, -1
+                i += 1
+                continue
+            if raw_line - code_line >= 4:
+                print(f'{rpy_file}:code行({code_text},line{code_line+1})和raw_text行({raw_text},line{raw_line+1})相隔太远')
+            # assert raw_line - tran_line < 4, f'{rpy_file}:translate行({trans_text},line{tran_line+1})和raw_text行({raw_text},line{raw_line+1})相隔太远'
+            # assert raw_line - code_line < 4, f'{rpy_file}:code行({code_text},line{code_line+1})和raw_text行({raw_text},line{raw_line+1})相隔太远'
+            if trans_text and trans_text in res_dict:
+                print(f'{rpy_file}:{trans_text}(line{tran_line+1})翻译索引已经存在, 已跳过')
+                code_text, code_line = None, -1
+                trans_text, tran_line = None, -1
+                raw_text, raw_line = None, -1
+                i += 1
+                continue
+            # assert trans_text and trans_text not in res_dict
             # 保存信息
             res_dict[trans_text] = rwa_item(i+1, code_text, trans_text, raw_text)
             # 清空匹配的code_text和trans_text
             code_text, code_line = None, -1
             trans_text, tran_line = None, -1
+            raw_text, raw_line = None, -1
             line = ''
             pass
         # 如果匹配这种文本:     # game/NikiEvents.rpy:16
@@ -256,6 +277,7 @@ def main():
                 if ok in new_dict:
                     nv = new_dict[ok]
                     if nv.raw_text.strip() != ov.raw_text.strip():
+                        untrans_count += 1
                         excel_data['原文件所在行数'].append(ov.line)
                         excel_data['原翻译索引'].append(ov.source)
                         excel_data['原代码索引'].append(ov.code)
@@ -264,6 +286,8 @@ def main():
                         excel_data['新翻译索引'].append(nv.source)
                         excel_data['新代码索引'].append(nv.code)
                         excel_data['新文件所在行数'].append(nv.line)
+                    else:
+                        trans_count += 1
             if len(excel_data['原文件所在行数']) > 0:
                 pddata = pd.DataFrame(excel_data)
                 pddata.to_excel(excel_writer=excel_writer,sheet_name=file_name(new_rpy))
@@ -273,7 +297,7 @@ def main():
         tot_untrans_count += untrans_count
     excel_writer.save()
     # excel_writer.close()
-    print_text = f'{len(new_rpy_files)} rpy files are translated with {tot_trans_count} translated line(s) and {tot_untrans_count} untranslated line(s).'
+    print_text = f'{len(new_rpy_files)} rpy files are matched with {tot_trans_count} translated line(s) and {tot_untrans_count} unmatched line(s).'
     print(print_text)
 
 
