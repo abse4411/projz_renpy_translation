@@ -124,6 +124,7 @@ class project_index:
         abs_source_dir = os.path.abspath(self.source_dir)
         for rpy_file in tqdm.tqdm(rpy_files,
                                   desc=f'Applying translated texts to {self.full_name}, you can found it in {save_dir}.'):
+            rpy_file = os.path.abspath(rpy_file)
             base_dir = os.path.join(save_dir, file_dir(rpy_file[len(abs_source_dir):]).strip(os.sep))
             mkdir(base_dir)
             r = replacer(rpy_file, save_dir=base_dir)
