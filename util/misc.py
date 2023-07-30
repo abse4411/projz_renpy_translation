@@ -23,7 +23,7 @@ def text_type(text: str):
                 return None, TEXT_TYPE.OTHER
             old_pos = text.find("old ")
             # new_pos = text.find("new")
-            shape_pos = text.find("# ")
+            shape_pos = text.find("#")
             quote_content = text[first_quote + 1:last_quote]
             if (old_pos != -1 and old_pos < first_quote and text[:old_pos].strip()=='') or (shape_pos != -1 and shape_pos < first_quote):
                 return quote_content, TEXT_TYPE.RAW
