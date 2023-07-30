@@ -13,7 +13,7 @@ from config.config import default_config
 from concurrent.futures import ThreadPoolExecutor
 
 from store.index import project_index
-from util.misc import my_input
+from util.misc import my_input, var_list, strip_tags, strip_breaks
 
 
 class concurrent_translator:
@@ -43,17 +43,31 @@ class concurrent_translator:
         self.event.wait()
         if self.quit:
             logging.info(f'Thread {threading.get_ident()}: Stopped by user')
+            web_translator.close()
             return
         sources, targets = [], []
         try:
             logging.info(
                 f'Thread {threading.get_ident()}: Starting translating {len(untranslated_lines)} untranslated line(s)')
             for line in untranslated_lines:
-                new_text = web_translator.translate(line)
+                raw_line = line
+                line = strip_tags(line)
+                renpy_vars = var_list(line)
+                # replace the var by another name
+                tvar_list = [f'T{i}' for i in range(len(renpy_vars))]
+                t_line = line
+                for i in range(len(tvar_list)):
+                    t_line = t_line.replace(renpy_vars[i], tvar_list[i])
+                new_text = web_translator.translate(t_line)
+                new_text = strip_breaks(new_text)
+                # convert the var back
+                for i in range(len(tvar_list)):
+                    new_text = new_text.replace(tvar_list[i], renpy_vars[i])
+
                 if new_text is None:
                     logging.warning(f'Thread {threading.get_ident()}: Error in translating {line}, it will ignored!')
                     continue
-                sources.append(line)
+                sources.append(raw_line)
                 targets.append('@@' + new_text)
                 if len(sources) > 20:
                     self.safe_update(sources, targets)
@@ -70,14 +84,15 @@ class concurrent_translator:
             return
         untranslated_lines = self.proj.untranslated_lines
         batches = []
-        batch_size = max(len(untranslated_lines) // self.num_workers, 1)
+        batch_size = max((len(untranslated_lines)+1) // self.num_workers, 1)
         if batch_size == 1:
             batches = [[untranslated_lines]]
         else:
             for i in range(0, len(untranslated_lines), batch_size):
                 batches.append(untranslated_lines[i: min(i + batch_size, len(untranslated_lines))])
-
+        logging.info(f'Dispatching {len(batches)} worker with batch size {batch_size}')
         self.event = threading.Event()
+        self.event.clear()
         self.sem = threading.BoundedSemaphore(len(batches))
         self.lock = threading.Lock()
         self.quit = False

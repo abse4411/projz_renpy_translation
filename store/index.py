@@ -59,7 +59,7 @@ class project_index:
             else:
                 if s not in self._raw_data.untranslated_lines:
                     logging.warning(
-                        f'Non-existent untranslated text "{t}" in untranslated_lines, this translation won\'t be added')
+                        f'Non-existent untranslated text "{s}" in untranslated_lines, this translation won\'t be added')
                     continue
                 utline = self._raw_data.untranslated_lines.pop(s)
                 utline.new_str = t

@@ -8,6 +8,8 @@ from config.config import default_config, CONFIG_FILE
 from prettytable import PrettyTable
 
 from store.index import project_index
+from trans import web_translator
+from trans.thread_trans import concurrent_translator
 from util.file import exists_dir, file_name
 from util.misc import my_input
 
@@ -21,23 +23,24 @@ def help_cmd():
     print("By abse4411(Github:https://github.com/abse4411/projz_renpy), version 2.0")
     table = PrettyTable(
         ['Command', 'Usage', 'Help'])
-    table.add_row(['new', 'new {tl_path} {name} {tag}',
+    table.add_row(['new or n', 'new {tl_path} {name} {tag}',
                    'Create an untranslated index from the translation dir ({tl_path}) in renpy.\n It may be like: D:\\my_renpy\game\\tl\\chinese.'
                    ' All texts are regard as untranslated ones.\n The {name} and {tag} are using while saving.'])
-    table.add_row(['old', 'old {tl_path} {name} {tag}',
+    table.add_row(['old or o', 'old {tl_path} {name} {tag}',
                    'Create a translated index from the translation dir ({tl_path}) in renpy.\n It may be like: D:\\my_renpy\game\\tl\\chinese.'
                    ' All texts are regard as translated ones.\n The {name} and {tag} are using while saving.'])
-    table.add_row(['translate', 'translate {proj_idx} {tran_api}',
-                   'Translate all untranslated texts with the given translation API {tran_api} for the project specified by the index {proj_idx}.'])
-    table.add_row(['merge', 'merge {sproj_idx} {tproj_idx}',
+    table.add_row(['translate or t', 'translate {proj_idx} {tran_api}',
+                   'Translate all untranslated texts with the given translation API {tran_api} for the project specified by the index {proj_idx}.\n'
+                   'Available translation APIs are caiyu, google, baidu, and youdao.'])
+    table.add_row(['merge or m', 'merge {sproj_idx} {tproj_idx}',
                    'Merge translated texts from a project {sproj_idx} to the target project {tproj_idx}.'])
-    table.add_row(['apply', 'apply {proj_idx}',
+    table.add_row(['apply or a', 'apply {proj_idx}',
                    'Apply all translated texts to rpy file. \nThe  built directory structure is the same as the original project.'
                    f' All files will be save in {default_config.project_path}'])
-    table.add_row(['list', 'list',
+    table.add_row(['list or l', 'list',
                    f'list projects in {default_config.project_path}, you can change it in {CONFIG_FILE} - GLOBAL.PROJECT_PATH'])
-    table.add_row(['help', 'help', 'Show all available commands.'])
-    table.add_row(['quit', 'quit', 'Say goodbye'])
+    table.add_row(['help or h', 'help', 'Show all available commands.'])
+    table.add_row(['quit or q', 'quit', 'Say goodbye'])
     print(table)
 
 
@@ -85,10 +88,15 @@ def merge_cmd(source_idx: int, target_idx: int):
         tproj.save_by_default()
 
 
-def translate_cmd(proj_idx, api_name):
+def translate_cmd(proj_idx: int, api_name: str):
     projs = _list_projects()
-    proj = project_index.load_from_file(projs[proj_idx])
-    pass
+    proj = project_index.load_from_file(projs[int(proj_idx)])
+    assert api_name.strip() != '', f'api_name is empty!'
+    driver_path = default_config.get_global('CHROME_DRIVER')
+    translator_class = web_translator.__dict__[api_name]
+    translator = concurrent_translator(proj, lambda : translator_class(driver_path))
+    translator.start()
+    proj.save_by_default()
 
 
 def apply_cmd(proj_idx:int):
@@ -100,15 +108,21 @@ def apply_cmd(proj_idx:int):
 def main():
     register_commands = {
         'new': new_cmd,
+        'n': new_cmd,
         'old': old_cmd,
+        'o': old_cmd,
         'translate': translate_cmd,
+        't': translate_cmd,
         'merge': merge_cmd,
+        'm': merge_cmd,
         'apply': apply_cmd,
+        'a': apply_cmd,
         'list': list_cmd,
+        'l': list_cmd,
         'help': help_cmd,
+        'h': help_cmd,
         'quit': quit,
         'q': quit,
-        'Q': quit,
     }
     help_cmd()
     while True:
@@ -121,7 +135,7 @@ def main():
                 try:
                     register_commands[cmd](*args[1:])
                 except Exception as e:
-                    print(e)
+                    print(f'error: {e}')
             else:
                 print(
                     f'Sorry, it seems to be a invalid command. Available commands are {list(register_commands.keys())}.')

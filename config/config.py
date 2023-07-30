@@ -21,7 +21,7 @@ class config:
             self.cfg = cfg
         except Exception as e:
             self.log.error(f'An error occurred while loading config file ({config_file}):{e}')
-            self.cfg = False
+            self.cfg = None
 
     @property
     def log_path(self):
