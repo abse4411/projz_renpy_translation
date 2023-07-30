@@ -114,13 +114,13 @@ n {tl_dir} {游戏名} {版本}
 
 一个例子：
 
-![](D:\BaiduNetdiskDownload\New36\projz\imgs\merge.png)
+![](imgs/merge.png)
 
 这了需要输入`Y`或`y`来确认指令执行。输入完后，我们可以看到我们利用旧版本`mygame v0.0.1`中13条翻译过的文本到新版本`mygame v0.0.2`中，现在我们只需要翻译剩下的7条即可！！！
 
 再次输入`l`命令看看：
 
-![](D:\BaiduNetdiskDownload\New36\projz\imgs\list_merge.png)
+![](imgs/list_merge.png)
 
 我们看到新版本`mygame v0.0.2`中已经翻译文本和为翻译的文本数量发生改变，这说明`merge`起作用了。
 
@@ -136,15 +136,15 @@ n {tl_dir} {游戏名} {版本}
 
 一个例子：
 
-![](D:\BaiduNetdiskDownload\New36\projz\imgs\translate.png)
+![](imgs/translate.png)
 
 这里程序等待你的确认以开始执行。我们可以看到启动两个窗口，这里你可以配置你的翻译目标，如设置从英语到中文的翻译：
 
-![](D:\BaiduNetdiskDownload\New36\projz\imgs\chrome_set.png)
+![](imgs/chrome_set.png)
 
 记得，每个窗口保证相同的翻译目标设置。然后在输入`Y`或`y`在进行下一步操作，程序开始自动翻译：
 
-![](D:\BaiduNetdiskDownload\New36\projz\imgs\translate_list.png)
+![](imgs/translate_list.png)
 
 我们使用`l`可以看到`mygame v0.0.2`已经翻译完了。
 
@@ -158,11 +158,11 @@ n {tl_dir} {游戏名} {版本}
 
 一个例子：
 
-![](D:\BaiduNetdiskDownload\New36\projz\imgs\apply.png)
+![](imgs/apply.png)
 
 你可以在`./projz\mygame_v0.0.2`目录下找到它们，而且它具有和原始路径一样的目录结构：
 
-![](D:\BaiduNetdiskDownload\New36\projz\imgs\apply_dir.png)
+![](imgs/apply_dir.png)
 
 这意味你可以将这个文件夹剪切到新版本游戏中的原始目录进行替换，当然请记得做好备份工作。
 
