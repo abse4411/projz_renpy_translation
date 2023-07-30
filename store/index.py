@@ -53,15 +53,15 @@ class project_index:
         for s, t in zip(sources, targets):
             if s in self._raw_data.translated_lines:
                 logging.warning(
-                    f'Existent translation for ({s}) in translated_lines:{self._raw_data.translated_lines[s]}, it will be replaced by the new translation:{t}')
+                    f'Existent translated text for ({s}) in translated_lines:{self._raw_data.translated_lines[s]}, it will be replaced by the new translation: {t}')
                 tline = self._raw_data.translated_lines[s]
                 tline.new_str = t
             else:
                 if s not in self._raw_data.untranslated_lines:
                     logging.warning(
-                        f'Non-existent untranslation for ({t}) in untranslated_lines:{self._raw_data.untranslated_lines[t]}, this translation wont be added')
+                        f'Non-existent untranslated text "{t}" in untranslated_lines, this translation won\'t be added')
                     continue
-                utline = self._raw_data.translated_lines.pop(s)
+                utline = self._raw_data.untranslated_lines.pop(s)
                 utline.new_str = t
                 self._raw_data.translated_lines[s] = utline
 
@@ -110,6 +110,8 @@ class project_index:
                 self._raw_data.translated_lines[s] = untline
         logging.info(f'{merge_cnt} translated line(s) are used during merging, and there has {unmerge_cnt} untranslated line(s)')
 
+    def apply_by_default(self):
+        self.apply(default_config.project_path)
 
     def apply(self, save_dir:str):
         save_dir = os.path.join(save_dir, self.full_name)
@@ -153,6 +155,9 @@ class project_index:
             raw_data = pickle.load(f)
             return cls(raw_data)
 
+    def save_by_default(self):
+        self.save(os.path.join(default_config.project_path, f'{self.full_name}.pt'))
+
     def save(self, file: str):
         with open(file, 'wb') as f:
             pickle.dump(self._raw_data, f)
@@ -160,9 +165,11 @@ class project_index:
 
 if __name__ == '__main__':
     import log.logger
-    # p = project_index.init_from_dir(r'D:\BaiduNetdiskDownload\New36\projz\translated\tmp', 'test', 'V0.0.1', is_translated=False)
+    # p = project_index.init_from_dir(r'D:\projz\translated\tmp', 'test', 'V0.0.1', is_translated=False)
     # p.save(os.path.join(default_config.project_path, f'{p.full_name}.pt'))
     # p.apply(r'./proz')
-    # new_p =project_index.load_from_file(os.path.join(default_config.project_path, f'test_V0.0.1.pt'))
-    # print(new_p._raw_data.untranslated_lines)
+    new_p =project_index.load_from_file(os.path.join(default_config.project_path, f'test_test.pt'))
+    sources = ['']
+    targets = []
+    print(new_p._raw_data.untranslated_lines)
     # new_p.apply(r'./proz')

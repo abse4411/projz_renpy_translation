@@ -108,3 +108,7 @@ class replacer:
             self.start_idx += 1
             if np.random.rand() > 0.99:
                 self.file_handle.flush()
+
+def my_input(prompt):
+    print(prompt)
+    return input()

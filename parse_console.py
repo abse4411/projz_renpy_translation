@@ -9,10 +9,7 @@ from prettytable import PrettyTable
 
 from store.index import project_index
 from util.file import exists_dir, file_name
-
-
-def _save_pt(proj: project_index):
-    proj.save(os.path.join(default_config.project_path, f'{proj.full_name}.pt'))
+from util.misc import my_input
 
 
 def _list_projects():
@@ -34,8 +31,9 @@ def help_cmd():
                    'Translate all untranslated texts with the given translation API {tran_api} for the project specified by the index {proj_idx}.'])
     table.add_row(['merge', 'merge {sproj_idx} {tproj_idx}',
                    'Merge translated texts from a project {sproj_idx} to the target project {tproj_idx}.'])
-    table.add_row(['apply', 'apply {proj_idx} {save_dir}',
-                   'Apply all translated texts to rpy file. \nThe  built directory structure is the same as the original project.'])
+    table.add_row(['apply', 'apply {proj_idx}',
+                   'Apply all translated texts to rpy file. \nThe  built directory structure is the same as the original project.'
+                   f' All files will be save in {default_config.project_path}'])
     table.add_row(['list', 'list',
                    f'list projects in {default_config.project_path}, you can change it in {CONFIG_FILE} - GLOBAL.PROJECT_PATH'])
     table.add_row(['help', 'help', 'Show all available commands.'])
@@ -65,26 +63,26 @@ def old_cmd(dir: str, name: str, tag: str):
     assert exists_dir(dir), f'{dir} is not a directory!'
     p = project_index.init_from_dir(dir, name, tag,
                                     is_translated=True)
-    _save_pt(p)
+    p.save_by_default()
 
 
 def new_cmd(dir: str, name: str, tag: str):
     assert exists_dir(dir), f'{dir} is not a directory!'
     p = project_index.init_from_dir(dir, name, tag,
                                     is_translated=False)
-    _save_pt(p)
+    p.save_by_default()
 
 
 def merge_cmd(source_idx: int, target_idx: int):
     source_idx, target_idx = int(source_idx), int(target_idx)
     projs = _list_projects()
     sproj, tproj = projs[source_idx], projs[target_idx]
-    yes = input(f'Merge all translated texts from {file_name(sproj)} to {file_name(tproj)}? Enter Y/y to continue:')
+    yes = my_input(f'Merge all translated texts from {file_name(sproj)} to {file_name(tproj)}? Enter Y/y to continue:')
     if yes.strip().lower() == 'y':
         sproj = project_index.load_from_file(sproj)
         tproj = project_index.load_from_file(tproj)
         tproj.merge_from(sproj)
-        _save_pt(tproj)
+        tproj.save_by_default()
 
 
 def translate_cmd(proj_idx, api_name):
@@ -114,7 +112,7 @@ def main():
     }
     help_cmd()
     while True:
-        args = input('What is your next step? (Enter a command or Q/q to exit):')
+        args = my_input('What is your next step? (Enter a command or Q/q to exit): ')
         args = args.strip()
         args = [c.strip() for c in args.split() if c.strip() != '']
         if len(args) >= 1:
