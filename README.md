@@ -17,7 +17,7 @@ python3 parse_console.py
 
 运行效果：
 
-<img title="" src="file:///D:/BaiduNetdiskDownload/New36/projz/imgs/console_preview.png" alt="" data-align="center">
+![](imgs/console_preview.png)
 
 ** PS： 注意后续将过度到这个版本，旧版本的`incre_parse.py`和`parse.py`将被移除。这个新版本仍在开发中，后续改进将会持续推进**
 
@@ -56,7 +56,7 @@ o {tl_dir} {游戏名} {版本}
 
 一个例子：
 
-<img src="file:///D:/BaiduNetdiskDownload/New36/projz/imgs/old.png" title="" alt="" data-align="center">
+![](imgs/old.png)
 
 然后试试`list`或`l`命令，他将列出当前翻译项目：
 
@@ -66,7 +66,7 @@ l
 
 效果图：
 
-<img src="file:///D:/BaiduNetdiskDownload/New36/projz/imgs/list.png" title="" alt="" data-align="center">
+![](imgs/list.png)
 
 ### 2.创建新版本的翻译项目
 
@@ -80,7 +80,7 @@ n {tl_dir} {游戏名} {版本}
 
 一个例子：
 
-<img title="" src="file:///D:/BaiduNetdiskDownload/New36/projz/imgs/new.png" alt="" data-align="center">
+![](imgs/new.png)
 
 **注意：**
 
@@ -104,7 +104,7 @@ n {tl_dir} {游戏名} {版本}
 
 首先查看我们已有项目，使用`l`命令：
 
-<img src="file:///D:/BaiduNetdiskDownload/New36/projz/imgs/list_new.png" title="" alt="" data-align="center">
+![](imgs/list_new.png)
 
 之后我们使用`merge`或者`m`命令来将旧版本`mygame v0.0.1`已有翻译文本被合并到新版`mygame v0.0.2`中，这会使得新版中存在的旧版本文本得到翻译，充分利用了旧版本的翻译文本。我们只需指定它们的索引进行操作：
 
@@ -169,8 +169,6 @@ n {tl_dir} {游戏名} {版本}
 **注意：**
 
 使用翻译引擎的翻译文本会带有`@@`，这用于后期润色工作。如果你不需要它们，请使用VS Code全文替换功能删除它们。
-
-
 
 ---
 
@@ -548,9 +546,9 @@ parser.add_argument(
   ```python
   regex_trans = re.compile(r'^translate chinese ([^\r\n:]*):')
   ```
-
+  
   示意图：
-
+  
   ![](./imgs/compare.jpg)参数：`-o`含有旧版本的rpy文件的文件夹，默认值`./old` ；`-n`含有新版本的rpy文件的文件夹，默认值`./new`；`-s`保存excel文件保存位置，默认值`./fc_res`
 
 ## 其他问题
