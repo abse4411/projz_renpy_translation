@@ -7,11 +7,174 @@
 
 ***
 
-## <mark>新的工具类已经推出!!!</mark>
+## <mark>新的版本!!!</mark>
 
-`compare.py`:可以检测旧版本rpy和新版本rpy中，处于在脚本代码同位置的文本变化情况，并输出两个版本之间的差异信息到excel表格中。详细说明请看后面的`工具文件`章节。
+使用控制台方式来交互，不需要额外的文件拷贝，多线程支持（加快翻译速度）。请使用新的版本直接运行：
+
+```shell
+python3 parse_console.py
+```
+
+运行效果：
+
+<img title="" src="file:///D:/BaiduNetdiskDownload/New36/projz/imgs/console_preview.png" alt="" data-align="center">
+
+** PS： 注意后续将过度到这个版本，旧版本的`incre_parse.py`和`parse.py`将被移除。这个新版本仍在开发中，后续改进将会持续推进**
+
+## 快速开始：
+
+首先请配置你的`chrome driver`文件路径，在`config.ini`中修改`driver
+CHROM`选项：
+
+```ini
+[GLOBAL]
+# log path
+LOG_PATH=./projz/log
+# Save dir for project indexes or generate rpy files
+PROJECT_PATH=./projz
+# The number of thread used to translate. The larger the value, the faster the translation
+NUM_WORKERS=2
+# The path of chrome driver
+CHROME_DRIVER=D:\Users\Surface Book2\Downloads\chromedriver_win32\chromedriver.exe
+```
+
+然后打开控制台交互程序：
+
+```shell
+python3 parse_console.py
+```
+
+### 1.从旧版本renpy翻译构建(如果没有，请跳过)：
+
+构建一个旧版本翻译项目，输入命令`old`或者`o`：
+
+```shell
+o {tl_dir} {游戏名} {版本}
+```
+
+`{tl_dir}`为游戏翻译文件所在目录，例如`D:\my_renpy\game\tl\chinese`。`{游戏名}`和`{版本}`请自定义，注意保存项目文件时候会用到它们（保存的项目文件为：`{游戏名}_{版本}.pt`），确保它们符合系统文件名要求。
+
+一个例子：
+
+<img src="file:///D:/BaiduNetdiskDownload/New36/projz/imgs/old.png" title="" alt="" data-align="center">
+
+然后试试`list`或`l`命令，他将列出当前翻译项目：
+
+```shell
+l
+```
+
+效果图：
+
+<img src="file:///D:/BaiduNetdiskDownload/New36/projz/imgs/list.png" title="" alt="" data-align="center">
+
+### 2.创建新版本的翻译项目
+
+构建一个新版本翻译项目，输入命令`new`或者`n`：
+
+```shell
+n {tl_dir} {游戏名} {版本}
+```
+
+它参数说明和`old`命令类似。
+
+一个例子：
+
+<img title="" src="file:///D:/BaiduNetdiskDownload/New36/projz/imgs/new.png" alt="" data-align="center">
+
+**注意：**
+
+注意，我们使用renpy SDK生成翻译文件时候需要保留原始文本，不要勾选未翻译生成空字符串的选项：
+
+![](./imgs/renpy.png)
+
+之后生成的ryp文件应该是这样的：
+
+> ```
+> # game/ImaniEvents.rpy:11
+> translate chinese callimanimorning_88744462:
+> 
+>     # "She doesn’t pick up."
+>     "She doesn’t pick up."
+> ```
+
+只有这样格式的ryp，才能代码才可以识别原始文本然后进行替换。
+
+### 3.从旧版本翻译项目合并到新版本中（如果你在第1步跳过，这里也请跳过）
+
+首先查看我们已有项目，使用`l`命令：
+
+<img src="file:///D:/BaiduNetdiskDownload/New36/projz/imgs/list_new.png" title="" alt="" data-align="center">
+
+之后我们使用`merge`或者`m`命令来将旧版本`mygame v0.0.1`已有翻译文本被合并到新版`mygame v0.0.2`中，这会使得新版中存在的旧版本文本得到翻译，充分利用了旧版本的翻译文本。我们只需指定它们的索引进行操作：
+
+```shell
+ merge {旧翻译项目索引} {新翻译项目索引}
+```
+
+一个例子：
+
+![](D:\BaiduNetdiskDownload\New36\projz\imgs\merge.png)
+
+这了需要输入`Y`或`y`来确认指令执行。输入完后，我们可以看到我们利用旧版本`mygame v0.0.1`中13条翻译过的文本到新版本`mygame v0.0.2`中，现在我们只需要翻译剩下的7条即可！！！
+
+再次输入`l`命令看看：
+
+![](D:\BaiduNetdiskDownload\New36\projz\imgs\list_merge.png)
+
+我们看到新版本`mygame v0.0.2`中已经翻译文本和为翻译的文本数量发生改变，这说明`merge`起作用了。
+
+### 4.使用翻译引擎翻译剩余的文本：
+
+使用`translate`或者`t`命令，只需要指定要翻译项目索引和翻译引擎即可：
+
+```shell
+ t {project_idx} {translation_API}
+```
+
+可用的`{translation_API}`有caiyu, google, baidu, and youdao。我们移除旧版本的`deepl`，因为它的问题很多。
+
+一个例子：
+
+![](D:\BaiduNetdiskDownload\New36\projz\imgs\translate.png)
+
+这里程序等待你的确认以开始执行。我们可以看到启动两个窗口，这里你可以配置你的翻译目标，如设置从英语到中文的翻译：
+
+![](D:\BaiduNetdiskDownload\New36\projz\imgs\chrome_set.png)
+
+记得，每个窗口保证相同的翻译目标设置。然后在输入`Y`或`y`在进行下一步操作，程序开始自动翻译：
+
+![](D:\BaiduNetdiskDownload\New36\projz\imgs\translate_list.png)
+
+我们使用`l`可以看到`mygame v0.0.2`已经翻译完了。
+
+### 5.生成&替换
+
+使用`apply`或`a`命令生成真实翻译文件，这也就是说：我么们之前操作并不会对原始文件进行修改，也不需要像旧版本那样拷贝rpy文件：
+
+```shell
+ a {project_idx}
+```
+
+一个例子：
+
+![](D:\BaiduNetdiskDownload\New36\projz\imgs\apply.png)
+
+你可以在`./projz\mygame_v0.0.2`目录下找到它们，而且它具有和原始路径一样的目录结构：
+
+![](D:\BaiduNetdiskDownload\New36\projz\imgs\apply_dir.png)
+
+这意味你可以将这个文件夹剪切到新版本游戏中的原始目录进行替换，当然请记得做好备份工作。
+
+**注意：**
+
+使用翻译引擎的翻译文本会带有`@@`，这用于后期润色工作。如果你不需要它们，请使用VS Code全文替换功能删除它们。
+
+
 
 ---
+
+## 以下内容为旧版本内容，不久后将被移除，请使用上面的新版本！！！
 
 ## 1.目的
 
@@ -379,15 +542,15 @@ parser.add_argument(
 
 - `compare.py`:游戏作者可能在新版本中校正旧版本的某些文本，这对导致我们第一阶段`incre_parse.py`某些文本得不到复用，因此这个工具类根据文本在原代码中的位置(叫做<mark>翻译索引</mark>)作为key，而对应原始文本作为value，构建字典。
    然后我们分别为新旧版本的rpy文件构建这样字典，然后根据两者共有的<mark>翻译索引</mark>进行对相应原始文本进行比较，然后把那些原始文本不一样的项目到处到excel中，方便查看。
-   
+  
   注意：修改代码26行的`chinese`（生成翻译的文件名）来匹配原rpy文件的`translate chinese XXXX`
+  
   ```python
   regex_trans = re.compile(r'^translate chinese ([^\r\n:]*):')
   ```
-  
-  
+
   示意图：
-  
+
   ![](./imgs/compare.jpg)参数：`-o`含有旧版本的rpy文件的文件夹，默认值`./old` ；`-n`含有新版本的rpy文件的文件夹，默认值`./new`；`-s`保存excel文件保存位置，默认值`./fc_res`
 
 ## 其他问题
