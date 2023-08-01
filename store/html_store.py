@@ -15,7 +15,7 @@ HTML_TEMPLATE = '''
     <table>
         <tbody>
             <tr>
-                <th>Translation ID</th><th>Raw Text</th>
+                <th>Raw Text</th>
             </tr>
 {filler}
         </tbody>
@@ -23,7 +23,7 @@ HTML_TEMPLATE = '''
 </body>
 </html>
 '''
-TR_TEMPLATE = '<tr><td>S#2#{id}#E3#</td><td>B4##{text}#D5#</td></tr>\n'
+TR_TEMPLATE = '<!--{id}S#2##E3#{text}--><tr><td>B4## {text} #D5#</td></tr>\n'
 MAGIC_NUMBER = 78945621384
 
 
@@ -58,8 +58,8 @@ def load_from_html(file_name: str, sources: List[str]):
         for l in f:
             i += 1
             l = l.strip()
-            if l.startswith('<tr><td') and l.endswith('</td></tr>'):
-                id = l[l.find('S#2#') + 4:l.rfind('#E3#')].strip().upper()
+            if l.startswith('<!--') and l.endswith('</td></tr>'):
+                id = l[l.find('<!--') + 4:l.find('S#2##')].strip().upper()
                 new_str = l[l.find('B4##') + 4:l.rfind('#D5#')].strip()
                 if id == '' or new_str == '':
                     logging.info(f'[Line {i}] Skipping corrupted translation: {l}')
