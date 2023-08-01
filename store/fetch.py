@@ -30,11 +30,11 @@ def update_translated_lines(rpy_file, translated_lines):
                 tline = translated_lines[raw_text]
                 logging.warning(
                     f'{rpy_file}[L{i}]: The old translation({tline.new_str}) for "{raw_text}" will replace by “{text}”. This may result in error in renpy.')
-                tline.new_str = text
+                tline.new_str = '@$' + text
             else:
                 translated_lines[raw_text] = translation_item(
                     old_str=raw_text,
-                    new_str=text,
+                    new_str='@$' + text,
                     file=rpy_file,
                     line=i
                 )
