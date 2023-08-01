@@ -83,6 +83,9 @@ class caiyun(abstract_web_translator):
     def clear(self):
         try:
             self.browser.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div[2]/div/div[2]/div/div[1]/div').click()
+        except:
+            pass
+        try:
             self.inputArea.click()
             self.inputArea.send_keys(Keys.CONTROL, 'a')
             self.inputArea.send_keys(Keys.BACKSPACE)
@@ -94,7 +97,7 @@ class caiyun(abstract_web_translator):
 class youdao(abstract_web_translator):
     def __init__(self, driver_path):
         super().__init__(driver_path)
-        self.browser.get('https://fanyi.youdao.com/')
+        self.browser.get('https://fanyi.youdao.com/index.html')
         print('Wait the browser for loading the page...')
         time.sleep(5)
         self.inputArea = self.browser.find_element(By.ID, 'js_fanyi_input')
@@ -119,6 +122,9 @@ class youdao(abstract_web_translator):
     def clear(self):
         try:
             self.browser.find_element(By.XPATH, '/html/body/div[1]/div[1]/div[2]/div[2]/div/div[1]/div/div[1]/a').click()
+        except:
+            pass
+        try:
             self.inputArea.click()
             self.inputArea.send_keys(Keys.CONTROL, 'a')
             self.inputArea.send_keys(Keys.BACKSPACE)
@@ -164,6 +170,9 @@ class baidu(abstract_web_translator):
     def clear(self):
         try:
             self.browser.find_element(By.XPATH, '/html/body/div[1]/div[2]/div/div/div[1]/div[2]/div[1]/div[1]/div/div[3]/a').click()
+        except:
+            pass
+        try:
             self.inputArea.click()
             self.inputArea.send_keys(Keys.CONTROL, 'a')
             self.inputArea.send_keys(Keys.BACKSPACE)
@@ -204,6 +213,9 @@ class google(abstract_web_translator):
     def clear(self):
         try:
             self.browser.find_element(By.XPATH, '/html/body/c-wiz/div/div[2]/c-wiz/div[2]/c-wiz/div[1]/div[2]/div[3]/c-wiz[1]/div[1]/div/div[1]/span/button').click()
+        except:
+            pass
+        try:
             self.inputArea.click()
             self.inputArea.send_keys(Keys.CONTROL, 'a')
             self.inputArea.send_keys(Keys.BACKSPACE)
