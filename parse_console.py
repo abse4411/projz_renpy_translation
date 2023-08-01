@@ -1,16 +1,20 @@
 import glob
+import logging
 import os.path
 from typing import List
+
+import prettytable
 
 import log.logger
 from config.config import default_config, CONFIG_FILE
 
 from prettytable import PrettyTable
 
+from store.html_store import save_to_html, load_from_html
 from store.index import project_index
 from trans import web_translator
 from trans.thread_trans import concurrent_translator
-from util.file import exists_dir, file_name
+from util.file import exists_dir, file_name, exists_file, mkdir
 from util.misc import my_input
 
 
@@ -23,6 +27,7 @@ def help_cmd():
     print("By abse4411(Github:https://github.com/abse4411/projz_renpy), version 2.0")
     table = PrettyTable(
         ['Command', 'Usage', 'Help'])
+    table.hrules = prettytable.ALL
     table.add_row(['new or n', 'new {tl_path} {name} {tag}',
                    'Create an untranslated index from the translation dir ({tl_path}) in renpy.\n It may be like: D:\\my_renpy\game\\tl\\chinese.'
                    ' All texts are regard as untranslated ones.\n The {name} and {tag} are using while saving.'])
@@ -30,12 +35,20 @@ def help_cmd():
                    'Create a translated index from the translation dir ({tl_path}) in renpy.\n It may be like: D:\\my_renpy\game\\tl\\chinese.'
                    ' All texts are regard as translated ones.\n The {name} and {tag} are using while saving.'])
     table.add_row(['translate or t', 'translate {proj_idx} {tran_api}',
-                   'Translate all untranslated texts with the given translation API {tran_api} for the project specified by the index {proj_idx}.\n'
+                   'Translate all untranslated texts using the translation API {tran_api} for the project {proj_idx}.\n'
                    'Available translation APIs are caiyu, google, baidu, and youdao.'])
     table.add_row(['merge or m', 'merge {sproj_idx} {tproj_idx}',
                    'Merge translated texts from a project {sproj_idx} to the target project {tproj_idx}.'])
     table.add_row(['apply or a', 'apply {proj_idx}',
-                   'Apply all translated texts to rpy file. \nThe  built directory structure is the same as the original project.'
+                   'Apply all translated texts of project {proj_idx} to rpy file. \nThe  built directory structure is the same as the original project.'
+                   f' All files will be save in {default_config.project_path}'])
+    table.add_row(['savehtml or sh', 'savehtml {proj_idx}',
+                   'Save untranslated texts of project {proj_idx} to a html file where Edge or Chrome can perform translating.\n'
+                   'Please use the Chrome or MS Edge to translate the html file, then save to overwrite it.\n'
+                   'After all, use loadhtml {proj_idx} to update translated texts!'])
+    table.add_row(['loadhtml or lh', 'loadhtml {proj_idx} [{html_file}]',
+                   'Load translated texts from a translated html file, and apply to untranslated texts of project {proj_idx}.\n'
+                   'If the {html_file} is not specified, we will find the corresponding html file for the project {proj_idx} \nat "{PROJECT_PATH}/html/{project.full_name}.html".'
                    f' All files will be save in {default_config.project_path}'])
     table.add_row(['list or l', 'list',
                    f'list projects in {default_config.project_path}, you can change it in {CONFIG_FILE} - GLOBAL.PROJECT_PATH'])
@@ -49,7 +62,7 @@ def list_cmd():
     print(f'there are {len(projs)} projects in {default_config.project_path}')
     projs = [project_index.load_from_file(p) for p in projs]
     table = PrettyTable(
-        ['Index', 'Project', 'Tag', 'Translated line(s)', 'Untranslated line(s)', 'Source dir', 'Num Rpys'])
+        ['Project Index', 'Project', 'Tag', 'Translated line(s)', 'Untranslated line(s)', 'Source dir', 'Num Rpys'])
     for i, p in enumerate(projs):
         table.add_row(
             [i, p.project_name, p.project_tag, p.translation_size, p.untranslation_size, p.source_dir,
@@ -94,15 +107,38 @@ def translate_cmd(proj_idx: int, api_name: str):
     assert api_name.strip() != '', f'api_name is empty!'
     driver_path = default_config.get_global('CHROME_DRIVER')
     translator_class = web_translator.__dict__[api_name]
-    translator = concurrent_translator(proj, lambda : translator_class(driver_path))
+    translator = concurrent_translator(proj, lambda: translator_class(driver_path))
     translator.start()
     proj.save_by_default()
 
 
-def apply_cmd(proj_idx:int):
+def apply_cmd(proj_idx: int):
     projs = _list_projects()
     proj = project_index.load_from_file(projs[int(proj_idx)])
     proj.apply(default_config.project_path)
+
+
+def savehtml_cmd(proj_idx: int):
+    projs = _list_projects()
+    proj = project_index.load_from_file(projs[int(proj_idx)])
+    save_path = os.path.join(default_config.project_path, 'html')
+    mkdir(save_path)
+    save_file = os.path.join(save_path, f'{proj.full_name}.html')
+    save_to_html(save_file, proj.untranslated_lines)
+    logging.info(f'Html file is saved to: {save_file}. Use the Chrome or MS Edge translate it and overwrite it.')
+
+
+def loadhtml_cmd(proj_idx: int, html_file: str = None):
+    projs = _list_projects()
+    proj = project_index.load_from_file(projs[int(proj_idx)])
+    if html_file is None:
+        save_path = os.path.join(default_config.project_path, 'html')
+        html_file = os.path.join(save_path, f'{proj.full_name}.html')
+    else:
+        assert exists_file(html_file), f'File {html_file} not found!'
+    s, t = load_from_html(html_file, proj.untranslated_lines)
+    proj.update(s, t)
+    proj.save_by_default()
 
 
 def main():
@@ -119,6 +155,10 @@ def main():
         'a': apply_cmd,
         'list': list_cmd,
         'l': list_cmd,
+        'savehtml': savehtml_cmd,
+        'sh': savehtml_cmd,
+        'loadhtml': loadhtml_cmd,
+        'lh': loadhtml_cmd,
         'help': help_cmd,
         'h': help_cmd,
         'quit': quit,
