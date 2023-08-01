@@ -46,10 +46,9 @@ def help_cmd():
                    'Save untranslated texts of project {proj_idx} to a html file where Edge or Chrome can perform translating.\n'
                    'Please use the Chrome or MS Edge to translate the html file, then save to overwrite it.\n'
                    'After all, use loadhtml {proj_idx} to update translated texts!'])
-    table.add_row(['loadhtml or lh', 'loadhtml {proj_idx} [{html_file}]',
+    table.add_row(['loadhtml or lh', 'loadhtml {proj_idx} {html_file} or\nloadhtml {proj_idx}',
                    'Load translated texts from a translated html file, and apply to untranslated texts of project {proj_idx}.\n'
-                   'If the {html_file} is not specified, we will find the corresponding html file for the project {proj_idx} \nat "{PROJECT_PATH}/html/{project.full_name}.html".'
-                   f' All files will be save in {default_config.project_path}'])
+                   'If the {html_file} is not specified, we will find the corresponding html file for the project {proj_idx} \nat "{PROJECT_PATH}/html/{project.full_name}.html".'])
     table.add_row(['list or l', 'list',
                    f'list projects in {default_config.project_path}, you can change it in {CONFIG_FILE} - GLOBAL.PROJECT_PATH'])
     table.add_row(['help or h', 'help', 'Show all available commands.'])
