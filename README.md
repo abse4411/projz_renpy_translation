@@ -8,9 +8,9 @@
 ***
 
 # <mark>⚡⚡⚡新的命令已经发布！有史以来*最最最快速*的翻译方法！！！ ⚡⚡⚡</mark>
-使用`savehtml`和`loadhtml`命令，导出未翻译文本为html文件，然后借助Chrome或者Micros Edge浏览器翻译网页并保存覆盖原始html文件，实现翻译文本快速导入。请输入`help`命令获取详细信息。
+使用`savehtml`和`loadhtml`命令，导出未翻译文本为html文件，然后借助Chrome或者Microsoft Edge浏览器翻译网页并保存覆盖原始html文件，实现翻译文本快速导入。请输入`help`命令获取详细信息。
 ### 使用步骤：
-1. 使用`savehtml {proj_idx}`命令，导出未翻译文本为html文件，然后用Chrome或者Micros Edge打开它。
+1. 使用`savehtml {proj_idx}`命令，导出未翻译文本为html文件，然后用Chrome或者Microsoft Edge打开它。
 2. 右键，使用翻译网页功能,或者在地址栏右边找到翻译网页按钮：
 
 ![](imgs/trans_menu.png)
