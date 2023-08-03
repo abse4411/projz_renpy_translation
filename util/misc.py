@@ -112,3 +112,10 @@ class replacer:
 def my_input(prompt):
     print(prompt)
     return input()
+
+def yes(prompt):
+    y = my_input(prompt + ' Enter Yes/Y (case-insensitive) to proceed:')
+    y = y.strip().lower()
+    if y == 'y' or y == 'yes':
+        return True
+    return False

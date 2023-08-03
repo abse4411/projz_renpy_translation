@@ -15,7 +15,7 @@ from store.index import project_index
 from trans import web_translator
 from trans.thread_trans import concurrent_translator
 from util.file import exists_dir, file_name, exists_file, mkdir
-from util.misc import my_input
+from util.misc import my_input, yes
 
 
 def _list_projects():
@@ -43,6 +43,8 @@ def help_cmd():
     table.add_row(['old or o', 'old {tl_path} {name} {tag}',
                    'Create a translated index from the translation dir ({tl_path}) in renpy.\n It may be like: D:\\my_renpy\game\\tl\\chinese.'
                    ' All texts are regard as translated ones.\n The {name} and {tag} are using while saving.'])
+    table.add_row(['delete or d', 'delete {proj_idx}', 'Delete the specified project {proj_idx}.'])
+    table.add_row(['clear or c', 'clear', f'clear all projects in {default_config.project_path}.'])
     table.add_row(['translate or t', 'translate {proj_idx} {tran_api}',
                    'Translate all untranslated texts using the translation API {tran_api} for the project {proj_idx}.\n'
                    'Available translation APIs are caiyu, google, baidu, and youdao.'])
@@ -100,9 +102,9 @@ def new_cmd(dir: str, name: str, tag: str):
 
 def merge_cmd(source_idx: int, target_idx: int):
     source_idx, target_idx = int(source_idx), int(target_idx)
+    assert source_idx != target_idx, f'source_idx({source_idx}) should diff from target_idx({target_idx}).'
     sproj, tproj = _list_projects_and_select([source_idx, target_idx])
-    yes = my_input(f'Merge all translated texts from {file_name(sproj)} to {file_name(tproj)}? Enter Y/y to continue:')
-    if yes.strip().lower() == 'y':
+    if yes(f'Merge all translated texts from {file_name(sproj)} to {file_name(tproj)}?'):
         sproj = project_index.load_from_file(sproj)
         tproj = project_index.load_from_file(tproj)
         tproj.merge_from(sproj)
@@ -123,8 +125,26 @@ def translate_cmd(proj_idx: int, api_name: str):
 def apply_cmd(proj_idx: int):
     # projs = _list_projects()
     proj = project_index.load_from_file(_list_projects_and_select([proj_idx])[0])
-    proj.apply(default_config.project_path)
+    proj.apply_by_default()
 
+def delete_cmd(proj_idx: int):
+    # projs = _list_projects()
+    proj = _list_projects_and_select([proj_idx])[0]
+    if yes(f'Are your sure to delete {proj}?'):
+        os.remove(proj)
+        logging.warning(f'{proj} is deleted!')
+
+def clear_cmd():
+    projs = _list_projects()
+    if len(projs) <= 0:
+        print(f'There are not projects in {default_config.project_path}')
+    print(f'The following {len(projs)} project(s) will be cleared:')
+    for p in projs:
+        print(p)
+    if yes(f'Are your sure to delete these {len(projs)} project(s)?'):
+        for p in projs:
+            os.remove(p)
+            logging.warning(f'{p} is deleted!')
 
 def savehtml_cmd(proj_idx: int, limit: int = None):
     if limit is not None:
@@ -169,6 +189,10 @@ def main():
         'a': apply_cmd,
         'list': list_cmd,
         'l': list_cmd,
+        'delete': delete_cmd,
+        'd': delete_cmd,
+        'clear': clear_cmd,
+        'c': clear_cmd,
         'savehtml': savehtml_cmd,
         'sh': savehtml_cmd,
         'loadhtml': loadhtml_cmd,

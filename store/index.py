@@ -48,6 +48,10 @@ class project_index:
     def project_tag(self):
         return self._raw_data.tag
 
+    @property
+    def file_name(self):
+        return f'{self.full_name}.pt'
+
     def update(self, sources: List[str], targets: List[str]):
         assert len(sources) == len(targets)
         for s, t in zip(sources, targets):
@@ -157,7 +161,7 @@ class project_index:
             return cls(raw_data)
 
     def save_by_default(self):
-        self.save(os.path.join(default_config.project_path, f'{self.full_name}.pt'))
+        self.save(os.path.join(default_config.project_path, self.file_name))
 
     def save(self, file: str):
         with open(file, 'wb') as f:
