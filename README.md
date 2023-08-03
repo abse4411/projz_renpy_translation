@@ -36,6 +36,13 @@ python3 parse_console.py
 
 ** PS： 注意后续将过度到这个版本，旧版本的`incre_parse.py`和`parse.py`将被移除。这个新版本仍在开发中，后续改进将会持续推进**
 
+## 运行环境准备
+
+- python3, pip install selenium prettytable tqdm
+
+- chrome, chrome driver(注意Chrome版本，如果不对请前往 [此链接](https://registry.npmmirror.com/binary.html?path=chromedriver/) 下载对应的chromedriver.exe)
+
+
 ## 快速开始：
 
 首先请配置你的`chrome driver`文件路径，在`config.ini`中修改`driver
