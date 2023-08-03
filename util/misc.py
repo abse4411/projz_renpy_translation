@@ -110,7 +110,7 @@ class replacer:
                 self.file_handle.flush()
 
 def my_input(prompt):
-    print(prompt)
+    print(prompt, flush=True)
     return input()
 
 def yes(prompt):
