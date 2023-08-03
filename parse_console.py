@@ -44,7 +44,7 @@ def help_cmd():
                    'Create a translated index from the translation dir ({tl_path}) in renpy.\n It may be like: D:\\my_renpy\game\\tl\\chinese.'
                    ' All texts are regard as translated ones.\n The {name} and {tag} are using while saving.'])
     table.add_row(['delete or d', 'delete {proj_idx}', 'Delete the specified project {proj_idx}.'])
-    table.add_row(['clear or c', 'clear', f'clear all projects in {default_config.project_path}.'])
+    table.add_row(['clear or c', 'clear', f'Clear all projects in {default_config.project_path}.'])
     table.add_row(['translate or t', 'translate {proj_idx} {tran_api}',
                    'Translate all untranslated texts using the translation API {tran_api} for the project {proj_idx}.\n'
                    'Available translation APIs are caiyu, google, baidu, and youdao.'])
@@ -56,7 +56,7 @@ def help_cmd():
     table.add_row(['savehtml or sh', 'savehtml {proj_idx} or\nsavehtml {proj_idx} {limit}',
                    'Save untranslated texts of project {proj_idx} to a html file where Edge or Chrome can perform translating.\n'
                    'Please use the Chrome or MS Edge to translate the html file, then save to overwrite it.\n'
-                   'The {limit} is optional, or specify it to limit the number of output lines.\n'
+                   'The argument {limit} is optional, or specify it to limit the number of output lines.\n'
                    'After all, use loadhtml {proj_idx} to update translated texts!'])
     table.add_row(['loadhtml or lh', 'loadhtml {proj_idx} {html_file} or\nloadhtml {proj_idx}',
                    'Load translated texts from a translated html file, and apply to untranslated texts of project {proj_idx}.\n'
