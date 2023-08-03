@@ -22,6 +22,15 @@ def _list_projects():
     return sorted(glob.glob(os.path.join(default_config.project_path, '*.pt')))
 
 
+def _list_projects_and_select(indexes: List[int]):
+    projs = _list_projects()
+    res = []
+    for i in indexes:
+        i = int(i)
+        assert 0 <= i < len(projs), f'index {i} out of range, available indexes are:{list(range(len(projs)))}'
+        res.append(projs[i])
+    return res
+
 def help_cmd():
     print("RenPy rpy文件机翻工具")
     print("By abse4411(Github:https://github.com/abse4411/projz_renpy), version 2.0")
@@ -42,9 +51,10 @@ def help_cmd():
     table.add_row(['apply or a', 'apply {proj_idx}',
                    'Apply all translated texts of project {proj_idx} to rpy file. \nThe  built directory structure is the same as the original project.'
                    f' All files will be save in {default_config.project_path}'])
-    table.add_row(['savehtml or sh', 'savehtml {proj_idx}',
+    table.add_row(['savehtml or sh', 'savehtml {proj_idx} or\nsavehtml {proj_idx} {limit}',
                    'Save untranslated texts of project {proj_idx} to a html file where Edge or Chrome can perform translating.\n'
                    'Please use the Chrome or MS Edge to translate the html file, then save to overwrite it.\n'
+                   'The {limit} is optional, or specify it to limit the number of output lines.\n'
                    'After all, use loadhtml {proj_idx} to update translated texts!'])
     table.add_row(['loadhtml or lh', 'loadhtml {proj_idx} {html_file} or\nloadhtml {proj_idx}',
                    'Load translated texts from a translated html file, and apply to untranslated texts of project {proj_idx}.\n'
@@ -90,8 +100,7 @@ def new_cmd(dir: str, name: str, tag: str):
 
 def merge_cmd(source_idx: int, target_idx: int):
     source_idx, target_idx = int(source_idx), int(target_idx)
-    projs = _list_projects()
-    sproj, tproj = projs[source_idx], projs[target_idx]
+    sproj, tproj = _list_projects_and_select([source_idx, target_idx])
     yes = my_input(f'Merge all translated texts from {file_name(sproj)} to {file_name(tproj)}? Enter Y/y to continue:')
     if yes.strip().lower() == 'y':
         sproj = project_index.load_from_file(sproj)
@@ -101,8 +110,8 @@ def merge_cmd(source_idx: int, target_idx: int):
 
 
 def translate_cmd(proj_idx: int, api_name: str):
-    projs = _list_projects()
-    proj = project_index.load_from_file(projs[int(proj_idx)])
+    # projs = _list_projects()
+    proj = project_index.load_from_file(_list_projects_and_select([proj_idx])[0])
     assert api_name.strip() != '', f'api_name is empty!'
     driver_path = default_config.get_global('CHROME_DRIVER')
     translator_class = web_translator.__dict__[api_name]
@@ -112,24 +121,30 @@ def translate_cmd(proj_idx: int, api_name: str):
 
 
 def apply_cmd(proj_idx: int):
-    projs = _list_projects()
-    proj = project_index.load_from_file(projs[int(proj_idx)])
+    # projs = _list_projects()
+    proj = project_index.load_from_file(_list_projects_and_select([proj_idx])[0])
     proj.apply(default_config.project_path)
 
 
-def savehtml_cmd(proj_idx: int):
-    projs = _list_projects()
-    proj = project_index.load_from_file(projs[int(proj_idx)])
+def savehtml_cmd(proj_idx: int, limit: int = None):
+    if limit is not None:
+        limit = int(limit)
+        assert limit > 0, 'limit should be large than 0'
+    # projs = _list_projects()
+    proj = project_index.load_from_file(_list_projects_and_select([proj_idx])[0])
     save_path = os.path.join(default_config.project_path, 'html')
     mkdir(save_path)
     save_file = os.path.join(save_path, f'{proj.full_name}.html')
-    save_to_html(save_file, proj.untranslated_lines)
+    untranslated_lines = proj.untranslated_lines
+    if limit is not None:
+        untranslated_lines = untranslated_lines[:limit]
+    save_to_html(save_file, untranslated_lines)
     logging.info(f'Html file is saved to: {save_file}. Use the Chrome or MS Edge translate it and overwrite it.')
 
 
 def loadhtml_cmd(proj_idx: int, html_file: str = None):
-    projs = _list_projects()
-    proj = project_index.load_from_file(projs[int(proj_idx)])
+    # projs = _list_projects()
+    proj = project_index.load_from_file(_list_projects_and_select([proj_idx])[0])
     if html_file is None:
         save_path = os.path.join(default_config.project_path, 'html')
         html_file = os.path.join(save_path, f'{proj.full_name}.html')
