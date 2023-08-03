@@ -31,24 +31,25 @@ class concurrent_translator:
 
     def translate(self, untranslated_lines):
         try:
-            logging.info(f'Thread {threading.get_ident()}: Starting the web translator...')
+            logging.info(f'Starting the web translator...')
             web_translator = self.translator_class()
         except Exception as e:
             logging.error(
-                f'Thread {threading.get_ident()}: Error in starting the web translator, {len(untranslated_lines)} untranslated line(s) will be not translated: {e}')
+                f'Error in starting the web translator, {len(untranslated_lines)} untranslated line(s) will be not translated: {e}')
             return
         finally:
             self.sem.release()
-        logging.info(f'Thread {threading.get_ident()}: Waiting for user input...')
+        logging.info(f'Waiting for user input...')
         self.event.wait()
         if self.quit:
-            logging.info(f'Thread {threading.get_ident()}: Stopped by user')
+            logging.info(f'Stopped by user')
             web_translator.close()
             return
         sources, targets = [], []
         try:
             logging.info(
-                f'Thread {threading.get_ident()}: Starting translating {len(untranslated_lines)} untranslated line(s)')
+                f'Starting translating {len(untranslated_lines)} untranslated line(s)')
+            last_output_text = None
             for line in untranslated_lines:
                 raw_line = line
                 line = strip_tags(line)
@@ -59,13 +60,16 @@ class concurrent_translator:
                 for i in range(len(tvar_list)):
                     t_line = t_line.replace(renpy_vars[i], tvar_list[i])
                 new_text = web_translator.translate(t_line)
+                if new_text is not None and new_text == last_output_text:
+                    logging.warning(f'Error in translating {line} (The translated text ({new_text}) is the same as last translated text), it will ignored!')
+                last_output_text = new_text
                 new_text = strip_breaks(new_text)
                 # convert the var back
                 for i in range(len(tvar_list)):
                     new_text = new_text.replace(tvar_list[i], renpy_vars[i])
 
                 if new_text is None:
-                    logging.warning(f'Thread {threading.get_ident()}: Error in translating {line}, it will ignored!')
+                    logging.warning(f'Error in translating {line}, it will ignored!')
                     continue
                 sources.append(raw_line)
                 targets.append('@@' + new_text)
@@ -75,8 +79,7 @@ class concurrent_translator:
             if len(sources) > 0:
                 self.safe_update(sources, targets)
         except Exception as e:
-            logging.error(f'Thread {threading.get_ident()}: Error during translating: {e}')
-        pass
+            logging.error(f'Error during translating: {e}')
 
     def start(self):
         if self.proj.untranslation_size <= 0:
@@ -90,7 +93,7 @@ class concurrent_translator:
         else:
             for i in range(0, len(untranslated_lines), batch_size):
                 batches.append(untranslated_lines[i: min(i + batch_size, len(untranslated_lines))])
-        logging.info(f'Dispatching {len(batches)} worker with batch size {batch_size}')
+        logging.info(f'Dispatching {len(batches)} worker(S) with batch size {batch_size}')
         self.event = threading.Event()
         self.event.clear()
         self.sem = threading.BoundedSemaphore(len(batches))
