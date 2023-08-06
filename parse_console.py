@@ -53,13 +53,15 @@ def help_cmd():
     table.add_row(['apply or a', 'apply {proj_idx}',
                    'Apply all translated texts of project {proj_idx} to rpy file. \nThe  built directory structure is the same as the original project.'
                    f' All files will be save in {default_config.project_path}'])
-    table.add_row(['savehtml or sh', 'savehtml {proj_idx} or\nsavehtml {proj_idx} {limit}',
+    table.add_row(['savehtml or sh', 'savehtml {proj_idx} or\nsavehtml {proj_idx} {lang} {limit}',
                    'Save untranslated texts of project {proj_idx} to a html file where Edge or Chrome can perform translating.\n'
                    'Please use the Chrome or MS Edge to translate the html file, then save to overwrite it.\n'
                    'The argument {limit} is optional, or specify it to limit the number of output lines.\n'
+                   'The lang {lang} is optional, or specify it to use this language {lang}.\n'
                    'After all, use loadhtml {proj_idx} to update translated texts!'])
-    table.add_row(['loadhtml or lh', 'loadhtml {proj_idx} {html_file} or\nloadhtml {proj_idx}',
+    table.add_row(['loadhtml or lh', 'loadhtml {proj_idx} {lang} {html_file}or\nloadhtml {proj_idx}',
                    'Load translated texts from a translated html file, and apply to untranslated texts of project {proj_idx}.\n'
+                   'The lang {lang} is optional, or specify it to use this language {lang}.\n'
                    'If the {html_file} is not specified, we will find the corresponding html file for the project {proj_idx} \nat "{PROJECT_PATH}/html/{project.full_name}.html".'])
     table.add_row(['list or l', 'list',
                    f'list projects in {default_config.project_path}, you can change it in {CONFIG_FILE} - GLOBAL.PROJECT_PATH'])
@@ -75,8 +77,10 @@ def list_cmd():
     table = PrettyTable(
         ['Project Index', 'Project', 'Tag', 'Translated line(s)', 'Untranslated line(s)', 'Source dir', 'Num Rpys'])
     for i, p in enumerate(projs):
+        untrans_cnt = '\n'.join([f'{l}: {p.untranslation_size(l)}' for l in p.untranslated_langs])
+        trans_cnt = '\n'.join([f'{l}: {p.translation_size(l)}' for l in p.translated_langs])
         table.add_row(
-            [i, p.project_name, p.project_tag, p.translation_size, p.untranslation_size, p.source_dir,
+            [i, p.project_name, p.project_tag, trans_cnt, untrans_cnt, p.source_dir,
              p.num_rpys])
     print(table)
 
@@ -122,10 +126,10 @@ def translate_cmd(proj_idx: int, api_name: str):
     proj.save_by_default()
 
 
-def apply_cmd(proj_idx: int):
+def apply_cmd(proj_idx: int, lang:str=None):
     # projs = _list_projects()
     proj = project_index.load_from_file(_list_projects_and_select([proj_idx])[0])
-    proj.apply_by_default()
+    proj.apply_by_default(lang)
 
 def delete_cmd(proj_idx: int):
     # projs = _list_projects()
@@ -146,32 +150,39 @@ def clear_cmd():
             os.remove(p)
             logging.warning(f'{p} is deleted!')
 
-def savehtml_cmd(proj_idx: int, limit: int = None):
+def savehtml_cmd(proj_idx: int, lang:str=None, limit: int = None):
     if limit is not None:
         limit = int(limit)
         assert limit > 0, 'limit should be large than 0'
     # projs = _list_projects()
     proj = project_index.load_from_file(_list_projects_and_select([proj_idx])[0])
+    if lang is None:
+        lang = proj.first_untranslated_lang
+        logging.info(f'Selecting the default language {lang} for savehtml. If you want change to another language, please specify the argument {{lang}}')
     save_path = os.path.join(default_config.project_path, 'html')
     mkdir(save_path)
     save_file = os.path.join(save_path, f'{proj.full_name}.html')
-    untranslated_lines = proj.untranslated_lines
+    untranslated_lines = proj.untranslated_lines(lang)
     if limit is not None:
         untranslated_lines = untranslated_lines[:limit]
     save_to_html(save_file, untranslated_lines)
     logging.info(f'Html file is saved to: {save_file}. Use the Chrome or MS Edge translate it and overwrite it.')
 
 
-def loadhtml_cmd(proj_idx: int, html_file: str = None):
+def loadhtml_cmd(proj_idx: int, lang:str=None, html_file: str = None):
     # projs = _list_projects()
     proj = project_index.load_from_file(_list_projects_and_select([proj_idx])[0])
+    if lang is None:
+        lang = proj.first_untranslated_lang
+        logging.info(f'Selecting the default language {lang} for loadhtml. If you want change to another language, please specify the argument {{lang}}')
     if html_file is None:
         save_path = os.path.join(default_config.project_path, 'html')
         html_file = os.path.join(save_path, f'{proj.full_name}.html')
     else:
         assert exists_file(html_file), f'File {html_file} not found!'
-    s, t = load_from_html(html_file, proj.untranslated_lines)
-    proj.update(s, t)
+    source_data = proj.untranslated_lines(lang)
+    res = load_from_html(html_file, source_data)
+    proj.update(res, lang)
     proj.save_by_default()
 
 
@@ -214,6 +225,7 @@ def main():
                     register_commands[cmd](*args[1:])
                 except Exception as e:
                     print(f'error: {e}')
+                    logging.exception(e)
             else:
                 print(
                     f'Sorry, it seems to be a invalid command. Available commands are {list(register_commands.keys())}.')

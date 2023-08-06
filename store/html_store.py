@@ -1,7 +1,9 @@
 import hashlib
 import logging
-from typing import List
+import os
+from typing import List, Tuple
 
+from config.config import default_config
 from store.index import project_index
 
 HTML_TEMPLATE = '''
@@ -41,47 +43,49 @@ def text_id(text):
     return (md5_str + hash_str).upper()
 
 
-def save_to_html(file_name: str, sources: List[str]):
+def save_to_html(file_name: str, tids_and_untranslated_texts: List[Tuple[str, str]]):
     tr_arr = []
-    for s in sources:
-        tr_arr.append(TR_TEMPLATE.format(id=text_id(s), text=s))
+    for tid, raw_text in tids_and_untranslated_texts:
+        tr_arr.append(TR_TEMPLATE.format(id=text_id(tid), text=raw_text))
     save_html = HTML_TEMPLATE.format(filler=''.join(tr_arr))
     with open(file_name, 'w', encoding='utf-8', newline='\n') as f:
         f.write(save_html)
-    logging.info(f'Save untranslated {len(sources)} translations to {file_name}')
+    logging.info(f'Save untranslated {len(tids_and_untranslated_texts)} translations to {file_name}')
 
 
-def load_from_html(file_name: str, sources: List[str]):
+def load_from_html(file_name: str, tids_and_untranslated_texts: List[Tuple[str, str]]):
     unmap = dict()
+    use_cnt = 0
+    unuse_cnt = 0
     with open(file_name, 'r', encoding='utf-8') as f:
         i = 0
         for l in f:
             i += 1
             l = l.strip()
             if l.startswith('<!--') and l.endswith('</td></tr>'):
-                id = l[l.find('<!--') + 4:l.find('S#2##')].strip().upper()
+                encrypted_tid = l[l.find('<!--') + 4:l.find('S#2##')].strip().upper()
                 new_str = l[l.find('B4##') + 4:l.rfind('#D5#')].strip()
-                if id == '' or new_str == '':
-                    logging.info(f'[Line {i}] Skipping corrupted translation: {l}')
+                old_str = l[l.find('#E3#') + 4:l.find('--><tr><td')].strip()
+                if encrypted_tid == '' or new_str == '' or new_str == old_str:
+                    logging.info(f'[Line {i}] Skipping corrupted translation for raw_text({old_str})==translated_text({new_str})')
                 else:
-                    unmap[id] = new_str
+                    unmap[encrypted_tid] = new_str
     logging.info(f'Found {len(unmap)} translations in {file_name}')
-    t_sources = []
-    targets = []
-    use_cnt = 0
-    unuse_cnt = 0
-    for s in sources:
-        tid = text_id(s)
-        if tid in unmap:
-            if s.strip()!=unmap[tid]:
-                use_cnt+=1
-                t_sources.append(s)
-                targets.append('@@'+unmap[tid])
+    res = []
+    for tid, raw_text in tids_and_untranslated_texts:
+        encrypted_tid = text_id(tid)
+        if encrypted_tid in unmap:
+            if raw_text == unmap[encrypted_tid]:
+                logging.info(f'Skipping corrupted translation: "{raw_text}" for raw_text({raw_text})==translated_text({unmap[encrypted_tid]})')
+                unuse_cnt += 1
             else:
-                logging.warning(f'Untranslated text (Translation ID:{tid}, "{s}") found, it will be ignored!')
-                unuse_cnt+=1
+                res.append((tid, unmap[encrypted_tid]))
+                use_cnt += 1
+        else:
+            logging.warning(f'Untranslated text (Translation ID: {tid}, text: {raw_text}) found, it will be ignored!')
+            unuse_cnt += 1
     logging.info(f'There are {use_cnt} translated line(s) and {unuse_cnt} untranslated line(s) in {file_name}')
-    return (t_sources, targets)
+    return res
 
 
 if __name__ == '__main__':
@@ -92,12 +96,21 @@ if __name__ == '__main__':
     print(my_hash('sda'))
     print(my_hash('2'))
     print(my_hash('2阿斯顿'))
-
+    print('======================================================================')
     p = project_index.init_from_dir(r'translated/tmp_renpy_game/game', 'test', 'V0.0.1', is_translated=False)
-    save_to_html(r'./a.html', p.untranslated_lines)
-    print(f'untranslation_size:{p.untranslation_size}')
-    s, t = load_from_html(r'D:\Users\Surface Book2\Downloads\公文.html', p.untranslated_lines)
-    p.update(s, t)
-    print(f'untranslation_size:{p.untranslation_size}')
-    for s,t in p._raw_data.translated_lines.items():
-        print(s,'->' ,t.new_str)
+    my_lang = 'chinese'
+    for s,t in p._raw_data.untranslated_lines[my_lang].items():
+        print(s,f'({t.old_str})','->' ,t.old_str, flush=True)
+    print('======================================================================')
+    save_path = os.path.join(default_config.project_path, 'html', f'{p.full_name}.html')
+    # save_to_html(save_path, p.untranslated_lines(my_lang))
+    # exit(0)
+    print(f'untranslation_size:{p.untranslation_size(my_lang)}')
+    res = load_from_html(save_path, p.untranslated_lines(my_lang))
+    p.update(res, my_lang)
+    print(f'untranslation_size:{p.untranslation_size(my_lang)}=========>')
+    for s,t in p._raw_data.untranslated_lines[my_lang].items():
+        print(s,f'({t.old_str})' ,'->' ,t.new_str, flush=True)
+    print(f'translation_size:{p.translation_size(my_lang)}*********>')
+    for s,t in p._raw_data.translated_lines[my_lang].items():
+        print(s,f'({t.old_str})' ,'->' ,t.new_str, flush=True)

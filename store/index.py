@@ -1,28 +1,28 @@
 import logging
 import os.path
-from typing import List
+from typing import List, Tuple
 import pickle
 
 import tqdm
 
 from config.config import default_config
-from store.fetch import update_translated_lines, update_untranslated_lines
-from store.item import project_item
-from util.file import walk_and_select, mkdir, file_dir, file_name
+from store.fetch import update_translated_lines_new, update_untranslated_lines_new, preparse_rpy_file
+from store.item import project_item_new, i18n_translation_dict
+from util.file import walk_and_select, mkdir, file_dir
 from util.misc import replacer, text_type, TEXT_TYPE
 
 
 class project_index:
-    def __init__(self, raw_data: project_item):
+    def __init__(self, raw_data: project_item_new):
         self._raw_data = raw_data
 
-    @property
-    def untranslation_size(self):
-        return len(self._raw_data.untranslated_lines)
+    def untranslation_size(self, lang:str=None):
+        assert lang in self.untranslated_langs, f'The selected_lang {lang} is not not Found! Available language(s) are {self.untranslated_langs}.'
+        return self._raw_data.untranslated_lines.len(lang)
 
-    @property
-    def translation_size(self):
-        return len(self._raw_data.translated_lines)
+    def translation_size(self, lang:str=None):
+        assert lang in self.translated_langs, f'The selected_lang {lang} is not not Found! Available language(s) are {self.translated_langs}.'
+        return self._raw_data.translated_lines.len(lang)
 
     @property
     def source_dir(self):
@@ -32,13 +32,36 @@ class project_index:
     def num_rpys(self):
         return len(self._raw_data.rpy_files)
 
+    def untranslated_lines(self, lang:str):
+        assert lang in self.untranslated_langs, f'The selected_lang {lang} is not not Found! Available language(s) are {self.untranslated_langs}.'
+        tid_texts = []
+        for tid, item in self._raw_data.untranslated_lines[lang].items():
+            tid_texts.append((tid, item.old_str))
+        return tid_texts
+
     @property
-    def untranslated_lines(self):
-        return list(self._raw_data.untranslated_lines.keys())
+    def untranslated_langs(self):
+        return list(self._raw_data.untranslated_lines.langs())
+
+    @property
+    def translated_langs(self):
+        return list(self._raw_data.translated_lines.langs())
 
     @property
     def full_name(self):
         return f'{self.project_name}_{self.project_tag}'
+
+    @property
+    def first_untranslated_lang(self):
+        langs = self.untranslated_langs
+        if len(langs) == 0: return None
+        return langs[0]
+
+    @property
+    def first_translated_lang(self):
+        langs = self.translated_langs
+        if len(langs) == 0: return None
+        return langs[0]
 
     @property
     def project_name(self):
@@ -52,83 +75,118 @@ class project_index:
     def file_name(self):
         return f'{self.full_name}.pt'
 
-    def update(self, sources: List[str], targets: List[str]):
-        assert len(sources) == len(targets)
-        for s, t in zip(sources, targets):
-            if s in self._raw_data.translated_lines:
+    def update(self, tids_and_translated_texts: List[Tuple[str, str]], lang:str):
+        assert lang in self.untranslated_langs, f'The selected_lang {lang} is not not Found! Available language(s) are {self.untranslated_langs}.'
+        self._raw_data.translated_lines.safe_add_key(lang)
+        translated_lines = self._raw_data.translated_lines[lang]
+        untranslated_lines = self._raw_data.untranslated_lines[lang]
+        for tid, text in tids_and_translated_texts:
+            if tid not in untranslated_lines:
                 logging.warning(
-                    f'Existent translated text for ({s}) in translated_lines:{self._raw_data.translated_lines[s]}, it will be replaced by the new translation: {t}')
-                tline = self._raw_data.translated_lines[s]
-                tline.new_str = t
+                    f'Non-existent untranslated text (identifier={tid}) in untranslated_lines, this translation won\'t be added')
+                continue
             else:
-                if s not in self._raw_data.untranslated_lines:
+                if tid in translated_lines:
                     logging.warning(
-                        f'Non-existent untranslated text "{s}" in untranslated_lines, this translation won\'t be added')
-                    continue
-                utline = self._raw_data.untranslated_lines.pop(s)
-                utline.new_str = t
-                self._raw_data.translated_lines[s] = utline
+                        f'Existent translated text for ({translated_lines[tid].old_str}) in translated_lines:{translated_lines[tid]}, it will be replaced by the new translation: {text}')
+                    tline = translated_lines[tid]
+                    tline.new_str = text
+                    if tid in untranslated_lines: untranslated_lines.pop(tid)
+                else:
+                    utline = untranslated_lines.pop(tid)
+                    utline.new_str = text
+                    translated_lines[tid] = utline
 
-    def translate(self, source:str):
-        if source in self._raw_data.translated_lines:
-            return self._raw_data.translated_lines[source].new_str
+    def translate(self, tid:str, lang:str):
+        if (lang, tid) in self._raw_data.translated_lines:
+            return self._raw_data.translated_lines[(lang, tid)].new_str
         return None
 
     @classmethod
     def init_from_dir(cls, source_dir: str, name: str, tag: str, is_translated=True):
         ryp_files = walk_and_select(source_dir, lambda x: x.endswith('.rpy'))
-        lines = dict()
+        lines = i18n_translation_dict()
         for rpy_file in tqdm.tqdm(ryp_files,
                                   desc=f'Getting {"translated" if is_translated else "untranslated"} texts from {source_dir}'):
             if is_translated:
-                update_translated_lines(rpy_file, lines)
+                update_translated_lines_new(rpy_file, lines)
             else:
-                update_untranslated_lines(rpy_file, lines)
+                update_untranslated_lines_new(rpy_file, lines)
         translated_lines = None
         untranslated_lines = None
         if is_translated:
             translated_lines = lines
-            logging.info(f'{len(lines)} translated line(s) are stored.')
+            logging.info(f'{lines.len()} translated line(s) are stored.')
         else:
             untranslated_lines = lines
-            logging.info(f'{len(lines)} untranslated line(s) are found.')
-        raw_data = project_item(source_dir, name, tag, ryp_files,
+            logging.info(f'{lines.len()} untranslated line(s) are found.')
+        raw_data = project_item_new(source_dir, name, tag, ryp_files,
                                 translated_lines=translated_lines,
                                 untranslated_lines=untranslated_lines)
         return cls(raw_data)
 
-    def merge_from(self, proj: project_name):
+    def merge_from(self, proj: project_name, selected_lang:str=None):
         merge_cnt = 0
         unmerge_cnt = 0
-        for s in self.untranslated_lines:
-            trans_txt = proj.translate(s)
-            if trans_txt is None:
-                unmerge_cnt += 1
-            else:
-                merge_cnt += 1
-                untline = self._raw_data.untranslated_lines.pop(s)
-                untline.new_str = trans_txt
-                if s in self._raw_data.translated_lines:
-                    logging.warning(
-                        f'Existent translation for ({s}) in translated_lines:{self._raw_data.translated_lines[s]}, it will be replaced by the new translation:{trans_txt}')
-                self._raw_data.translated_lines[s] = untline
-        logging.info(f'{merge_cnt} translated line(s) are used during merging, and there has {unmerge_cnt} untranslated line(s)')
+        assert selected_lang in self.untranslated_langs, f'The selected_lang {selected_lang} is not not Found! Available language(s) are {self.untranslated_langs}.'
+        for lang, old_dict in self._raw_data.untranslated_lines.items():
+            if selected_lang is not None and lang != selected_lang:
+                continue
+            for tid in old_dict.keys():
+                trans_txt = proj.translate((lang, tid))
+                if trans_txt is None:
+                    unmerge_cnt += 1
+                else:
+                    merge_cnt += 1
+                    untline = old_dict.pop(tid)
+                    untline.new_str = trans_txt
+                    if (lang, tid) in self._raw_data.translated_lines:
+                        logging.warning(
+                            f'{untline.file}[L{untline.line}]: Existent translation for ({untline.old_str}) in translated_lines:{self._raw_data.translated_lines[(lang, tid)]}, it will be replaced by the new translation:{trans_txt}')
+                    self._raw_data.translated_lines[(lang, tid)] = untline
+        logging.info(
+            f'{merge_cnt} translated line(s) are used during merging, and there has {unmerge_cnt} untranslated line(s)')
 
-    def apply_by_default(self):
-        self.apply(default_config.project_path)
+    def perparse_with_linenumber(self, rpy_file, selected_lang:str=None, skip_unmatch=False):
+        new_i18n_dict = preparse_rpy_file(rpy_file)
+        linenumber_map = dict()
+        for lang, new_dict in new_i18n_dict.items():
+            if selected_lang is not None and lang != selected_lang:
+                continue
+            for tid, item in new_dict.items():
+                line_no = item.line
+                if skip_unmatch and item.old_str != item.new_str:
+                    logging.info(f'{item.file}[L{item.line}]: The item {item} is skipped for old_str({item.old_str})!=new_str({item.new_str})')
+                    continue
+                assert line_no not in linenumber_map, f'Duplicate translation line number:{line_no}.\n' \
+                                                                f'\tDetailed info:\n' \
+                                                                f'\told:{linenumber_map[line_no]}\n' \
+                                                                f'\tnew:{item}'
+                linenumber_map[line_no] = item
+        return linenumber_map
 
-    def apply(self, save_dir:str):
+
+    def apply_by_default(self, lang:str=None):
+        if lang is None:
+            lang = self.first_untranslated_lang
+            logging.info(
+                f'Selecting the default language {lang} for savehtml. If you want change to another language, please specify the argument {{lang}}.')
+        self.apply(default_config.project_path, lang)
+
+    def apply(self, save_dir:str, lang:str):
+        assert lang in self.translated_langs, f'The selected_lang {lang} is not not Found! Available language(s) are {self.translated_langs}.'
         save_dir = os.path.join(save_dir, self.full_name)
         mkdir(save_dir)
         rpy_files = walk_and_select(self.source_dir, lambda x: x.endswith('.rpy'))
-        if self.untranslation_size > 0:
-            logging.warning(f'There still exists untranslated texts (qty:{self.untranslation_size}).')
+        if self.untranslation_size(lang) > 0:
+            logging.warning(f'There still exists untranslated texts (qty:{self.untranslation_size(lang)}) in language {lang}.')
         apply_cnt = 0
         unapply_cnt = 0
         abs_source_dir = os.path.abspath(self.source_dir)
         for rpy_file in tqdm.tqdm(rpy_files,
-                                  desc=f'Applying translated texts to {self.full_name}, you can found it in {save_dir}.'):
+                                  desc=f'Applying translated texts to {self.full_name} in language {lang}, you can found it in {save_dir}.'):
             rpy_file = os.path.abspath(rpy_file)
+            preparsed_data = self.perparse_with_linenumber(rpy_file, selected_lang=lang, skip_unmatch=True)
             base_dir = os.path.join(save_dir, file_dir(rpy_file[len(abs_source_dir):]).strip(os.sep))
             mkdir(base_dir)
             r = replacer(rpy_file, save_dir=base_dir)
@@ -136,23 +194,29 @@ class project_index:
             apply_cnt_i = 0
             unapply_cnt_i = 0
             text = r.next()
+            line_no = 1
             while text is not None:
                 ori_text, ttype = text_type(text)
                 if ttype == TEXT_TYPE.NEW:
-                    trans_txt = self.translate(ori_text)
-                    if trans_txt is None:
-                        unapply_cnt += 1
+                    if line_no in preparsed_data:
+                        parsed_item = preparsed_data[line_no]
+                        trans_txt = self.translate(parsed_item.identifier, lang)
+                        if trans_txt is None:
+                            unapply_cnt += 1
+                        else:
+                            apply_cnt_i += 1
+                            text = text.replace(ori_text, trans_txt)
                     else:
-                        apply_cnt_i += 1
-                        text = text.replace(ori_text, trans_txt)
+                        unapply_cnt += 1
                 r.update(text)
                 text = r.next()
+                line_no += 1
             logging.info(
-                f'{rpy_file} is translated with {apply_cnt_i} translated line(s) and {unapply_cnt_i} untranslated line(s).')
+                f'{rpy_file} is translated with {apply_cnt_i} translated line(s) and {unapply_cnt_i} untranslated line(s) in language {lang}.')
             apply_cnt += apply_cnt_i
             unapply_cnt += unapply_cnt_i
         logging.info(
-            f'{len(rpy_files)} rpy file(s) is/are translated with {apply_cnt} translated line(s) and {unapply_cnt} untranslated line(s).')
+            f'{len(rpy_files)} rpy file(s) is/are translated with {apply_cnt} translated line(s) and {unapply_cnt} untranslated line(s) in language {lang}.')
 
     @classmethod
     def load_from_file(cls, file: str):
