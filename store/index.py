@@ -1,5 +1,6 @@
 import logging
 import os.path
+from collections import defaultdict
 from typing import List, Tuple
 import pickle
 
@@ -8,7 +9,7 @@ import tqdm
 from config.config import default_config
 from store.fetch import update_translated_lines_new, update_untranslated_lines_new, preparse_rpy_file
 from store.item import project_item_new, i18n_translation_dict
-from util.file import walk_and_select, mkdir, file_dir
+from util.file import walk_and_select, mkdir, file_dir, exists_file
 from util.misc import replacer, text_type, TEXT_TYPE
 
 
@@ -31,6 +32,25 @@ class project_index:
     @property
     def num_rpys(self):
         return len(self._raw_data.rpy_files)
+
+    @property
+    def rpys(self):
+        return self._raw_data.rpy_files.copy()
+
+    @staticmethod
+    def rpy_statistics(ryp_file):
+        trans_dict, untrans_dict, invalid_dict = defaultdict(list), defaultdict(list), defaultdict(list)
+        assert exists_file(ryp_file), 'File not found: {ryp_file}'
+        new_i18n_dict, invalid_list = preparse_rpy_file(ryp_file, verbose=False)
+        for lang, new_dict in new_i18n_dict.items():
+            for tid, item in new_dict.items():
+                if item.old_str != item.new_str:
+                    trans_dict[lang].append(item)
+                else:
+                    untrans_dict[lang].append(item)
+        for d in invalid_list:
+            invalid_dict[d.lang].append(d)
+        return trans_dict, untrans_dict, invalid_dict
 
     def untranslated_lines(self, lang:str):
         assert lang in self.untranslated_langs, f'The selected_lang {lang} is not not Found! Available language(s) are {self.untranslated_langs}.'
@@ -128,17 +148,18 @@ class project_index:
     def merge_from(self, proj: project_name, selected_lang:str=None):
         merge_cnt = 0
         unmerge_cnt = 0
-        assert selected_lang in self.untranslated_langs, f'The selected_lang {selected_lang} is not not Found! Available language(s) are {self.untranslated_langs}.'
-        for lang, old_dict in self._raw_data.untranslated_lines.items():
+        if selected_lang is not None:
+            assert selected_lang in self.untranslated_langs, f'The selected_lang {selected_lang} is not not Found! Available language(s) are {self.untranslated_langs}.'
+        for lang, new_dict in self._raw_data.untranslated_lines.items():
             if selected_lang is not None and lang != selected_lang:
                 continue
-            for tid in old_dict.keys():
-                trans_txt = proj.translate((lang, tid))
+            for tid in list(new_dict.keys()):
+                trans_txt = proj.translate(tid, lang)
                 if trans_txt is None:
                     unmerge_cnt += 1
                 else:
                     merge_cnt += 1
-                    untline = old_dict.pop(tid)
+                    untline = new_dict.pop(tid)
                     untline.new_str = trans_txt
                     if (lang, tid) in self._raw_data.translated_lines:
                         logging.warning(
@@ -148,7 +169,7 @@ class project_index:
             f'{merge_cnt} translated line(s) are used during merging, and there has {unmerge_cnt} untranslated line(s)')
 
     def perparse_with_linenumber(self, rpy_file, selected_lang:str=None, skip_unmatch=False):
-        new_i18n_dict = preparse_rpy_file(rpy_file)
+        new_i18n_dict = preparse_rpy_file(rpy_file)[0]
         linenumber_map = dict()
         for lang, new_dict in new_i18n_dict.items():
             if selected_lang is not None and lang != selected_lang:
@@ -156,7 +177,7 @@ class project_index:
             for tid, item in new_dict.items():
                 line_no = item.line
                 if skip_unmatch and item.old_str != item.new_str:
-                    logging.info(f'{item.file}[L{item.line}]: The item {item} is skipped for old_str({item.old_str})!=new_str({item.new_str})')
+                    logging.warning(f'{item.file}[L{item.line}]: The item is skipped for old_str({item.old_str})!=new_str({item.new_str}):  \n\t{item}')
                     continue
                 assert line_no not in linenumber_map, f'Duplicate translation line number:{line_no}.\n' \
                                                                 f'\tDetailed info:\n' \
@@ -170,7 +191,7 @@ class project_index:
         if lang is None:
             lang = self.first_untranslated_lang
             logging.info(
-                f'Selecting the default language {lang} for savehtml. If you want change to another language, please specify the argument {{lang}}.')
+                f'Selecting the default language {lang} for apply_by_default. If you want change to another language, please specify the argument {{lang}}.')
         self.apply(default_config.project_path, lang)
 
     def apply(self, save_dir:str, lang:str):
@@ -216,7 +237,7 @@ class project_index:
             apply_cnt += apply_cnt_i
             unapply_cnt += unapply_cnt_i
         logging.info(
-            f'{len(rpy_files)} rpy file(s) is/are translated with {apply_cnt} translated line(s) and {unapply_cnt} untranslated line(s) in language {lang}.')
+            f'{len(rpy_files)} rpy file(s) are translated with {apply_cnt} translated line(s) and {unapply_cnt} untranslated line(s) in language {lang}.')
 
     @classmethod
     def load_from_file(cls, file: str):

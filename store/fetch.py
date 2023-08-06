@@ -1,5 +1,6 @@
 import logging
 import re
+from typing import List, Tuple
 
 from tqdm import tqdm
 
@@ -26,7 +27,7 @@ def get_trans_info(text):
     return None, None
 
 
-def preparse_rpy_file(rpy_file) -> i18n_translation_dict:
+def preparse_rpy_file(rpy_file, verbose=True) -> Tuple[i18n_translation_dict, List[translation_item]]:
     with open(rpy_file, 'r', encoding='utf-8') as f:
         temp_data = f.readlines()
     raw_text = None
@@ -41,21 +42,22 @@ def preparse_rpy_file(rpy_file) -> i18n_translation_dict:
     # not under 'translate chinese string'-like group block
     in_group = False
     store = i18n_translation_dict()
+    invalid_list = []
     for i, line in enumerate(temp_data, 1):
         line = line.strip()
         if line == '': continue
         text, ttype = text_type(line)
         if ttype == TEXT_TYPE.RAW:
             raw_text = text
-            if is_empty(text):
+            if is_empty(text) and verbose:
                 logging.warning(f'{rpy_file}[L{i}]: The old text({text}) is empty')
             raw_line = i
         elif ttype == TEXT_TYPE.NEW:
-            if is_empty(text):
+            if is_empty(text) and verbose:
                 logging.warning(f'{rpy_file}[L{i}]: The new text({text}) is empty!')
             if in_group:
+                lang, _ = id_data
                 if code_data is not None and code_line + 1 == raw_line and raw_text is not None and raw_line + 1 == i:
-                    lang, _ = id_data
                     store[(lang, raw_text)] = translation_item(
                         old_str=raw_text,
                         new_str=text,
@@ -67,8 +69,18 @@ def preparse_rpy_file(rpy_file) -> i18n_translation_dict:
                     )
                     valid_cnt += 1
                 else:
-                    logging.warning(f'{rpy_file}[L{i}] Unmatched in-group new text({text}), it will be skipped!')
+                    if verbose:
+                        logging.warning(f'{rpy_file}[L{i}] Unmatched in-group new text({text}), it will be skipped!')
                     invalid_cnt += 1
+                    invalid_list.append(translation_item(
+                        old_str = raw_text,
+                        new_str = text,
+                        file = rpy_file,
+                        line = i,
+                        lang = lang,
+                        code = code_data,
+                        identifier = raw_text
+                    ))
             else:
                 if code_data is not None and code_line + 1 == id_line \
                         and id_data is not None and id_line + 2 == raw_line \
@@ -87,8 +99,22 @@ def preparse_rpy_file(rpy_file) -> i18n_translation_dict:
                     id_line = -1
                     valid_cnt += 1
                 else:
-                    logging.warning(f'{rpy_file}[L{i}] Unmatched not-in-group new text({text}), it will be skipped!')
+                    if verbose:
+                        logging.warning(f'{rpy_file}[L{i}] Unmatched not-in-group new text({text}), it will be skipped!')
                     invalid_cnt += 1
+                    if id_data is not None:
+                        lang, tid = id_data
+                    else:
+                        lang, tid = None, None
+                    invalid_list.append(translation_item(
+                        old_str = raw_text,
+                        new_str = text,
+                        file = rpy_file,
+                        line = i,
+                        lang = lang,
+                        code = code_data,
+                        identifier = tid
+                    ))
                 raw_text = None
                 raw_line = -1
                 code_data = None
@@ -105,13 +131,14 @@ def preparse_rpy_file(rpy_file) -> i18n_translation_dict:
             elif ttype == TEXT_TYPE_TRANS_CODE:
                 code_data = data
                 code_line = i
-    logging.info(
-        f'{rpy_file}: {valid_cnt} line(s) are added. Other {invalid_cnt} line(s) are skipped!')
-    return store
+    if verbose:
+        logging.info(
+            f'{rpy_file}: {valid_cnt} line(s) are added. Other {invalid_cnt} line(s) are skipped!')
+    return store, invalid_list
 
 
 def update_translated_lines_new(rpy_file: str, translated_lines: i18n_translation_dict):
-    new_i18n_dict = preparse_rpy_file(rpy_file)
+    new_i18n_dict = preparse_rpy_file(rpy_file)[0]
     for lang in new_i18n_dict.langs():
         new_dict = new_i18n_dict[lang]
         if lang in translated_lines:
@@ -134,7 +161,7 @@ def update_translated_lines_new(rpy_file: str, translated_lines: i18n_translatio
                 translated_lines[(lang, tid)] = new_item
 
 def update_untranslated_lines_new(rpy_file: str, translated_lines: i18n_translation_dict):
-    new_i18n_dict = preparse_rpy_file(rpy_file)
+    new_i18n_dict = preparse_rpy_file(rpy_file)[0]
     for lang in new_i18n_dict.langs():
         new_dict = new_i18n_dict[lang]
         if lang in translated_lines:
@@ -262,7 +289,7 @@ if __name__ == '__main__':
     # print(regex_code.search('# game/AyaneEvents.rpy:584').groups())
     old_rpy_file = r'fc_res/old/script.rpy'
     new_rpy_file = r'fc_res/new/script.rpy'
-    res = preparse_rpy_file(old_rpy_file)
+    res = preparse_rpy_file(old_rpy_file)[0]
     def print_dict(res_dict):
         for k, v in res_dict.items():
             print(f'lang:{k}===========================================================>', flush=True)

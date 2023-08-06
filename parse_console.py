@@ -1,6 +1,7 @@
 import glob
 import logging
 import os.path
+from collections import defaultdict
 from typing import List
 
 import prettytable
@@ -10,6 +11,7 @@ from config.config import default_config, CONFIG_FILE
 
 from prettytable import PrettyTable
 
+from store.fetch import preparse_rpy_file
 from store.html_store import save_to_html, load_from_html
 from store.index import project_index
 from trans import web_translator
@@ -31,6 +33,7 @@ def _list_projects_and_select(indexes: List[int]):
         res.append(projs[i])
     return res
 
+
 def help_cmd():
     print("RenPy rpy文件机翻工具")
     print("By abse4411(Github:https://github.com/abse4411/projz_renpy), version 2.0")
@@ -48,41 +51,86 @@ def help_cmd():
     table.add_row(['translate or t', 'translate {proj_idx} {tran_api}',
                    'Translate all untranslated texts using the translation API {tran_api} for the project {proj_idx}.\n'
                    'Available translation APIs are caiyu, google, baidu, and youdao.'])
-    table.add_row(['merge or m', 'merge {sproj_idx} {tproj_idx}',
-                   'Merge translated texts from a project {sproj_idx} to the target project {tproj_idx}.'])
+    table.add_row(['merge or m', 'merge {sproj_idx} {tproj_idx} or\nmerge {sproj_idx} {tproj_idx} {lang}',
+                   'Merge translated texts from a project {sproj_idx} to the target project {tproj_idx}.\n'
+                   'The lang {lang} is optional, or specify it to use this language {lang}.'
+                   ])
     table.add_row(['apply or a', 'apply {proj_idx}',
                    'Apply all translated texts of project {proj_idx} to rpy file. \nThe  built directory structure is the same as the original project.'
                    f' All files will be save in {default_config.project_path}'])
     table.add_row(['savehtml or sh', 'savehtml {proj_idx} or\nsavehtml {proj_idx} {lang} {limit}',
-                   'Save untranslated texts of project {proj_idx} to a html file where Edge or Chrome can perform translating.\n'
-                   'Please use the Chrome or MS Edge to translate the html file, then save to overwrite it.\n'
+                   'Save untranslated texts of project {proj_idx} to a html file where Chrome or Microsoft Edge can perform translating.\n'
+                   'Please use the Chrome or Microsoft Edge to translate the html file, then save to overwrite it.\n'
                    'The argument {limit} is optional, or specify it to limit the number of output lines.\n'
                    'The lang {lang} is optional, or specify it to use this language {lang}.\n'
                    'After all, use loadhtml {proj_idx} to update translated texts!'])
-    table.add_row(['loadhtml or lh', 'loadhtml {proj_idx} {lang} {html_file}or\nloadhtml {proj_idx}',
+    table.add_row(['loadhtml or lh', 'loadhtml {proj_idx} or\nloadhtml {proj_idx} {lang} {html_file}',
                    'Load translated texts from a translated html file, and apply to untranslated texts of project {proj_idx}.\n'
                    'The lang {lang} is optional, or specify it to use this language {lang}.\n'
-                   'If the {html_file} is not specified, we will find the corresponding html file for the project {proj_idx} \nat "{PROJECT_PATH}/html/{project.full_name}.html".'])
-    table.add_row(['list or l', 'list',
-                   f'list projects in {default_config.project_path}, you can change it in {CONFIG_FILE} - GLOBAL.PROJECT_PATH'])
+                   'If the {html_file} is not specified, we will find the corresponding html file for the project {proj_idx} \n'
+                   f'at "{default_config.project_path}/html/{{project.full_name}}.html".'])
+    table.add_row(['list or l', 'list or list {proj_idx}',
+                   f'list projects in {default_config.project_path}, you can change it in {CONFIG_FILE}: [GLOBAL].PROJECT_PATH.\n'
+                   'The argument {proj_idx} is optional, or specify it to show detailed info for the project {proj_idx}.\n'])
     table.add_row(['help or h', 'help', 'Show all available commands.'])
     table.add_row(['quit or q', 'quit', 'Say goodbye'])
     print(table)
 
 
-def list_cmd():
-    projs = _list_projects()
-    print(f'there are {len(projs)} projects in {default_config.project_path}')
-    projs = [project_index.load_from_file(p) for p in projs]
-    table = PrettyTable(
-        ['Project Index', 'Project', 'Tag', 'Translated line(s)', 'Untranslated line(s)', 'Source dir', 'Num Rpys'])
-    for i, p in enumerate(projs):
-        untrans_cnt = '\n'.join([f'{l}: {p.untranslation_size(l)}' for l in p.untranslated_langs])
-        trans_cnt = '\n'.join([f'{l}: {p.translation_size(l)}' for l in p.translated_langs])
+def list_cmd(proj_idx: int = None):
+    if proj_idx is None:
+        projs = _list_projects()
+        print(f'there are {len(projs)} projects in {default_config.project_path}')
+        projs = [project_index.load_from_file(p) for p in projs]
+        table = PrettyTable(
+            ['Project Index', 'Project', 'Tag', 'Translated line(s)', 'Untranslated line(s)', 'Source dir', 'Num Rpys'])
+        table.hrules = prettytable.ALL
+        for i, p in enumerate(projs):
+            untrans_cnt = '\n'.join([f'{l}: {p.untranslation_size(l)}' for l in p.untranslated_langs])
+            trans_cnt = '\n'.join([f'{l}: {p.translation_size(l)}' for l in p.translated_langs])
+            table.add_row(
+                [i, p.project_name, p.project_tag, trans_cnt, untrans_cnt, p.source_dir,
+                 p.num_rpys])
+        print(table)
+    else:
+        proj = project_index.load_from_file(_list_projects_and_select([proj_idx])[0])
+        table = PrettyTable(
+            ['Project', 'Tag', 'Translated line(s)', 'Untranslated line(s)', 'Source dir', 'Num Rpys'])
+        untrans_cnt = '\n'.join([f'{l}: {proj.untranslation_size(l)}' for l in proj.untranslated_langs])
+        trans_cnt = '\n'.join([f'{l}: {proj.translation_size(l)}' for l in proj.translated_langs])
         table.add_row(
-            [i, p.project_name, p.project_tag, trans_cnt, untrans_cnt, p.source_dir,
-             p.num_rpys])
-    print(table)
+            [proj.project_name, proj.project_tag, trans_cnt, untrans_cnt, proj.source_dir,
+             proj.num_rpys])
+        print(table)
+        table = PrettyTable(
+            ['Rpy file', 'Translated line(s)', 'Untranslated line(s)', 'Invalid line(s)', 'Sum'])
+        table.hrules = prettytable.ALL
+
+        def _get_statistics(lang_dict):
+            cnt = 0
+            lang_arr = []
+            for k, v in lang_dict.items():
+                lang_arr.append(f'{k}: {len(v)}')
+                cnt += len(v)
+            return lang_arr, cnt
+
+        def _add(accum, lang_dict):
+            for k, v in lang_dict.items():
+                accum[k] += v
+
+        tot_trans, tot_untran, tot_invalid = defaultdict(list), defaultdict(list), defaultdict(list)
+        for f in proj.rpys:
+            trans_dict, untrans_dict, invalid_dict = project_index.rpy_statistics(f)
+            (t, tc), (ut, utc), (a, ac) = _get_statistics(trans_dict), _get_statistics(untrans_dict), _get_statistics(
+                invalid_dict)
+            _add(tot_trans, trans_dict)
+            _add(tot_untran, untrans_dict)
+            _add(tot_invalid, invalid_dict)
+            table.add_row([f, '\n'.join(t), '\n'.join(ut), '\n'.join(a), tc + utc + ac])
+        (t, tc), (ut, utc), (a, ac) = _get_statistics(tot_trans), _get_statistics(tot_untran), _get_statistics(
+            tot_invalid)
+        table.add_row(['Sum', '\n'.join(t), '\n'.join(ut), '\n'.join(a), tc + utc + ac])
+        print(table)
 
 
 def quit():
@@ -104,14 +152,14 @@ def new_cmd(dir: str, name: str, tag: str):
     p.save_by_default()
 
 
-def merge_cmd(source_idx: int, target_idx: int):
+def merge_cmd(source_idx: int, target_idx: int, lang: str = None):
     source_idx, target_idx = int(source_idx), int(target_idx)
     assert source_idx != target_idx, f'source_idx({source_idx}) should diff from target_idx({target_idx}).'
     sproj, tproj = _list_projects_and_select([source_idx, target_idx])
     if yes(f'Merge all translated texts from {file_name(sproj)} to {file_name(tproj)}?'):
         sproj = project_index.load_from_file(sproj)
         tproj = project_index.load_from_file(tproj)
-        tproj.merge_from(sproj)
+        tproj.merge_from(sproj, lang)
         tproj.save_by_default()
 
 
@@ -126,10 +174,11 @@ def translate_cmd(proj_idx: int, api_name: str):
     proj.save_by_default()
 
 
-def apply_cmd(proj_idx: int, lang:str=None):
+def apply_cmd(proj_idx: int, lang: str = None):
     # projs = _list_projects()
     proj = project_index.load_from_file(_list_projects_and_select([proj_idx])[0])
     proj.apply_by_default(lang)
+
 
 def delete_cmd(proj_idx: int):
     # projs = _list_projects()
@@ -137,6 +186,7 @@ def delete_cmd(proj_idx: int):
     if yes(f'Are your sure to delete {proj}?'):
         os.remove(proj)
         logging.warning(f'{proj} is deleted!')
+
 
 def clear_cmd():
     projs = _list_projects()
@@ -150,7 +200,8 @@ def clear_cmd():
             os.remove(p)
             logging.warning(f'{p} is deleted!')
 
-def savehtml_cmd(proj_idx: int, lang:str=None, limit: int = None):
+
+def savehtml_cmd(proj_idx: int, lang: str = None, limit: int = None):
     if limit is not None:
         limit = int(limit)
         assert limit > 0, 'limit should be large than 0'
@@ -158,7 +209,8 @@ def savehtml_cmd(proj_idx: int, lang:str=None, limit: int = None):
     proj = project_index.load_from_file(_list_projects_and_select([proj_idx])[0])
     if lang is None:
         lang = proj.first_untranslated_lang
-        logging.info(f'Selecting the default language {lang} for savehtml. If you want change to another language, please specify the argument {{lang}}')
+        logging.info(
+            f'Selecting the default language {lang} for savehtml. If you want change to another language, please specify the argument {{lang}}')
     save_path = os.path.join(default_config.project_path, 'html')
     mkdir(save_path)
     save_file = os.path.join(save_path, f'{proj.full_name}.html')
@@ -169,12 +221,13 @@ def savehtml_cmd(proj_idx: int, lang:str=None, limit: int = None):
     logging.info(f'Html file is saved to: {save_file}. Use the Chrome or MS Edge translate it and overwrite it.')
 
 
-def loadhtml_cmd(proj_idx: int, lang:str=None, html_file: str = None):
+def loadhtml_cmd(proj_idx: int, lang: str = None, html_file: str = None):
     # projs = _list_projects()
     proj = project_index.load_from_file(_list_projects_and_select([proj_idx])[0])
     if lang is None:
         lang = proj.first_untranslated_lang
-        logging.info(f'Selecting the default language {lang} for loadhtml. If you want change to another language, please specify the argument {{lang}}')
+        logging.info(
+            f'Selecting the default language {lang} for loadhtml. If you want change to another language, please specify the argument {{lang}}')
     if html_file is None:
         save_path = os.path.join(default_config.project_path, 'html')
         html_file = os.path.join(save_path, f'{proj.full_name}.html')
