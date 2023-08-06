@@ -36,7 +36,7 @@ def _list_projects_and_select(indexes: List[int]):
 
 def help_cmd():
     print("RenPy rpy文件机翻工具")
-    print("By abse4411(Github:https://github.com/abse4411/projz_renpy), version 2.0")
+    print("By abse4411(Github:https://github.com/abse4411/projz_renpy), version 3.0")
     table = PrettyTable(
         ['Command', 'Usage', 'Help'])
     table.hrules = prettytable.ALL
@@ -48,8 +48,9 @@ def help_cmd():
                    ' All texts are regard as translated ones.\n The {name} and {tag} are using while saving.'])
     table.add_row(['delete or d', 'delete {proj_idx}', 'Delete the specified project {proj_idx}.'])
     table.add_row(['clear or c', 'clear', f'Clear all projects in {default_config.project_path}.'])
-    table.add_row(['translate or t', 'translate {proj_idx} {tran_api}',
+    table.add_row(['translate or t', 'translate {proj_idx} {tran_api} or\ntranslate {proj_idx} {tran_api} {lang}',
                    'Translate all untranslated texts using the translation API {tran_api} for the project {proj_idx}.\n'
+                   'The lang {lang} is optional, or specify it to use this language {lang}.\n'
                    'Available translation APIs are caiyu, google, baidu, and youdao.'])
     table.add_row(['merge or m', 'merge {sproj_idx} {tproj_idx} or\nmerge {sproj_idx} {tproj_idx} {lang}',
                    'Merge translated texts from a project {sproj_idx} to the target project {tproj_idx}.\n'
@@ -163,14 +164,20 @@ def merge_cmd(source_idx: int, target_idx: int, lang: str = None):
         tproj.save_by_default()
 
 
-def translate_cmd(proj_idx: int, api_name: str):
+def translate_cmd(proj_idx: int, api_name: str, lang:str=None):
     # projs = _list_projects()
     proj = project_index.load_from_file(_list_projects_and_select([proj_idx])[0])
+    if lang is None:
+        lang = proj.first_untranslated_lang
+        logging.info(
+            f'Selecting the default language {lang} for translating. If you want change to another language, please specify the argument {{lang}}')
+    else:
+        assert lang in proj.untranslated_langs, f'The selected_lang {lang} is not not Found! Available language(s) are {proj.untranslated_langs}.'
     assert api_name.strip() != '', f'api_name is empty!'
     driver_path = default_config.get_global('CHROME_DRIVER')
     translator_class = web_translator.__dict__[api_name]
     translator = concurrent_translator(proj, lambda: translator_class(driver_path))
-    translator.start()
+    translator.start(lang)
     proj.save_by_default()
 
 

@@ -25,7 +25,7 @@ HTML_TEMPLATE = '''
 </body>
 </html>
 '''
-TR_TEMPLATE = '<!--{id}S#2##E3#{text}--><tr><td>B4## {text} #D5#</td></tr>\n'
+TR_TEMPLATE = '<!--{id}S#2##E3#{text}--><tr><td>B4@# {text} #D5#</td></tr>\n'
 MAGIC_NUMBER = 78945621384
 
 
@@ -64,7 +64,7 @@ def load_from_html(file_name: str, tids_and_untranslated_texts: List[Tuple[str, 
             l = l.strip()
             if l.startswith('<!--') and l.endswith('</td></tr>'):
                 encrypted_tid = l[l.find('<!--') + 4:l.find('S#2##')].strip().upper()
-                new_str = l[l.find('B4##') + 4:l.rfind('#D5#')].strip()
+                new_str = l[l.find('B4@#') + 4:l.rfind('#D5#')].strip()
                 old_str = l[l.find('#E3#') + 4:l.find('--><tr><td')].strip()
                 if encrypted_tid == '' or new_str == '' or new_str == old_str:
                     logging.info(f'[Line {i}] Skipping corrupted translation for raw_text({old_str})==translated_text({new_str})')
@@ -79,7 +79,7 @@ def load_from_html(file_name: str, tids_and_untranslated_texts: List[Tuple[str, 
                 logging.info(f'Skipping corrupted translation: "{raw_text}" for raw_text({raw_text})==translated_text({unmap[encrypted_tid]})')
                 unuse_cnt += 1
             else:
-                res.append((tid, unmap[encrypted_tid]))
+                res.append((tid, '@@'+unmap[encrypted_tid]))
                 use_cnt += 1
         else:
             logging.warning(f'Untranslated text (Translation ID: {tid}, text: {raw_text}) found, it will be ignored!')

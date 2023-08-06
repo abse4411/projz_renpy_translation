@@ -189,7 +189,7 @@ class project_index:
 
     def apply_by_default(self, lang:str=None):
         if lang is None:
-            lang = self.first_untranslated_lang
+            lang = self.first_translated_lang
             logging.info(
                 f'Selecting the default language {lang} for apply_by_default. If you want change to another language, please specify the argument {{lang}}.')
         self.apply(default_config.project_path, lang)
@@ -199,7 +199,7 @@ class project_index:
         save_dir = os.path.join(save_dir, self.full_name)
         mkdir(save_dir)
         rpy_files = walk_and_select(self.source_dir, lambda x: x.endswith('.rpy'))
-        if self.untranslation_size(lang) > 0:
+        if lang in self.untranslated_langs and self.untranslation_size(lang) > 0:
             logging.warning(f'There still exists untranslated texts (qty:{self.untranslation_size(lang)}) in language {lang}.')
         apply_cnt = 0
         unapply_cnt = 0
@@ -238,6 +238,7 @@ class project_index:
             unapply_cnt += unapply_cnt_i
         logging.info(
             f'{len(rpy_files)} rpy file(s) are translated with {apply_cnt} translated line(s) and {unapply_cnt} untranslated line(s) in language {lang}.')
+        logging.info(f'You can output rpy files in {save_dir}.')
 
     @classmethod
     def load_from_file(cls, file: str):

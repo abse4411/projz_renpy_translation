@@ -2,7 +2,7 @@ import logging
 import os.path
 import threading
 import time
-from typing import List
+from typing import List, Tuple
 
 import numpy as np
 import tqdm
@@ -23,13 +23,17 @@ class concurrent_translator:
         self.executor = ThreadPoolExecutor(max_workers=default_config.num_workers)
         self.proj = proj
 
-    def safe_update(self, sources: List[str], targets: List[str]):
+    def safe_update(self,translated_lines: List[Tuple[str, str]], lang:str):
         self.lock.acquire()
-        self.proj.update(sources, targets)
-        self.pbar.update(len(sources))
-        self.lock.release()
+        try:
+            self.proj.update(translated_lines, lang)
+            self.pbar.update(len(translated_lines))
+        except Exception as e:
+            logging.exception(e)
+        finally:
+            self.lock.release()
 
-    def translate(self, untranslated_lines):
+    def translate(self, untranslated_lines: List[Tuple[str, str]], lang:str):
         try:
             logging.info(f'Starting the web translator...')
             web_translator = self.translator_class()
@@ -45,12 +49,12 @@ class concurrent_translator:
             logging.info(f'Stopped by user')
             web_translator.close()
             return
-        sources, targets = [], []
+        translated_lines = []
         try:
             logging.info(
                 f'Starting translating {len(untranslated_lines)} untranslated line(s)')
             last_output_text = None
-            for line in untranslated_lines:
+            for tid, line in untranslated_lines:
                 raw_line = line
                 line = strip_tags(line)
                 renpy_vars = var_list(line)
@@ -71,21 +75,20 @@ class concurrent_translator:
                 if new_text is None:
                     logging.warning(f'Error in translating {line}, it will ignored!')
                     continue
-                sources.append(raw_line)
-                targets.append('@@' + new_text)
-                if len(sources) > 20:
-                    self.safe_update(sources, targets)
-                    sources, targets = [], []
-            if len(sources) > 0:
-                self.safe_update(sources, targets)
+                translated_lines.append((tid, '@@' + new_text))
+                if len(translated_lines) > 20:
+                    self.safe_update(translated_lines, lang)
+                    translated_lines = []
+            if len(translated_lines) > 0:
+                self.safe_update(translated_lines, lang)
         except Exception as e:
             logging.error(f'Error during translating: {e}')
 
-    def start(self):
-        if self.proj.untranslation_size <= 0:
-            logging.info(f'All texts in {self.proj.full_name} are translated!')
+    def start(self, lang:str):
+        if self.proj.untranslation_size(lang) <= 0:
+            logging.info(f'All texts in {self.proj.full_name} of language {lang} are translated!')
             return
-        untranslated_lines = self.proj.untranslated_lines
+        untranslated_lines = self.proj.untranslated_lines(lang)
         batches = []
         batch_size = max((len(untranslated_lines)+1) // self.num_workers, 1)
         if batch_size == 1:
@@ -102,7 +105,7 @@ class concurrent_translator:
         threads = []
         for b in batches:
             self.sem.acquire()
-            threads.append(self.executor.submit(self.translate, b))
+            threads.append(self.executor.submit(self.translate, b, lang))
         logging.info('Waiting for all threads...')
         self.sem.acquire()
         self.sem.release()
