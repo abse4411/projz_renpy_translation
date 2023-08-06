@@ -1,7 +1,7 @@
 # RenPy rpy翻译文件机翻工具
 
 - 用于迁移旧版本的rpy翻译文件和自动翻译rpy翻译文件, 机翻采用Selenium调用Chrome访问网页进行翻译。
-- 可用的机翻引擎：Google翻译(速度较快，效果一般)，彩云小译(推荐，速度较快，效果好)，有道翻译(速度较快)，百度翻译(速度较快)，DeepL翻译器(不推荐，不稳定，速度慢)
+- 可用的机翻引擎：Google翻译(速度较快，效果一般)，彩云小译(推荐，速度较快，效果好)，有道翻译(速度较快)，百度翻译(速度较快)，~~DeepL翻译器(不推荐，不稳定，速度慢)~~
 - 部分代码来自[Maooookai(Mirage)](https://github.com/Maooookai/WebTranslator), [DrDRR](https://github.com/DrDRR/RenPy-WebTranslator/commits?author=DrDRR "View all commits by DrDRR")，Salute!
 - 该代码仅供学习使用。
 
@@ -193,9 +193,13 @@ n {tl_dir} {游戏名} {版本}
 
 使用翻译引擎的翻译文本会带有`@@`，这用于后期润色工作。如果你不需要它们，请使用VS Code全文替换功能删除它们。
 
+## Todo List:
+- 添加excel导入导出功能
+- 添加英语文档
+
 ---
 
-## 以下内容为旧版本内容，不久后将被移除，请使用上面的新版本！！！
+## 以下内容为旧版本(V0.1.0)内容，不久后将被移除，请使用上面的新版本！！！
 
 ## 1.目的
 
