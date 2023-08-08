@@ -57,7 +57,18 @@ def preparse_rpy_file(rpy_file, verbose=True) -> Tuple[i18n_translation_dict, Li
                 logging.warning(f'{rpy_file}[L{i}]: The new text({text}) is empty!')
             if in_group:
                 lang, _ = id_data
+                ''' EXAMPLE:
+                    # renpy/common/00accessibility.rpy:28 <---[code_line]
+                    old "Self-voicing disabled." <---[raw_line]
+                    new "Self-voicing disabled."  <---[current line] (i)
+                '''
                 if code_data is not None and code_line + 1 == raw_line and raw_text is not None and raw_line + 1 == i:
+                    if verbose and (lang, raw_text) in store:
+                        old_item = store[(lang, raw_text)]
+                        logging.warning(
+                            f'{rpy_file}[L{i}]: Duplicate translation (identifier:{raw_text}, text:{raw_text}) is found! This may result in error in renpy.'
+                            f'\tDetailed info:\n'
+                            f'\told:{old_item}')
                     store[(lang, raw_text)] = translation_item(
                         old_str=raw_text,
                         new_str=text,
@@ -82,10 +93,23 @@ def preparse_rpy_file(rpy_file, verbose=True) -> Tuple[i18n_translation_dict, Li
                         identifier = raw_text
                     ))
             else:
+                ''' EXAMPLE:
+                # game/AmiEvents.rpy:39 <---[code_line]
+                translate chinese amiinvitegen_2a2264b4: <---[id_line]
+                
+                    # a "What’s up?" # <---[raw_line]
+                    a "What’s up?" # <---[current line] (i)
+                '''
                 if code_data is not None and code_line + 1 == id_line \
                         and id_data is not None and id_line + 2 == raw_line \
                         and raw_text is not None and raw_line + 1 == i:
                     lang, tid = id_data
+                    if verbose and (lang, tid) in store:
+                        old_item = store[(lang, tid)]
+                        logging.warning(
+                            f'{rpy_file}[L{i}]: Duplicate translation (identifier:{tid}, text:{raw_text}) is found! This may result in error in renpy.'
+                            f'\tDetailed info:\n'
+                            f'\told:{old_item}')
                     store[(lang, tid)] = translation_item(
                         old_str=raw_text,
                         new_str=text,
