@@ -67,7 +67,7 @@ def load_from_html(file_name: str, tids_and_untranslated_texts: List[Tuple[str, 
                 new_str = l[l.find('B4@#') + 4:l.rfind('#D5#')].strip()
                 old_str = l[l.find('#E3#') + 4:l.find('--><tr><td')].strip()
                 if encrypted_tid == '' or new_str == '' or new_str == old_str:
-                    logging.info(f'[Line {i}] Skipping corrupted translation for raw_text({old_str})==translated_text({new_str})')
+                    logging.info(f'[Line {i}] Skipping corrupted translation for raw_text({old_str}) and translated_text({new_str})')
                 else:
                     unmap[encrypted_tid] = new_str
     logging.info(f'Found {len(unmap)} translations in {file_name}')
