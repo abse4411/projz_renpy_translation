@@ -8,7 +8,7 @@ from store.item import translation_item, i18n_translation_dict
 from util.misc import text_type, TEXT_TYPE, is_empty
 
 # 匹配原始这种格式的符串:"# renpy/common/00accessibility.rpy:138"
-regex_code = re.compile(r'^# (\S*(?=\.rpy)\S+):([\d]+)')
+regex_code = re.compile(r'^# (.+(?=\.rpy)\.rpy):(\d+)')
 # 匹配字符串这种格式的字符串:"translate chinese nikiinvite2_442941ca_1:"
 regex_trans = re.compile(r'^translate (\S+) ([^:]+):')
 
