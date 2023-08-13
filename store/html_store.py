@@ -8,7 +8,7 @@ from store.index import project_index
 
 HTML_TEMPLATE = '''
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -25,7 +25,7 @@ HTML_TEMPLATE = '''
 </body>
 </html>
 '''
-TR_TEMPLATE = '<!--{id}S#2##E3#{text}--><tr><td>B4@# {text} #D5#</td></tr>\n'
+TR_TEMPLATE = '<!--{id}S#2##E3#{text}--><tr><td>B4@# {text}</td></tr>\n'
 MAGIC_NUMBER = 78945621384
 
 
@@ -63,10 +63,16 @@ def load_from_html(file_name: str, tids_and_untranslated_texts: List[Tuple[str, 
             i += 1
             l = l.strip()
             if l.startswith('<!--') and l.endswith('</td></tr>'):
-                encrypted_tid = l[l.find('<!--') + 4:l.find('S#2##')].strip().upper()
-                new_str = l[l.find('B4@#') + 4:l.rfind('#D5#')].strip()
-                old_str = l[l.find('#E3#') + 4:l.find('--><tr><td')].strip()
-                if encrypted_tid == '' or new_str == '' or new_str == old_str:
+                tli, tri = l.find('<!--'), l.find('S#2#')
+                nli, nri = l.find('>B4@#'), l.rfind('</td></tr>')
+                oli, ori = l.find('#E3#'), l.find('--><tr><td')
+                if not (0<=tli<tri and tri<oli<ori and ori<nli<nri):
+                    logging.info(f'[Line {i}] Skipping unmatch line:{l}')
+                    continue
+                encrypted_tid = l[tli + 4:tri].strip().upper()
+                new_str = l[nli + 5:nri].strip()
+                old_str = l[oli + 4:ori].strip()
+                if encrypted_tid == '' or new_str == '' or old_str == '' or new_str == old_str:
                     logging.info(f'[Line {i}] Skipping corrupted translation for raw_text({old_str}) and translated_text({new_str})')
                 else:
                     unmap[encrypted_tid] = new_str

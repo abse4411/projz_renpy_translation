@@ -207,6 +207,9 @@ def update_untranslated_lines_new(rpy_file: str, translated_lines: i18n_translat
                 old_dict[tid] = new_item
         else:
             for tid, new_item in new_dict.items():
+                if new_item.new_str != new_item.old_str:
+                    logging.warning(f'{rpy_file}[L{new_item.line}]: The new text({new_item.new_str}) is not the same as the old text({new_item.old_str})! It will be ignored for translation.')
+                    continue
                 new_item.new_str = None
                 translated_lines[(lang, tid)] = new_item
 
