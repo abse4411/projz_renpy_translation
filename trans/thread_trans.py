@@ -55,7 +55,6 @@ class concurrent_translator:
                 f'Starting translating {len(untranslated_lines)} untranslated line(s)')
             last_output_text = None
             for tid, line in untranslated_lines:
-                raw_line = line
                 line = strip_tags(line)
                 renpy_vars = var_list(line)
                 # replace the var by another name
@@ -64,17 +63,18 @@ class concurrent_translator:
                 for i in range(len(tvar_list)):
                     t_line = t_line.replace(renpy_vars[i], tvar_list[i])
                 new_text = web_translator.translate(t_line)
-                if new_text is not None and new_text == last_output_text:
-                    logging.warning(f'Error in translating {line} (The translated text ({new_text}) is the same as last translated text), it will ignored!')
+                if new_text is None:
+                    logging.warning(f'Error in translating {line}, it will ignored!')
+                    continue
+                if new_text == last_output_text:
+                    logging.warning(f'Error in translating {line} (The translated text ({new_text}) is the same as the last translated text), it will ignored!')
+                    continue
                 last_output_text = new_text
                 new_text = strip_breaks(new_text)
                 # convert the var back
                 for i in range(len(tvar_list)):
                     new_text = new_text.replace(tvar_list[i], renpy_vars[i])
 
-                if new_text is None:
-                    logging.warning(f'Error in translating {line}, it will ignored!')
-                    continue
                 translated_lines.append((tid, '@@' + new_text))
                 if len(translated_lines) > 20:
                     self.safe_update(translated_lines, lang)
@@ -82,7 +82,7 @@ class concurrent_translator:
             if len(translated_lines) > 0:
                 self.safe_update(translated_lines, lang)
         except Exception as e:
-            logging.error(f'Error during translating: {e}')
+            logging.error(f'Error occurred during translating: {e}, this thread is going to exit!')
 
     def start(self, lang:str):
         if self.proj.untranslation_size(lang) <= 0:
