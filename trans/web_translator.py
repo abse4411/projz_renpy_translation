@@ -23,7 +23,8 @@ def init_chrome(driver_path):
         browser = webdriver.Chrome(service=s, options=options)
     except SessionNotCreatedException as err:
         logging.error(
-            'Error in starting chromedriver, you may find the compatible chromedriver for your Chrome from https://registry.npmmirror.com/binary.html?path=chromedriver/')
+            'Error in starting chromedriver, you may find the compatible chromedriver for your Chrome from https://registry.npmmirror.com/binary.html?path=chromedriver/\n'
+            'or https://googlechromelabs.github.io/chrome-for-testing/#stable')
         raise err
     return browser
 

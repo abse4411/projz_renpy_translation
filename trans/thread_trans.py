@@ -96,7 +96,7 @@ class concurrent_translator:
         else:
             for i in range(0, len(untranslated_lines), batch_size):
                 batches.append(untranslated_lines[i: min(i + batch_size, len(untranslated_lines))])
-        logging.info(f'Dispatching {len(batches)} worker(S) with batch size {batch_size}')
+        logging.info(f'Dispatching {len(batches)} worker(s) with batch size {batch_size}')
         self.event = threading.Event()
         self.event.clear()
         self.sem = threading.BoundedSemaphore(len(batches))
@@ -130,11 +130,19 @@ class concurrent_translator:
             while not _all_done(threads):
                 time.sleep(10)
                 self.lock.acquire()
-                # Saving every 10s
+                try:
+                    # Saving every 10s
+                    self.proj.save_by_default()
+                except Exception as e:
+                    logging.error(f'Error during Saving: {e}')
+                finally:
+                    self.lock.release()
+            try:
                 self.proj.save_by_default()
-                self.lock.release()
-            self.proj.save_by_default()
-        self.pbar.close()
+            except Exception as e:
+                logging.error(f'Error during Saving: {e}')
+            finally:
+                self.pbar.close()
 
 
 class google_translator:
