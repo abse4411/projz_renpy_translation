@@ -5,6 +5,7 @@ from typing import List, Tuple
 
 from config.config import default_config
 from store.index import project_index
+import pandas as pd
 
 HTML_TEMPLATE = '''
 <!DOCTYPE html>
@@ -76,6 +77,55 @@ def load_from_html(file_name: str, tids_and_untranslated_texts: List[Tuple[str, 
                     logging.info(f'[Line {i}] Skipping corrupted translation for raw_text({old_str}) and translated_text({new_str})')
                 else:
                     unmap[encrypted_tid] = new_str
+    logging.info(f'Found {len(unmap)} translations in {file_name}')
+    res = []
+    for tid, raw_text in tids_and_untranslated_texts:
+        encrypted_tid = text_id(tid)
+        if encrypted_tid in unmap:
+            if raw_text == unmap[encrypted_tid]:
+                logging.info(f'Skipping corrupted translation: "{raw_text}" for raw_text({raw_text})==translated_text({unmap[encrypted_tid]})')
+                unuse_cnt += 1
+            else:
+                res.append((tid, '@@'+unmap[encrypted_tid]))
+                use_cnt += 1
+        else:
+            logging.warning(f'Untranslated text (Translation ID: {tid}, text: {raw_text}) found, it will be ignored!')
+            unuse_cnt += 1
+    logging.info(f'There are {use_cnt} translated line(s) and {unuse_cnt} untranslated line(s) in {file_name}')
+    return res
+
+INDEX_STR = 'Translation Index (Don\'t modify)'
+RAW_TEXT_STR = 'Raw Text'
+NEW_TEXT_STR = 'Translated Text'
+def save_to_excel(file_name: str, tids_and_untranslated_texts: List[Tuple[str, str]]):
+    columns = [INDEX_STR, RAW_TEXT_STR, NEW_TEXT_STR]
+    excel_id_data = []
+    excel_rt_data = []
+    excel_nt_data = []
+    for tid, raw_text in tids_and_untranslated_texts:
+        excel_id_data.append(text_id(tid))
+        excel_rt_data.append(raw_text)
+        excel_nt_data.append(raw_text)
+    df = pd.DataFrame({INDEX_STR:excel_id_data,
+                  RAW_TEXT_STR:excel_rt_data,
+                  NEW_TEXT_STR:excel_nt_data})
+    df.reindex(columns=columns)
+    df.to_excel(file_name, index=False)
+    logging.info(f'Save untranslated {len(tids_and_untranslated_texts)} translations to {file_name}')
+
+
+def load_from_excel(file_name: str, tids_and_untranslated_texts: List[Tuple[str, str]]):
+    unmap = dict()
+    use_cnt = 0
+    unuse_cnt = 0
+    df = pd.read_excel(file_name)
+    i = 0
+    for encrypted_tid, old_str, new_str in zip(df[INDEX_STR], df[RAW_TEXT_STR], df[NEW_TEXT_STR]):
+        encrypted_tid, old_str, new_str = encrypted_tid.strip().upper(), old_str.strip(), new_str.strip()
+        if encrypted_tid == '' or new_str == '' or old_str == '' or new_str == old_str:
+            logging.info(f'[Line {i}] Skipping corrupted translation for raw_text({old_str}) and translated_text({new_str})')
+        else:
+            unmap[encrypted_tid] = new_str
     logging.info(f'Found {len(unmap)} translations in {file_name}')
     res = []
     for tid, raw_text in tids_and_untranslated_texts:

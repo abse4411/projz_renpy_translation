@@ -12,7 +12,7 @@ from config.config import default_config, CONFIG_FILE
 from prettytable import PrettyTable
 
 from store.fetch import preparse_rpy_file
-from store.html_store import save_to_html, load_from_html
+from store.file_store import save_to_html, load_from_html, load_from_excel, save_to_excel
 from store.index import project_index
 from trans import web_translator
 from trans.thread_trans import concurrent_translator
@@ -70,6 +70,10 @@ def help_cmd():
                    'The lang {lang} is optional, or specify it to use this language {lang}.\n'
                    'If the {html_file} is not specified, we will find the corresponding html file for the project {proj_idx} \n'
                    f'at "{default_config.project_path}/html/{{project.full_name}}.html".'])
+    table.add_row(['saveexcel or se', 'saveexcel {proj_idx} or\nsaveexcel {proj_idx} {lang} {limit}',
+                   'It works like savehtml, BUT save as an excel file. For augments\' description Please see to savehtml.'])
+    table.add_row(['loadexcel or le', 'loadexcel {proj_idx} or\nloadexcel {proj_idx} {lang} {excel_file}',
+                   'It works like loadhtml, BUT read from an excel file. For augments\' description Please see to loadhtml.'])
     table.add_row(['list or l', 'list or list {proj_idx}',
                    f'list projects in {default_config.project_path}, you can change it in {CONFIG_FILE}: [GLOBAL].PROJECT_PATH.\n'
                    'The argument {proj_idx} is optional, or specify it to show detailed info for the project {proj_idx}.\n'])
@@ -245,6 +249,43 @@ def loadhtml_cmd(proj_idx: int, lang: str = None, html_file: str = None):
     proj.update(res, lang)
     proj.save_by_default()
 
+def saveexcel_cmd(proj_idx: int, lang: str = None, limit: int = None):
+    if limit is not None:
+        limit = int(limit)
+        assert limit > 0, 'limit should be large than 0'
+    # projs = _list_projects()
+    proj = project_index.load_from_file(_list_projects_and_select([proj_idx])[0])
+    if lang is None:
+        lang = proj.first_untranslated_lang
+        logging.info(
+            f'Selecting the default language {lang} for saveexcel. If you want change to another language, please specify the argument {{lang}}')
+    save_path = os.path.join(default_config.project_path, 'excel')
+    mkdir(save_path)
+    save_file = os.path.join(save_path, f'{proj.full_name}.xlsx')
+    untranslated_lines = proj.untranslated_lines(lang)
+    if limit is not None:
+        untranslated_lines = untranslated_lines[:limit]
+    save_to_excel(save_file, untranslated_lines)
+    logging.info(f'Excel file is saved to: {save_file}.')
+
+
+def loadexcel_cmd(proj_idx: int, lang: str = None, excel_file: str = None):
+    # projs = _list_projects()
+    proj = project_index.load_from_file(_list_projects_and_select([proj_idx])[0])
+    if lang is None:
+        lang = proj.first_untranslated_lang
+        logging.info(
+            f'Selecting the default language {lang} for loadexcel. If you want change to another language, please specify the argument {{lang}}')
+    if excel_file is None:
+        save_path = os.path.join(default_config.project_path, 'excel')
+        excel_file = os.path.join(save_path, f'{proj.full_name}.xlsx')
+    else:
+        assert exists_file(excel_file), f'File {excel_file} not found!'
+    source_data = proj.untranslated_lines(lang)
+    res = load_from_excel(excel_file, source_data)
+    proj.update(res, lang)
+    proj.save_by_default()
+
 
 def main():
     register_commands = {
@@ -268,6 +309,10 @@ def main():
         'sh': savehtml_cmd,
         'loadhtml': loadhtml_cmd,
         'lh': loadhtml_cmd,
+        'saveexcel': saveexcel_cmd,
+        'se': saveexcel_cmd,
+        'loadexcel': loadexcel_cmd,
+        'le': loadexcel_cmd,
         'help': help_cmd,
         'h': help_cmd,
         'quit': quit,

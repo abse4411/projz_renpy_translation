@@ -7,6 +7,7 @@
 
 ***
 
+# <mark>⭐ 新版本V0.3.1:添加excel文件的导入导出功能，功能与`savehtml`和`loadhtml`命令类似 ⭐</mark>
 # <mark>⭐ 新版本V0.3.0:改进翻译索引，减少对翻译文本的丢弃 ⭐</mark>
 # <mark>⚡⚡⚡新的命令已经发布！有史以来*最最最快速*的翻译方法！！！ ⚡⚡⚡</mark>
 使用`savehtml`和`loadhtml`命令，导出未翻译文本为html文件，然后借助Chrome或者Microsoft Edge浏览器翻译网页并保存覆盖原始html文件，实现翻译文本快速导入。请输入`help`命令获取详细信息。
@@ -39,7 +40,7 @@ python3 parse_console.py
 
 ## 运行环境准备
 
-- python3, pip install selenium prettytable tqdm
+- python3, pip install selenium prettytable tqdm pandas
 
 - chrome, chrome driver(注意Chrome版本，如果不对请前往 [此链接](https://registry.npmmirror.com/binary.html?path=chromedriver/) 下载对应的chromedriver.exe)
 
@@ -194,7 +195,7 @@ n {tl_dir} {游戏名} {版本}
 使用翻译引擎的翻译文本会带有`@@`，这用于后期润色工作。如果你不需要它们，请使用VS Code全文替换功能删除它们。
 
 ## Todo List:
-- 添加excel导入导出功能
+- ~~添加excel导入导出功能~~ (Done at 20230819)
 - 添加英语文档
 
 ---
