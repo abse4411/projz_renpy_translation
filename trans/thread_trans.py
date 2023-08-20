@@ -55,6 +55,11 @@ class concurrent_translator:
                 f'Starting translating {len(untranslated_lines)} untranslated line(s)')
             last_output_text = None
             for tid, line in untranslated_lines:
+                if line.strip() == '':
+                    logging.warning(f'Empty text [{line}] found!')
+                    translated_lines.append((tid, line))
+                    continue
+                raw_line = line
                 line = strip_tags(line)
                 renpy_vars = var_list(line)
                 # replace the var by another name
@@ -64,10 +69,10 @@ class concurrent_translator:
                     t_line = t_line.replace(renpy_vars[i], tvar_list[i])
                 new_text = web_translator.translate(t_line)
                 if new_text is None:
-                    logging.warning(f'Error in translating {line}, it will ignored!')
+                    logging.warning(f'Error in translating [{raw_line}], it will ignored!')
                     continue
                 if new_text == last_output_text:
-                    logging.warning(f'Error in translating {line} (The translated text ({new_text}) is the same as the last translated text), it will ignored!')
+                    logging.warning(f'Error in translating [{raw_line}] (The translated text ({new_text}) is the same as the last translated text), it will ignored!')
                     continue
                 last_output_text = new_text
                 new_text = strip_breaks(new_text)
@@ -82,7 +87,9 @@ class concurrent_translator:
             if len(translated_lines) > 0:
                 self.safe_update(translated_lines, lang)
         except Exception as e:
-            logging.error(f'Error occurred during translating: {e}, this thread is going to exit!')
+            logging.error(f'Error occurred during translating [{e}], this thread is going to exit!')
+        finally:
+            web_translator.close()
 
     def start(self, lang:str):
         if self.proj.untranslation_size(lang) <= 0:
