@@ -75,10 +75,10 @@ def help_cmd():
     table.add_row(['loadexcel or le', 'loadexcel {proj_idx} or\nloadexcel {proj_idx} {lang} {excel_file}',
                    'It works like loadhtml, BUT read from an excel file. For augments\' description Please see to loadhtml.'])
     table.add_row(['list or l', 'list or list {proj_idx}',
-                   f'list projects in {default_config.project_path}, you can change it in {CONFIG_FILE}: [GLOBAL].PROJECT_PATH.\n'
-                   'The argument {proj_idx} is optional, or specify it to show detailed info for the project {proj_idx}.\n'])
+                   f'List projects in {default_config.project_path}, you can change it in {CONFIG_FILE}: [GLOBAL].PROJECT_PATH.\n'
+                   'The argument {proj_idx} is optional, or specify it to show detailed info for the project {proj_idx}.'])
     table.add_row(['help or h', 'help', 'Show all available commands.'])
-    table.add_row(['quit or q', 'quit', 'Say goodbye'])
+    table.add_row(['quit or q', 'quit', 'Say goodbye.'])
     print(table)
 
 

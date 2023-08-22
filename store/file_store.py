@@ -121,7 +121,7 @@ def load_from_excel(file_name: str, tids_and_untranslated_texts: List[Tuple[str,
     df = pd.read_excel(file_name)
     i = 0
     for encrypted_tid, old_str, new_str in zip(df[INDEX_STR], df[RAW_TEXT_STR], df[NEW_TEXT_STR]):
-        encrypted_tid, old_str, new_str = encrypted_tid.strip().upper(), old_str.strip(), new_str.strip()
+        encrypted_tid, old_str, new_str = str(encrypted_tid).strip().upper(), str(old_str).strip(), str(new_str).strip()
         if encrypted_tid == '' or new_str == '' or old_str == '' or new_str == old_str:
             logging.info(f'[Line {i}] Skipping corrupted translation for raw_text({old_str}) and translated_text({new_str})')
         else:
