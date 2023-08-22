@@ -41,33 +41,33 @@ def help_cmd():
         ['Command', 'Usage', 'Help'])
     table.hrules = prettytable.ALL
     table.add_row(['new or n', 'new {tl_path} {name} {tag}',
-                   'Create an untranslated index from the translation dir ({tl_path}) in renpy.\n It may be like: D:\\my_renpy\game\\tl\\chinese.'
+                   'Create an untranslated index from the translation dir ({tl_path}) in renpy.\n It may like: D:\\my_renpy\game\\tl\\chinese.'
                    ' All texts are regard as untranslated ones.\n The {name} and {tag} are using while saving.'])
     table.add_row(['old or o', 'old {tl_path} {name} {tag}',
-                   'Create a translated index from the translation dir ({tl_path}) in renpy.\n It may be like: D:\\my_renpy\game\\tl\\chinese.'
+                   'Create a translated index from the translation dir ({tl_path}) in renpy.\n It may like: D:\\my_renpy\game\\tl\\chinese.'
                    ' All texts are regard as translated ones.\n The {name} and {tag} are using while saving.'])
     table.add_row(['delete or d', 'delete {proj_idx}', 'Delete the specified project {proj_idx}.'])
     table.add_row(['clear or c', 'clear', f'Clear all projects in {default_config.project_path}.'])
     table.add_row(['translate or t', 'translate {proj_idx} {tran_api} or\ntranslate {proj_idx} {tran_api} {lang}',
                    'Translate all untranslated texts using the translation API {tran_api} for the project {proj_idx}.\n'
-                   'The lang {lang} is optional, or specify it to use this language {lang}.\n'
+                   'The argument {lang} is optional, or specify it to use this language {lang}.\n'
                    'Available translation APIs are caiyu, google, baidu, and youdao.'])
     table.add_row(['merge or m', 'merge {sproj_idx} {tproj_idx} or\nmerge {sproj_idx} {tproj_idx} {lang}',
                    'Merge translated texts from a project {sproj_idx} to the target project {tproj_idx}.\n'
-                   'The lang {lang} is optional, or specify it to use this language {lang}.'
+                   'The argument {lang} is optional, or specify it to use this language {lang}.'
                    ])
     table.add_row(['apply or a', 'apply {proj_idx}',
-                   'Apply all translated texts of project {proj_idx} to rpy file. \nThe  built directory structure is the same as the original project.'
-                   f' All files will be save in {default_config.project_path}'])
+                   'Apply all translated texts of project {proj_idx} to rpy files. \nThe  built directory structure is the same as that of the original project.'
+                   f' All rpy files will be save in {default_config.project_path}'])
     table.add_row(['savehtml or sh', 'savehtml {proj_idx} or\nsavehtml {proj_idx} {lang} {limit}',
                    'Save untranslated texts of project {proj_idx} to a html file where Chrome or Microsoft Edge can perform translating.\n'
                    'Please use the Chrome or Microsoft Edge to translate the html file, then save to overwrite it.\n'
                    'The argument {limit} is optional, or specify it to limit the number of output lines.\n'
-                   'The lang {lang} is optional, or specify it to use this language {lang}.\n'
+                   'The argument {lang} is optional, or specify it to use this language {lang}.\n'
                    'After all, use loadhtml {proj_idx} to update translated texts!'])
     table.add_row(['loadhtml or lh', 'loadhtml {proj_idx} or\nloadhtml {proj_idx} {lang} {html_file}',
                    'Load translated texts from a translated html file, and apply to untranslated texts of project {proj_idx}.\n'
-                   'The lang {lang} is optional, or specify it to use this language {lang}.\n'
+                   'The argument {lang} is optional, or specify it to use this language {lang}.\n'
                    'If the {html_file} is not specified, we will find the corresponding html file for the project {proj_idx} \n'
                    f'at "{default_config.project_path}/html/{{project.full_name}}.html".'])
     table.add_row(['saveexcel or se', 'saveexcel {proj_idx} or\nsaveexcel {proj_idx} {lang} {limit}',

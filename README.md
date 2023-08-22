@@ -20,7 +20,7 @@
 
 3. 滚动界面让所有文本都翻译完毕。
 4. `Ctrl + S` 保存文件，并覆盖原始的html文件。
-5. 使用`loadhtml {proj_idx}`命令，把翻译过的html文件导入项目即可。
+5. 使用`loadhtml {proj_idx}`命令，把翻译过的html文件导入项目。
 6. 使用`apply {proj_idx}`命令生成rpy文件即可。
 ---
 
