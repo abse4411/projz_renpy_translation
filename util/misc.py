@@ -10,25 +10,44 @@ class TEXT_TYPE:
     OTHER = "OTHER"
     RAW = "RAW"
     NEW = "NEW"
-
+class VAR_NAME:
+    OLD = "old"
+    NEW = "new"
 
 def text_type(text: str):
     if text:
         text = text.strip()
-        if text != '':
+        if text != '' and text.endswith('"'):
             first_quote = text.find("\"")
             last_quote = text.rfind("\"")
             # raw text or new text not found, both text must be in quotes.
             if first_quote == -1 or first_quote == last_quote:
-                return None, TEXT_TYPE.OTHER
+                return None, TEXT_TYPE.OTHER, None
             old_pos = text.find("old ")
             # new_pos = text.find("new")
             shape_pos = text.find("#")
             quote_content = text[first_quote + 1:last_quote]
-            if (old_pos != -1 and old_pos < first_quote and text[:old_pos].strip()=='') or (shape_pos != -1 and shape_pos < first_quote):
-                return quote_content, TEXT_TYPE.RAW
-            return quote_content, TEXT_TYPE.NEW
-    return None, TEXT_TYPE.OTHER
+            ''' if an old line like this:
+                old "Hello world!"
+            '''
+            if old_pos != -1 and old_pos < first_quote and text[:old_pos].strip() == '' and text[old_pos:first_quote].strip() == VAR_NAME.OLD:
+                return quote_content, TEXT_TYPE.RAW, VAR_NAME.OLD
+            ''' else if an old line like this:
+                # ch_name[optional] "Hello world!"
+            '''
+            if shape_pos != -1 and shape_pos < first_quote:
+                var_name = text[shape_pos+1:first_quote].strip()
+                return quote_content, TEXT_TYPE.RAW, var_name
+            new_pos = text.find("new ")
+            ''' if an new line like this:
+                new "Hello world!"
+            '''
+            if new_pos != -1 and new_pos < first_quote and text[:new_pos].strip() == '' and text[new_pos:first_quote].strip() == VAR_NAME.NEW:
+                return quote_content, TEXT_TYPE.NEW, VAR_NAME.NEW
+            else:
+                var_name = text[:first_quote].strip()
+                return quote_content, TEXT_TYPE.NEW, var_name
+    return None, TEXT_TYPE.OTHER, None
 
 
 # match the variable

@@ -1,3 +1,4 @@
+import distutils
 import glob
 import logging
 import os.path
@@ -40,12 +41,16 @@ def help_cmd():
     table = PrettyTable(
         ['Command', 'Usage', 'Help'])
     table.hrules = prettytable.ALL
-    table.add_row(['new or n', 'new {tl_path} {name} {tag}',
+    table.add_row(['new or n', 'new {tl_path} {name} {tag} or\nnew {tl_path} {name} {tag} {greedy=True}',
                    'Create an untranslated index from the translation dir ({tl_path}) in renpy.\n It may like: D:\\my_renpy\game\\tl\\chinese.'
-                   ' All texts are regard as untranslated ones.\n The {name} and {tag} are using while saving.'])
-    table.add_row(['old or o', 'old {tl_path} {name} {tag}',
+                   ' All texts are regard as untranslated ones.\n The {name} and {tag} are using while saving.]\n'
+                   'The argument {greedy} is optional, or specify it by True to scan more translation item,\n'
+                   'which also discard less invalid lines. Default as False.'])
+    table.add_row(['old or o', 'old {tl_path} {name} {tag}\nnew {tl_path} {name} {tag} {greedy=True}',
                    'Create a translated index from the translation dir ({tl_path}) in renpy.\n It may like: D:\\my_renpy\game\\tl\\chinese.'
-                   ' All texts are regard as translated ones.\n The {name} and {tag} are using while saving.'])
+                   ' All texts are regard as translated ones.\n The {name} and {tag} are using while saving.\n'
+                   'The argument {greedy} is optional, or specify it by True to scan more translation item,\n'
+                   'which also discard less invalid lines. Default as False.'])
     table.add_row(['delete or d', 'delete {proj_idx}', 'Delete the specified project {proj_idx}.'])
     table.add_row(['clear or c', 'clear', f'Clear all projects in {default_config.project_path}.'])
     table.add_row(['translate or t', 'translate {proj_idx} {tran_api} or\ntranslate {proj_idx} {tran_api} {lang}',
@@ -56,9 +61,12 @@ def help_cmd():
                    'Merge translated texts from a project {sproj_idx} to the target project {tproj_idx}.\n'
                    'The argument {lang} is optional, or specify it to use this language {lang}.'
                    ])
-    table.add_row(['apply or a', 'apply {proj_idx}',
+    table.add_row(['apply or a', 'apply {proj_idx} or apply {proj_idx} {lang} or\n'
+                                 'apply {proj_idx} {lang} {greedy=True}',
                    'Apply all translated texts of project {proj_idx} to rpy files. \nThe  built directory structure is the same as that of the original project.'
-                   f' All rpy files will be save in {default_config.project_path}'])
+                   f' All rpy files will be save in {default_config.project_path}\n'
+                   'The argument {lang} is optional, or specify it to use this language {lang}.\n'
+                   'The argument {greedy} is optional, or specify it by True to scan more translation item'])
     table.add_row(['savehtml or sh', 'savehtml {proj_idx} or\nsavehtml {proj_idx} {lang} {limit}',
                    'Save untranslated texts of project {proj_idx} to a html file where Chrome or Microsoft Edge can perform translating.\n'
                    'Please use the Chrome or Microsoft Edge to translate the html file, then save to overwrite it.\n'
@@ -143,17 +151,19 @@ def quit():
     exit(0)
 
 
-def old_cmd(dir: str, name: str, tag: str):
+def old_cmd(dir: str, name: str, tag: str, greedy:bool=True):
     assert exists_dir(dir), f'{dir} is not a directory!'
+    strict_mode = not (distutils.util.strtobool(greedy) if isinstance(greedy, str) else greedy)
     p = project_index.init_from_dir(dir, name, tag,
-                                    is_translated=True)
+                                    is_translated=True, strict=strict_mode)
     p.save_by_default()
 
 
-def new_cmd(dir: str, name: str, tag: str):
+def new_cmd(dir: str, name: str, tag: str, greedy:bool=True):
     assert exists_dir(dir), f'{dir} is not a directory!'
+    strict_mode = not (distutils.util.strtobool(greedy) if isinstance(greedy, str) else greedy)
     p = project_index.init_from_dir(dir, name, tag,
-                                    is_translated=False)
+                                    is_translated=False, strict=strict_mode)
     p.save_by_default()
 
 
@@ -185,10 +195,11 @@ def translate_cmd(proj_idx: int, api_name: str, lang:str=None):
     proj.save_by_default()
 
 
-def apply_cmd(proj_idx: int, lang: str = None):
+def apply_cmd(proj_idx: int, lang: str = None, greedy:bool=True):
     # projs = _list_projects()
+    strict_mode = not (distutils.util.strtobool(greedy) if isinstance(greedy, str) else greedy)
     proj = project_index.load_from_file(_list_projects_and_select([proj_idx])[0])
-    proj.apply_by_default(lang)
+    proj.apply_by_default(lang, strict=strict_mode)
 
 
 def delete_cmd(proj_idx: int):

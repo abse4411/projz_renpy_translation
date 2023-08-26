@@ -5,12 +5,12 @@ from typing import List, Tuple
 from tqdm import tqdm
 
 from store.item import translation_item, i18n_translation_dict
-from util.misc import text_type, TEXT_TYPE, is_empty
+from util.misc import text_type, TEXT_TYPE, is_empty, VAR_NAME
 
 # 匹配原始这种格式的符串:"# renpy/common/00accessibility.rpy:138"
-regex_code = re.compile(r'^# (.+(?=\.rpy)\.rpy):(\d+)')
+regex_code = re.compile(r'^# (.+(?=\.rpy)\.rpy):(\d+)$')
 # 匹配字符串这种格式的字符串:"translate chinese nikiinvite2_442941ca_1:"
-regex_trans = re.compile(r'^translate (\S+) ([^:]+):')
+regex_trans = re.compile(r'^translate (\S+) ([^:]+):$')
 
 TEXT_TYPE_TRANS_ID = "TRANS_ID"
 TEXT_TYPE_TRANS_CODE = "TRANS_CODE"
@@ -26,10 +26,64 @@ def get_trans_info(text):
             if res: return (res.group(1), res.group(2)), TEXT_TYPE_TRANS_ID
     return None, None
 
+def determine_new_line(info_dict:dict, in_group=False, strict=False):
+    '''
+    determine whether a new line is a valid translation_item or not
+    :param info_dict: all info about the translation
+    :param in_group: indicates an in-group translation line
+    :param strict: use strict rule to determine
+    :param verbose: indicates logging
+    :return:
+    '''
+    raw_text = info_dict['raw_text']
+    raw_line = info_dict['raw_line']
+    raw_var = info_dict['raw_var']
+    id_data = info_dict['id_data']
+    id_line = info_dict['id_line']
+    code_data = info_dict['code_data']
+    code_line = info_dict['code_line']
+    new_text = info_dict['new_text']
+    new_line = info_dict['new_line']
+    new_var = info_dict['new_var']
 
-def preparse_rpy_file(rpy_file, verbose=True) -> Tuple[i18n_translation_dict, List[translation_item]]:
+    if id_data is None: return False
+    if in_group:
+        ''' EXAMPLE:
+            # renpy/common/00accessibility.rpy:28 <---[code_line]
+            old "Self-voicing disabled." <---[raw_line]
+            new "Self-voicing disabled."  <---[current line] (i)
+        '''
+        if raw_var != VAR_NAME.OLD or new_var != VAR_NAME.NEW: return False
+        if strict:
+            if code_data is not None and code_line + 1 == raw_line and raw_text is not None and raw_line + 1 == new_line:
+                return True
+        else:
+            if raw_text is not None and raw_line < new_line:
+                return True
+    else:
+        ''' EXAMPLE:
+        # game/AmiEvents.rpy:39 <---[code_line]
+        translate chinese amiinvitegen_2a2264b4: <---[id_line]
+
+            # a "What’s up?" # <---[raw_line]
+            a "What’s up?" # <---[current line] (i)
+        '''
+        if raw_var != new_var: return False
+        if strict:
+            if code_data is not None and code_line + 1 == id_line \
+                    and id_line + 2 == raw_line \
+                    and raw_text is not None and raw_line + 1 == new_line:
+                return True
+        else:
+            if id_line < raw_line \
+                    and raw_text is not None and raw_line < new_line:
+                return True
+    return False
+
+def preparse_rpy_file(rpy_file, strict=False, verbose=True) -> Tuple[i18n_translation_dict, List[translation_item]]:
     with open(rpy_file, 'r', encoding='utf-8') as f:
         temp_data = f.readlines()
+    raw_var = None
     raw_text = None
     raw_line = -1
     id_data = None
@@ -46,27 +100,35 @@ def preparse_rpy_file(rpy_file, verbose=True) -> Tuple[i18n_translation_dict, Li
     for i, line in enumerate(temp_data, 1):
         line = line.strip()
         if line == '': continue
-        text, ttype = text_type(line)
+        text, ttype, var_name = text_type(line)
         if ttype == TEXT_TYPE.RAW:
             raw_text = text
             if is_empty(text) and verbose:
                 logging.warning(f'{rpy_file}[L{i}]: The old text({text}) is empty')
             raw_line = i
+            raw_var = var_name
         elif ttype == TEXT_TYPE.NEW:
             if is_empty(text) and verbose:
                 logging.warning(f'{rpy_file}[L{i}]: The new text({text}) is empty!')
+            info_dict = {
+                'raw_text' : raw_text,
+                'raw_line' : raw_line,
+                'raw_var' : raw_var,
+                'id_data' : id_data,
+                'id_line' : id_line,
+                'code_data' : code_data,
+                'code_line' : code_line,
+                'new_text' : text,
+                'new_line' : i,
+                'new_var' : var_name,
+            }
             if in_group:
                 lang, _ = id_data
-                ''' EXAMPLE:
-                    # renpy/common/00accessibility.rpy:28 <---[code_line]
-                    old "Self-voicing disabled." <---[raw_line]
-                    new "Self-voicing disabled."  <---[current line] (i)
-                '''
-                if code_data is not None and code_line + 1 == raw_line and raw_text is not None and raw_line + 1 == i:
+                if determine_new_line(info_dict, in_group, strict):
                     if verbose and (lang, raw_text) in store:
                         old_item = store[(lang, raw_text)]
                         logging.warning(
-                            f'{rpy_file}[L{i}]: Duplicate translation (identifier:{raw_text}, text:{raw_text}) is found! This may result in error in renpy.'
+                            f'{rpy_file}[L{i}]: Duplicate translation (identifier:{raw_text}, text:{raw_text}) is found! This may result in error in renpy.\n'
                             f'\tDetailed info:\n'
                             f'\told:{old_item}')
                     store[(lang, raw_text)] = translation_item(
@@ -75,7 +137,7 @@ def preparse_rpy_file(rpy_file, verbose=True) -> Tuple[i18n_translation_dict, Li
                         file=rpy_file,
                         line=i,
                         lang=lang,
-                        code=code_data,
+                        code=code_data if code_line<raw_line else None,
                         identifier=raw_text
                     )
                     valid_cnt += 1
@@ -89,25 +151,16 @@ def preparse_rpy_file(rpy_file, verbose=True) -> Tuple[i18n_translation_dict, Li
                         file = rpy_file,
                         line = i,
                         lang = lang,
-                        code = code_data,
+                        code = code_data if code_line<raw_line else None,
                         identifier = raw_text
                     ))
             else:
-                ''' EXAMPLE:
-                # game/AmiEvents.rpy:39 <---[code_line]
-                translate chinese amiinvitegen_2a2264b4: <---[id_line]
-                
-                    # a "What’s up?" # <---[raw_line]
-                    a "What’s up?" # <---[current line] (i)
-                '''
-                if code_data is not None and code_line + 1 == id_line \
-                        and id_data is not None and id_line + 2 == raw_line \
-                        and raw_text is not None and raw_line + 1 == i:
+                if determine_new_line(info_dict, in_group, strict):
                     lang, tid = id_data
                     if verbose and (lang, tid) in store:
                         old_item = store[(lang, tid)]
                         logging.warning(
-                            f'{rpy_file}[L{i}]: Duplicate translation (identifier:{tid}, text:{raw_text}) is found! This may result in error in renpy.'
+                            f'{rpy_file}[L{i}]: Duplicate translation (identifier:{tid}, text:{raw_text}) is found! This may result in error in renpy.\n'
                             f'\tDetailed info:\n'
                             f'\told:{old_item}')
                     store[(lang, tid)] = translation_item(
@@ -116,11 +169,9 @@ def preparse_rpy_file(rpy_file, verbose=True) -> Tuple[i18n_translation_dict, Li
                         file=rpy_file,
                         line=i,
                         lang=lang,
-                        code=code_data,
+                        code=code_data if code_line<id_line else None,
                         identifier=tid
                     )
-                    id_data = None
-                    id_line = -1
                     valid_cnt += 1
                 else:
                     if verbose:
@@ -136,13 +187,16 @@ def preparse_rpy_file(rpy_file, verbose=True) -> Tuple[i18n_translation_dict, Li
                         file = rpy_file,
                         line = i,
                         lang = lang,
-                        code = code_data,
+                        code = code_data if code_line<id_line else None,
                         identifier = tid
                     ))
-                raw_text = None
-                raw_line = -1
-                code_data = None
-                code_line = -1
+                id_data = None
+                id_line = -1
+            raw_var = None
+            raw_text = None
+            raw_line = -1
+            code_data = None
+            code_line = -1
         else:
             data, ttype = get_trans_info(line)
             if ttype == TEXT_TYPE_TRANS_ID:
@@ -152,6 +206,9 @@ def preparse_rpy_file(rpy_file, verbose=True) -> Tuple[i18n_translation_dict, Li
                     in_group = True
                 else:
                     in_group = False
+                raw_var = None
+                raw_text = None
+                raw_line = -1
             elif ttype == TEXT_TYPE_TRANS_CODE:
                 code_data = data
                 code_line = i
@@ -161,15 +218,42 @@ def preparse_rpy_file(rpy_file, verbose=True) -> Tuple[i18n_translation_dict, Li
     return store, invalid_list
 
 
-def update_translated_lines_new(rpy_file: str, translated_lines: i18n_translation_dict):
-    new_i18n_dict = preparse_rpy_file(rpy_file)[0]
+def update_translated_lines_new(rpy_file: str, translated_lines: i18n_translation_dict, strict=False):
+    new_i18n_dict, discard_list = preparse_rpy_file(rpy_file, strict=strict)
+    def safe_add_prefix(new_str):
+        if new_str is not None and not (new_str.startswith('@$') or new_str.startswith('@@')):
+            return '@$' + new_str
+        return new_str
+    # collect some translated items without raw text from discarded items if not in strict mode
+    if not strict:
+        ''' we collect translated items like:
+        # game/AmiEvents.rpy:39 <---[code_line], dispensable
+        translate chinese amiinvitegen_2a2264b4: <---[id_line], necessary
+
+            # a "What’s up?" # <---[raw_line], dispensable
+            a "What’s up?" # <---[current line] (i), necessary
+        '''
+        for item in discard_list:
+            # not in-group translation
+            if item.identifier != item.old_str and item.old_str is None\
+                    and item.identifier is not None and item.new_str is not None \
+                    and item.new_str != '' and item.lang is not None:
+                item.new_str = safe_add_prefix(item.new_str)
+                if (item.lang, item.identifier) not in new_i18n_dict:
+                    new_i18n_dict[(item.lang, item.identifier)] = item
+                else:
+                    logging.warning(
+                        f'{rpy_file}[L{item.line}]: Duplicate translation (identifier:{item.identifier}, text:{item.new_str}) is found!\n'
+                        f'\tDetailed info:\n'
+                        f'\told:{new_i18n_dict[(item.lang, item.identifier)]}')
+
     for lang in new_i18n_dict.langs():
         new_dict = new_i18n_dict[lang]
         if lang in translated_lines:
             old_dict = translated_lines[lang]
             for tid, new_item in new_dict.items():
                 line = new_item.line
-                new_item.new_str = '@$' + new_item.new_str
+                new_item.new_str = safe_add_prefix(new_item.new_str)
                 if tid in old_dict:
                     old_item = old_dict[tid]
                     logging.warning(
@@ -181,11 +265,11 @@ def update_translated_lines_new(rpy_file: str, translated_lines: i18n_translatio
                 old_dict[tid] = new_item
         else:
             for tid, new_item in new_dict.items():
-                new_item.new_str = '@$' + new_item.new_str
+                new_item.new_str = safe_add_prefix(new_item.new_str)
                 translated_lines[(lang, tid)] = new_item
 
-def update_untranslated_lines_new(rpy_file: str, translated_lines: i18n_translation_dict):
-    new_i18n_dict = preparse_rpy_file(rpy_file)[0]
+def update_untranslated_lines_new(rpy_file: str, translated_lines: i18n_translation_dict, strict=False):
+    new_i18n_dict = preparse_rpy_file(rpy_file, strict=strict)[0]
     for lang in new_i18n_dict.langs():
         new_dict = new_i18n_dict[lang]
         if lang in translated_lines:
@@ -214,120 +298,31 @@ def update_untranslated_lines_new(rpy_file: str, translated_lines: i18n_translat
                 translated_lines[(lang, tid)] = new_item
 
 
-def update_translated_lines(rpy_file, translated_lines):
-    with open(rpy_file, 'r', encoding='utf-8') as f:
-        temp_data = f.readlines()
-    raw_text = None
-    raw_line = -1
-    save_cnt = 0
-    unsave_cnt = 0
-    for i, line in enumerate(temp_data, 1):
-        text, ttype = text_type(line)
-        if ttype == TEXT_TYPE.RAW:
-            if is_empty(text):
-                logging.warning(f'{rpy_file}[L{i}]: The old text({text}) is empty')
-            raw_text = text
-            raw_line = i
-        if ttype == TEXT_TYPE.NEW:
-            if raw_text is None or i - raw_line != 1:
-                logging.error(f'{rpy_file}[L{i}]: Unmatched new text({text}), it will be skipped!')
-                raw_text = None
-                raw_line = -1
-                unsave_cnt += 1
-                continue
-            if is_empty(text):
-                logging.warning(f'{rpy_file}[L{i}]: The new text({text}) is empty!')
-            if raw_text in translated_lines:
-                tline = translated_lines[raw_text]
-                logging.warning(
-                    f'{rpy_file}[L{i}]: The old translation({tline.new_str}) for "{raw_text}" will replace by “{text}”. This may result in error in renpy.')
-                tline.new_str = '@$' + text
-            else:
-                translated_lines[raw_text] = translation_item(
-                    old_str=raw_text,
-                    new_str='@$' + text,
-                    file=rpy_file,
-                    line=i
-                )
-            save_cnt += 1
-            raw_text = None
-            raw_line = -1
-    logging.info(
-        f'{rpy_file}: {save_cnt} untranslated line(s) are added. Other {unsave_cnt} untranslated line(s) are skipped!')
-
-
-def update_untranslated_lines(rpy_file, untranslated_lines):
-    with open(rpy_file, 'r', encoding='utf-8') as f:
-        temp_data = f.readlines()
-    raw_text = None
-    raw_line = -1
-    save_cnt = 0
-    unsave_cnt = 0
-    for i, line in enumerate(temp_data, 1):
-        text, ttype = text_type(line)
-        if ttype == TEXT_TYPE.RAW:
-            if is_empty(text):
-                logging.warning(f'{rpy_file}[L{i}]: The old text({text}) is empty.')
-            raw_text = text
-            raw_line = i
-        if ttype == TEXT_TYPE.NEW:
-            if raw_text is None or i - raw_line != 1:
-                # logging.info(f'{rpy_file}[L{i}]: Unmatched new text({text}). It is ok, noting that the new text and the old new text must be in pair while getting translated texts.')
-                logging.warning(f'{rpy_file}[L{i}]: Unmatched new text({text}). It will be ignored！.')
-                # untranslated_lines[text] = translation_item(
-                #     old_str=text,
-                #     new_str=None,
-                #     file=rpy_file,
-                #     line=i
-                # )
-                unsave_cnt += 1
-                raw_text = None
-                raw_line = -1
-                continue
-            if raw_text == text:
-                if raw_text in untranslated_lines:
-                    untline = untranslated_lines[raw_text]
-                    logging.warning(
-                        f'{rpy_file}[L{i}]: The duplicate untranslated text({raw_text}) is found! This may result in error in renpy.')
-                    untline.new_str = text
-                else:
-                    untranslated_lines[raw_text] = translation_item(
-                        old_str=raw_text,
-                        new_str=None,
-                        file=rpy_file,
-                        line=i
-                    )
-                save_cnt += 1
-            else:
-                logging.warning(
-                    f'{rpy_file}[L{i}]: The new text({text}) is not the same as the old text({raw_text})! It will be ignored for translation.')
-                unsave_cnt += 1
-            raw_text = None
-            raw_line = -1
-    logging.info(
-        f'{rpy_file}: {save_cnt} untranslated line(s) are added. Other {unsave_cnt} untranslated line(s) are skipped!')
-
-
-
-
 if __name__ == '__main__':
     import log.logger
     # print(regex_trans.search('translate chinese jumpymenu3_a439b59a:').groups())
     # print(regex_code.search('# game/AyaneEvents.rpy:584').groups())
     old_rpy_file = r'fc_res/old/script.rpy'
     new_rpy_file = r'fc_res/new/script.rpy'
-    res = preparse_rpy_file(old_rpy_file)[0]
+    # res = preparse_rpy_file(old_rpy_file, False)[0]
+    store = i18n_translation_dict()
+    update_translated_lines_new(old_rpy_file, store, strict=True)
     def print_dict(res_dict):
         for k, v in res_dict.items():
             print(f'lang:{k}===========================================================>', flush=True)
-            for d in v.items():
-                print(d, flush=True)
-    print_dict(res)
+            for str_id, d in v.items():
+                # print(d, flush=True)
+                print(d.identifier)
+                print(f'\tRAW:[{d.old_str}]')
+                print(f'\tNEW:[{d.new_str}]')
+                print(f'\tLINE:[{d.line}]')
+                print(f'\tCODE:[{d.code}]')
+    print_dict(store)
     # old_data = preparse_rpy_file(new_rpy_file)
     # new_data = preparse_rpy_file(new_rpy_file)
     print('********************************************************************', flush=True)
     # print()
-    empty = i18n_translation_dict()
-    update_translated_lines_new(new_rpy_file, res)
-    print_dict(res)
+    # empty = i18n_translation_dict()
+    # update_translated_lines_new(new_rpy_file, res)
+    # print_dict(res)
     pass

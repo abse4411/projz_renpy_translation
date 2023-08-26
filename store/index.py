@@ -123,15 +123,15 @@ class project_index:
         return None
 
     @classmethod
-    def init_from_dir(cls, source_dir: str, name: str, tag: str, is_translated=True):
+    def init_from_dir(cls, source_dir: str, name: str, tag: str, is_translated=True, strict=False):
         ryp_files = walk_and_select(source_dir, lambda x: x.endswith('.rpy'))
         lines = i18n_translation_dict()
         for rpy_file in tqdm.tqdm(ryp_files,
                                   desc=f'Getting {"translated" if is_translated else "untranslated"} texts from {source_dir}'):
             if is_translated:
-                update_translated_lines_new(rpy_file, lines)
+                update_translated_lines_new(rpy_file, lines, strict=strict)
             else:
-                update_untranslated_lines_new(rpy_file, lines)
+                update_untranslated_lines_new(rpy_file, lines, strict=strict)
         translated_lines = None
         untranslated_lines = None
         if is_translated:
@@ -168,8 +168,8 @@ class project_index:
         logging.info(
             f'{merge_cnt} translated line(s) are used during merging, and there has {unmerge_cnt} untranslated line(s)')
 
-    def perparse_with_linenumber(self, rpy_file, selected_lang:str=None, skip_unmatch=False):
-        new_i18n_dict = preparse_rpy_file(rpy_file)[0]
+    def perparse_with_linenumber(self, rpy_file, selected_lang:str=None, skip_unmatch=False, strict=False):
+        new_i18n_dict = preparse_rpy_file(rpy_file, strict=strict)[0]
         linenumber_map = dict()
         for lang, new_dict in new_i18n_dict.items():
             if selected_lang is not None and lang != selected_lang:
@@ -187,14 +187,14 @@ class project_index:
         return linenumber_map
 
 
-    def apply_by_default(self, lang:str=None):
+    def apply_by_default(self, lang:str=None, strict=False):
         if lang is None:
             lang = self.first_translated_lang
             logging.info(
                 f'Selecting the default language {lang} for apply_by_default. If you want change to another language, please specify the argument {{lang}}.')
-        self.apply(default_config.project_path, lang)
+        self.apply(default_config.project_path, lang, strict=strict)
 
-    def apply(self, save_dir:str, lang:str):
+    def apply(self, save_dir:str, lang:str, strict=False):
         assert lang in self.translated_langs, f'The selected_lang {lang} is not not Found! Available language(s) are {self.translated_langs}.'
         save_dir = os.path.join(save_dir, self.full_name)
         mkdir(save_dir)
@@ -207,7 +207,7 @@ class project_index:
         for rpy_file in tqdm.tqdm(rpy_files,
                                   desc=f'Applying translated texts to {self.full_name} in language {lang}, you can found it in {save_dir}.'):
             rpy_file = os.path.abspath(rpy_file)
-            preparsed_data = self.perparse_with_linenumber(rpy_file, selected_lang=lang, skip_unmatch=True)
+            preparsed_data = self.perparse_with_linenumber(rpy_file, selected_lang=lang, skip_unmatch=True, strict=strict)
             base_dir = os.path.join(save_dir, file_dir(rpy_file[len(abs_source_dir):]).strip(os.sep))
             mkdir(base_dir)
             r = replacer(rpy_file, save_dir=base_dir)
@@ -217,7 +217,7 @@ class project_index:
             text = r.next()
             line_no = 1
             while text is not None:
-                ori_text, ttype = text_type(text)
+                ori_text, ttype, _ = text_type(text)
                 if ttype == TEXT_TYPE.NEW:
                     if line_no in preparsed_data:
                         parsed_item = preparsed_data[line_no]
@@ -238,7 +238,7 @@ class project_index:
             unapply_cnt += unapply_cnt_i
         logging.info(
             f'{len(rpy_files)} rpy file(s) are translated with {apply_cnt} translated line(s) and {unapply_cnt} untranslated line(s) in language {lang}.')
-        logging.info(f'You can output rpy files in {save_dir}.')
+        logging.info(f'You can find output rpy files in {save_dir}.')
 
     @classmethod
     def load_from_file(cls, file: str):
