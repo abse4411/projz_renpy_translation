@@ -82,6 +82,8 @@ def help_cmd():
                    'It works like savehtml, BUT save as an excel file. For augments\' description Please see to savehtml.'])
     table.add_row(['loadexcel or le', 'loadexcel {proj_idx} or\nloadexcel {proj_idx} {lang} {excel_file}',
                    'It works like loadhtml, BUT read from an excel file. For augments\' description Please see to loadhtml.'])
+    table.add_row(['dump', 'dump {proj_idx}',
+                   'Dump all translation and untranslation data of project {proj_idx} to an excel file.'])
     table.add_row(['list or l', 'list or list {proj_idx}',
                    f'List projects in {default_config.project_path}, you can change it in {CONFIG_FILE}: [GLOBAL].PROJECT_PATH.\n'
                    'The argument {proj_idx} is optional, or specify it to show detailed info for the project {proj_idx}.'])
@@ -151,7 +153,7 @@ def quit():
     exit(0)
 
 
-def old_cmd(dir: str, name: str, tag: str, greedy:bool=True):
+def old_cmd(dir: str, name: str, tag: str, greedy: bool = True):
     assert exists_dir(dir), f'{dir} is not a directory!'
     strict_mode = not (distutils.util.strtobool(greedy) if isinstance(greedy, str) else greedy)
     p = project_index.init_from_dir(dir, name, tag,
@@ -159,7 +161,7 @@ def old_cmd(dir: str, name: str, tag: str, greedy:bool=True):
     p.save_by_default()
 
 
-def new_cmd(dir: str, name: str, tag: str, greedy:bool=True):
+def new_cmd(dir: str, name: str, tag: str, greedy: bool = True):
     assert exists_dir(dir), f'{dir} is not a directory!'
     strict_mode = not (distutils.util.strtobool(greedy) if isinstance(greedy, str) else greedy)
     p = project_index.init_from_dir(dir, name, tag,
@@ -178,7 +180,7 @@ def merge_cmd(source_idx: int, target_idx: int, lang: str = None):
         tproj.save_by_default()
 
 
-def translate_cmd(proj_idx: int, api_name: str, lang:str=None):
+def translate_cmd(proj_idx: int, api_name: str, lang: str = None):
     # projs = _list_projects()
     proj = project_index.load_from_file(_list_projects_and_select([proj_idx])[0])
     if lang is None:
@@ -195,7 +197,7 @@ def translate_cmd(proj_idx: int, api_name: str, lang:str=None):
     proj.save_by_default()
 
 
-def apply_cmd(proj_idx: int, lang: str = None, greedy:bool=True):
+def apply_cmd(proj_idx: int, lang: str = None, greedy: bool = True):
     # projs = _list_projects()
     strict_mode = not (distutils.util.strtobool(greedy) if isinstance(greedy, str) else greedy)
     proj = project_index.load_from_file(_list_projects_and_select([proj_idx])[0])
@@ -260,6 +262,7 @@ def loadhtml_cmd(proj_idx: int, lang: str = None, html_file: str = None):
     proj.update(res, lang)
     proj.save_by_default()
 
+
 def saveexcel_cmd(proj_idx: int, lang: str = None, limit: int = None):
     if limit is not None:
         limit = int(limit)
@@ -298,6 +301,14 @@ def loadexcel_cmd(proj_idx: int, lang: str = None, excel_file: str = None):
     proj.save_by_default()
 
 
+def dumptoexcel_cmd(proj_idx: int):
+    proj = project_index.load_from_file(_list_projects_and_select([proj_idx])[0])
+    save_path = os.path.join(default_config.project_path, 'excel')
+    mkdir(save_path)
+    save_file = os.path.join(save_path, f'{proj.full_name}_dump.xlsx')
+    proj.dump_to_excel(save_file)
+
+
 def main():
     register_commands = {
         'new': new_cmd,
@@ -324,6 +335,7 @@ def main():
         'se': saveexcel_cmd,
         'loadexcel': loadexcel_cmd,
         'le': loadexcel_cmd,
+        'dump': dumptoexcel_cmd,
         'help': help_cmd,
         'h': help_cmd,
         'quit': quit,
@@ -331,7 +343,7 @@ def main():
     }
     help_cmd()
     while True:
-        args = my_input('What is your next step? (Enter a command or Q/q to exit): ')
+        args = my_input('What is your next step? (Enter a command (case insensitive) or Q/q to exit): ')
         args = args.strip()
         args = [c.strip() for c in args.split() if c.strip() != '']
         if len(args) >= 1:

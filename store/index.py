@@ -1,14 +1,17 @@
 import logging
 import os.path
 from collections import defaultdict
+from functools import cmp_to_key
 from typing import List, Tuple
 import pickle
 
+import pandas as pd
 import tqdm
+from pandas import ExcelWriter
 
 from config.config import default_config
 from store.fetch import update_translated_lines_new, update_untranslated_lines_new, preparse_rpy_file
-from store.item import project_item_new, i18n_translation_dict
+from store.item import project_item_new, i18n_translation_dict, translation_item
 from util.file import walk_and_select, mkdir, file_dir, exists_file
 from util.misc import replacer, text_type, TEXT_TYPE
 
@@ -56,6 +59,13 @@ class project_index:
         assert lang in self.untranslated_langs, f'The selected_lang {lang} is not not Found! Available language(s) are {self.untranslated_langs}.'
         tid_texts = []
         for tid, item in self._raw_data.untranslated_lines[lang].items():
+            tid_texts.append((tid, item.old_str))
+        return tid_texts
+
+    def translated_lines(self, lang:str):
+        assert lang in self.translated_langs, f'The selected_lang {lang} is not not Found! Available language(s) are {self.translated_langs}.'
+        tid_texts = []
+        for tid, item in self._raw_data.translated_lines[lang].items():
             tid_texts.append((tid, item.old_str))
         return tid_texts
 
@@ -252,6 +262,56 @@ class project_index:
     def save(self, file: str):
         with open(file, 'wb') as f:
             pickle.dump(self._raw_data, f)
+
+    def dump_to_excel(self, file_name: str):
+        columns = ['Translation Identifier', 'Language', 'Raw Text', 'New Text', 'File', 'Line', 'Code Info']
+
+        def sort_and_unpack(tran_list: list):
+            def _item_cmp(x: translation_item, y: translation_item):
+                if x.file < y.file:
+                    return 1
+                elif x.file == y.file:
+                    if x.line < y.line:
+                        return 1
+                    elif x.line == y.line:
+                        return 0
+                return -1
+
+            tran_list.sort(key=cmp_to_key(_item_cmp))
+            excel_id_data = []
+            excel_la_data = []
+            excel_rt_data = []
+            excel_nt_data = []
+            excel_fi_data = []
+            excel_li_data = []
+            excel_co_data = []
+            for d in tran_list:
+                excel_id_data.append(d.identifier)
+                excel_la_data.append(d.lang)
+                excel_rt_data.append(d.old_str)
+                excel_nt_data.append(d.new_str)
+                excel_fi_data.append(d.file)
+                excel_li_data.append(d.line)
+                excel_co_data.append(d.code)
+            return excel_id_data, excel_la_data, excel_rt_data, excel_nt_data, excel_fi_data, excel_li_data, excel_co_data
+
+        pd_dict = dict()
+        for lang in self.translated_langs + self.untranslated_langs:
+            if lang in self.translated_langs and self.translation_size(lang) > 0:
+                res = sort_and_unpack(list(self._raw_data.translated_lines[lang].values()))
+                df = pd.DataFrame({columns[i]: res[i] for i in range(len(columns))})
+                df.reindex(columns=columns)
+                pd_dict[f'Translated {lang}'] = df
+            if lang in self.untranslated_langs and self.untranslation_size(lang) > 0:
+                res = sort_and_unpack(list(self._raw_data.untranslated_lines[lang].values()))
+                df = pd.DataFrame({columns[i]: res[i] for i in range(len(columns))})
+                df.reindex(columns=columns)
+                pd_dict[f'Untranslated {lang}'] = df
+
+        with ExcelWriter(file_name) as writer:
+            for sheet_name in sorted(pd_dict.keys()):
+                pd_dict[sheet_name].to_excel(writer, sheet_name=sheet_name, index=False)
+        logging.info(f'All translation and untranslation data are save to {file_name}')
 
 
 if __name__ == '__main__':

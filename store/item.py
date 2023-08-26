@@ -87,22 +87,6 @@ class i18n_translation_dict:
         return self.lang_dict.items()
 
 
-class project_item:
-    def __init__(self,
-                 source_dir: str,
-                 name: str,
-                 tag: str,
-                 rpy_files: List[str],
-                 translated_lines: Dict[str, translation_item] = None,
-                 untranslated_lines: Dict[str, translation_item] = None):
-        self.source_dir = source_dir
-        self.name = name
-        self.tag = tag
-        self.rpy_files = rpy_files
-        self.translated_lines = translated_lines if translated_lines is not None else dict()
-        self.untranslated_lines = untranslated_lines if untranslated_lines is not None else dict()
-
-
 class project_item_new:
     def __init__(self,
                  source_dir: str,

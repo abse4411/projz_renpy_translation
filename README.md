@@ -1,15 +1,17 @@
 # RenPy rpy翻译文件机翻工具
 
-- 用于迁移旧版本的rpy翻译文件和自动翻译rpy翻译文件, 机翻采用Selenium调用Chrome访问网页进行翻译。
-- 可用的机翻引擎：Google翻译(速度较快，效果一般)，彩云小译(推荐，速度较快，效果好)，有道翻译(速度较快)，百度翻译(速度较快)，~~DeepL翻译器(不推荐，不稳定，速度慢)~~
+- 用于迁移旧版本的rpy翻译文件和自动翻译rpy翻译文件, 机翻采用Selenium调用Chrom翻译或者使用浏览器自带快速翻。
+- 可用的机翻引擎：Google(速度较快，效果一般)，Caiyun(推荐，速度较快，效果好)，Youdao(速度较快)，Baidu(速度较快)~~
 - 部分代码来自[Maooookai(Mirage)](https://github.com/Maooookai/WebTranslator), [DrDRR](https://github.com/DrDRR/RenPy-WebTranslator/commits?author=DrDRR "View all commits by DrDRR")，Salute!
 - 该代码仅供学习使用。
 
 ***
-
-# <mark>⭐ 新版本V0.3.1:添加excel文件的导入导出功能，功能与`savehtml`和`loadhtml`命令类似 ⭐</mark>
-# <mark>⭐ 新版本V0.3.0:改进翻译索引，减少对翻译文本的丢弃 ⭐</mark>
-# <mark>⚡⚡⚡新的命令已经发布！有史以来*最最最快速*的翻译方法！！！ ⚡⚡⚡</mark>
+# Changelog:
+* V0.3.2: 修复翻译文本识别问题，现在能识别更多的翻译文本；`dump`:现在你可以把一个项目所有翻译文本导出为excel
+* V0.3.1: 添加excel文件的导入导出功能，功能与`savehtml`和`loadhtml`命令类似
+* V0.3.0: 改进翻译索引，减少对翻译文本的丢弃
+* V0.2.0: 使用`savehtml`和`loadhtml`快速翻译，见下文
+## <mark>使用`savehtml`和`loadhtml`⚡快速⚡翻译</mark>
 使用`savehtml`和`loadhtml`命令，导出未翻译文本为html文件，然后借助Chrome或者Microsoft Edge浏览器翻译网页并保存覆盖原始html文件，实现翻译文本快速导入。请输入`help`命令获取详细信息。
 ### 使用步骤：
 1. 使用`savehtml {proj_idx}`命令，导出未翻译文本为html文件，然后用Chrome或者Microsoft Edge打开它。
@@ -195,5 +197,5 @@ n {tl_dir} {游戏名} {版本}
 使用翻译引擎的翻译文本会带有`@@`，这用于后期润色工作。如果你不需要它们，请使用VS Code全文替换功能删除它们。
 
 ## Todo List:
-- ~~添加excel导入导出功能~~ (Done at 20230819)
-- 添加英语文档
+1. [x] ~~添加excel导入导出功能~~ (Done at 20230819)
+2. [ ] 添加英语文档
