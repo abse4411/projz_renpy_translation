@@ -51,11 +51,13 @@ def determine_new_line(info_dict:dict, in_group=False, strict=False):
     if in_group:
         lang, _ = id_data
         ''' EXAMPLE:
+        translate chinese strings:
+        
             # renpy/common/00accessibility.rpy:28 <---[code_line]
             old "Self-voicing disabled." <---[raw_line]
             new "Self-voicing disabled."  <---[current line] (i)
         '''
-        if raw_var != VAR_NAME.OLD or new_var != VAR_NAME.NEW: return None
+        if raw_var != VAR_NAME.OLD or new_var != VAR_NAME.NEW or id_line>=raw_line: return None
         if strict:
             if code_data is not None and code_line + 1 == raw_line and raw_text is not None and raw_line + 1 == new_line:
                 return translation_item(
