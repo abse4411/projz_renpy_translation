@@ -21,7 +21,7 @@ def get_trans_info(text):
         text = text.strip()
         if text != '':
             res = regex_code.match(text)
-            if res: return (res.group(1), res.group(2)), TEXT_TYPE_TRANS_CODE
+            if res: return f'{res.group(1)}:{ res.group(2)}', TEXT_TYPE_TRANS_CODE
             res = regex_trans.match(text)
             if res: return (res.group(1), res.group(2)), TEXT_TYPE_TRANS_ID
     return None, None
