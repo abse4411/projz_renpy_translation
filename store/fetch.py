@@ -45,22 +45,41 @@ def determine_new_line(info_dict:dict, in_group=False, strict=False):
     new_text = info_dict['new_text']
     new_line = info_dict['new_line']
     new_var = info_dict['new_var']
+    rpy_file = info_dict['rpy_file']
 
-    if id_data is None: return False
+    if id_data is None: return None
     if in_group:
+        lang, _ = id_data
         ''' EXAMPLE:
             # renpy/common/00accessibility.rpy:28 <---[code_line]
             old "Self-voicing disabled." <---[raw_line]
             new "Self-voicing disabled."  <---[current line] (i)
         '''
-        if raw_var != VAR_NAME.OLD or new_var != VAR_NAME.NEW: return False
+        if raw_var != VAR_NAME.OLD or new_var != VAR_NAME.NEW: return None
         if strict:
             if code_data is not None and code_line + 1 == raw_line and raw_text is not None and raw_line + 1 == new_line:
-                return True
+                return translation_item(
+                        old_str=raw_text,
+                        new_str=new_text,
+                        file=rpy_file,
+                        line=new_line,
+                        lang=lang,
+                        code=code_data,
+                        identifier=raw_text
+                    )
         else:
             if raw_text is not None and raw_line < new_line:
-                return True
+                return translation_item(
+                        old_str=raw_text,
+                        new_str=new_text,
+                        file=rpy_file,
+                        line=new_line,
+                        lang=lang,
+                        code=code_data if code_data is not None and code_line<raw_line else None,
+                        identifier=raw_text
+                    )
     else:
+        lang, tid = id_data
         ''' EXAMPLE:
         # game/AmiEvents.rpy:39 <---[code_line]
         translate chinese amiinvitegen_2a2264b4: <---[id_line]
@@ -68,17 +87,33 @@ def determine_new_line(info_dict:dict, in_group=False, strict=False):
             # a "What’s up?" # <---[raw_line]
             a "What’s up?" # <---[current line] (i)
         '''
-        if raw_var != new_var: return False
+        if raw_var != new_var: return None
         if strict:
             if code_data is not None and code_line + 1 == id_line \
                     and id_line + 2 == raw_line \
                     and raw_text is not None and raw_line + 1 == new_line:
-                return True
+                return translation_item(
+                        old_str=raw_text,
+                        new_str=new_text,
+                        file=rpy_file,
+                        line=new_line,
+                        lang=lang,
+                        code=code_data,
+                        identifier=tid
+                    )
         else:
             if id_line < raw_line \
                     and raw_text is not None and raw_line < new_line:
-                return True
-    return False
+                return translation_item(
+                        old_str=raw_text,
+                        new_str=new_text,
+                        file=rpy_file,
+                        line=new_line,
+                        lang=lang,
+                        code=code_data if code_data is not None and code_line<id_line else None,
+                        identifier=tid
+                    )
+    return None
 
 def preparse_rpy_file(rpy_file, strict=False, verbose=True) -> Tuple[i18n_translation_dict, List[translation_item]]:
     with open(rpy_file, 'r', encoding='utf-8') as f:
@@ -121,25 +156,23 @@ def preparse_rpy_file(rpy_file, strict=False, verbose=True) -> Tuple[i18n_transl
                 'new_text' : text,
                 'new_line' : i,
                 'new_var' : var_name,
+                'rpy_file' : rpy_file,
             }
             if in_group:
-                lang, _ = id_data
-                if determine_new_line(info_dict, in_group, strict):
-                    if verbose and (lang, raw_text) in store:
-                        old_item = store[(lang, raw_text)]
+                if id_data is not None:
+                    lang = id_data[0]
+                else:
+                    lang = None
+                tid = raw_text
+                res = determine_new_line(info_dict, in_group, strict)
+                if res is not None:
+                    if verbose and (lang, tid) in store:
+                        old_item = store[(lang, tid)]
                         logging.warning(
-                            f'{rpy_file}[L{i}]: Duplicate translation (identifier:{raw_text}, text:{raw_text}) is found! This may result in error in renpy.\n'
+                            f'{rpy_file}[L{i}]: Duplicate translation (identifier:{tid}, text:{raw_text}) is found! This may result in error in renpy.\n'
                             f'\tDetailed info:\n'
                             f'\told:{old_item}')
-                    store[(lang, raw_text)] = translation_item(
-                        old_str=raw_text,
-                        new_str=text,
-                        file=rpy_file,
-                        line=i,
-                        lang=lang,
-                        code=code_data if code_line<raw_line else None,
-                        identifier=raw_text
-                    )
+                    store[(lang, tid)] = res
                     valid_cnt += 1
                 else:
                     if verbose:
@@ -155,7 +188,12 @@ def preparse_rpy_file(rpy_file, strict=False, verbose=True) -> Tuple[i18n_transl
                         identifier = raw_text
                     ))
             else:
-                if determine_new_line(info_dict, in_group, strict):
+                if id_data is not None:
+                    lang, tid = id_data
+                else:
+                    lang, tid = None, None
+                res = determine_new_line(info_dict, in_group, strict)
+                if res is not None:
                     lang, tid = id_data
                     if verbose and (lang, tid) in store:
                         old_item = store[(lang, tid)]
@@ -163,24 +201,12 @@ def preparse_rpy_file(rpy_file, strict=False, verbose=True) -> Tuple[i18n_transl
                             f'{rpy_file}[L{i}]: Duplicate translation (identifier:{tid}, text:{raw_text}) is found! This may result in error in renpy.\n'
                             f'\tDetailed info:\n'
                             f'\told:{old_item}')
-                    store[(lang, tid)] = translation_item(
-                        old_str=raw_text,
-                        new_str=text,
-                        file=rpy_file,
-                        line=i,
-                        lang=lang,
-                        code=code_data if code_line<id_line else None,
-                        identifier=tid
-                    )
+                    store[(lang, tid)] = res
                     valid_cnt += 1
                 else:
                     if verbose:
                         logging.warning(f'{rpy_file}[L{i}] Unmatched not-in-group new text({text}), it will be skipped!')
                     invalid_cnt += 1
-                    if id_data is not None:
-                        lang, tid = id_data
-                    else:
-                        lang, tid = None, None
                     invalid_list.append(translation_item(
                         old_str = raw_text,
                         new_str = text,
@@ -306,7 +332,7 @@ if __name__ == '__main__':
     new_rpy_file = r'fc_res/new/script.rpy'
     # res = preparse_rpy_file(old_rpy_file, False)[0]
     store = i18n_translation_dict()
-    update_translated_lines_new(old_rpy_file, store, strict=True)
+    update_translated_lines_new(old_rpy_file, store, strict=False)
     def print_dict(res_dict):
         for k, v in res_dict.items():
             print(f'lang:{k}===========================================================>', flush=True)
