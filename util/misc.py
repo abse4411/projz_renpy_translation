@@ -17,7 +17,7 @@ class VAR_NAME:
 def text_type(text: str):
     if text:
         text = text.strip()
-        if text != '' and text.endswith('"'):
+        if text != '':
             first_quote = text.find("\"")
             last_quote = text.rfind("\"")
             # raw text or new text not found, both text must be in quotes.
