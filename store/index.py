@@ -155,7 +155,26 @@ class project_index:
                                 untranslated_lines=untranslated_lines)
         return cls(raw_data)
 
-    def merge_from(self, proj: project_name, selected_lang:str=None):
+    def accept_untranslation(self, selected_lang:str=None):
+        acce_cnt = 0
+        if selected_lang is not None:
+            assert selected_lang in self.untranslated_langs, f'The selected_lang {selected_lang} is not not Found! Available language(s) are {self.untranslated_langs}.'
+        for lang, new_dict in self._raw_data.untranslated_lines.items():
+            if selected_lang is not None and lang != selected_lang:
+                continue
+            for tid in list(new_dict.keys()):
+                acce_cnt+=1
+                new_line = new_dict.pop(tid)
+                new_line.new_str = new_line.old_str
+                if (lang, tid) in self._raw_data.translated_lines:
+                    old_line = self._raw_data.translated_lines[(lang, tid)]
+                    logging.warning(
+                        f'{new_line.file}[L{new_line.line}]: Existent translation for ({new_line.old_str}) in translated_lines:{old_line}, it will be replaced by the new translation:{new_line.new_str}')
+                self._raw_data.translated_lines[(lang, tid)] = new_line
+        logging.info(
+            f'{acce_cnt} untranslated line(s) are used as translated one(s)')
+
+    def merge_from(self, proj, selected_lang:str=None):
         merge_cnt = 0
         unmerge_cnt = 0
         if selected_lang is not None:
@@ -236,7 +255,9 @@ class project_index:
                             unapply_cnt += 1
                         else:
                             apply_cnt_i += 1
-                            text = text.replace(ori_text, trans_txt)
+                            lb = text.find('"')
+                            rb = text.rfind('"')
+                            text = text[:lb+1] + trans_txt + text[rb:]
                     else:
                         unapply_cnt += 1
                 r.update(text)

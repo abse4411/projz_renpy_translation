@@ -84,6 +84,9 @@ def help_cmd():
                    'It works like loadhtml, BUT read from an excel file. For augments\' description Please see to loadhtml.'])
     table.add_row(['dump', 'dump {proj_idx}',
                    'Dump all translation and untranslation data of project {proj_idx} to an excel file.'])
+    table.add_row(['accept or ac', 'accept {proj_idx} or accept {proj_idx} {lang}',
+                   'Accept all untranslated texts as translated texts for project {proj_idx}.\n'
+                   'The argument {lang} is optional, or specify it to use this language {lang}.'])
     table.add_row(['list or l', 'list or list {proj_idx}',
                    f'List projects in {default_config.project_path}, you can change it in {CONFIG_FILE}: [GLOBAL].PROJECT_PATH.\n'
                    'The argument {proj_idx} is optional, or specify it to show detailed info for the project {proj_idx}.'])
@@ -168,6 +171,13 @@ def new_cmd(dir: str, name: str, tag: str, greedy: bool = True):
                                     is_translated=False, strict=strict_mode)
     p.save_by_default()
 
+def acceptuntrans_cmd(proj_idx: int, lang: str = None):
+    # projs = _list_projects()
+    project_name = _list_projects_and_select([proj_idx])[0]
+    proj = project_index.load_from_file(project_name)
+    if yes(f'Accept all untranslated texts as translated texts for project: {project_name}?'):
+        proj.accept_untranslation(lang)
+        proj.save_by_default()
 
 def merge_cmd(source_idx: int, target_idx: int, lang: str = None):
     source_idx, target_idx = int(source_idx), int(target_idx)
@@ -336,6 +346,8 @@ def main():
         'loadexcel': loadexcel_cmd,
         'le': loadexcel_cmd,
         'dump': dumptoexcel_cmd,
+        'accept': acceptuntrans_cmd,
+        'ac': acceptuntrans_cmd,
         'help': help_cmd,
         'h': help_cmd,
         'quit': quit,
