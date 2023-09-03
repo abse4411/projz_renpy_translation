@@ -1,7 +1,7 @@
 # RenPy rpy翻译文件机翻工具
 
-- 用于迁移旧版本的rpy翻译文件和自动翻译rpy翻译文件, 机翻采用Selenium调用Chrom翻译或者使用浏览器自带快速翻。
-- 可用的机翻引擎：Google(速度较快，效果一般)，Caiyun(推荐，速度较快，效果好)，Youdao(速度较快)，Baidu(速度较快)~~
+- 用于迁移旧版本的rpy翻译文件和自动翻译rpy翻译文件, 机翻采用Selenium调用Chrom的API翻译(可选)或者使用浏览器自带快速翻译(推荐)。
+- 可用的API机翻引擎：Google(速度较快，效果一般)，Caiyun(推荐，速度较快，效果好)，Youdao(速度较快)，Baidu(速度较快)~~
 - 部分代码来自[Maooookai(Mirage)](https://github.com/Maooookai/WebTranslator), [DrDRR](https://github.com/DrDRR/RenPy-WebTranslator/commits?author=DrDRR "View all commits by DrDRR")，Salute!
 - 该代码仅供学习使用。
 
@@ -43,15 +43,16 @@ python3 parse_console.py
 
 ## 运行环境准备
 
-- python3, pip install selenium prettytable tqdm pandas
+- python3, `pip install prettytable tqdm pandas`
 
-- chrome, chrome driver(注意Chrome版本，如果不对请前往 [此链接](https://registry.npmmirror.com/binary.html?path=chromedriver/) 下载对应的chromedriver.exe)
+  注意如果不想要使用Selenium调用Chrom的API翻译(caiyun，baidu，google，youdao)， Selenium不是必须的。 如果你想使用API翻译请安装Selenium：`pip install selenium`
+
+- chrome, chrome driver(注意Chrome版本，如果不对请前往 [此链接，版本116以下](https://registry.npmmirror.com/binary.html?path=chromedriver/) 或者 [此链接，版本116或更高](https://googlechromelabs.github.io/chrome-for-testing/#stable)下载对应的chromedriver.exe)
 
 
 ## 快速开始：
 
-首先请配置你的`chrome driver`文件路径，在`config.ini`中修改`driver
-CHROM`选项：
+首先请配置你的`chrome driver`文件路径，在`config.ini`中修改`CHROME_DRIVER`选项：
 
 ```ini
 [GLOBAL]
@@ -115,7 +116,7 @@ n {tl_dir} {游戏名} {版本}
 
 ![](./imgs/renpy.png)
 
-之后生成的ryp文件应该是这样的：
+之后生成的rpy文件应该是这样的：
 
 > ```
 > # game/ImaniEvents.rpy:11
@@ -125,7 +126,7 @@ n {tl_dir} {游戏名} {版本}
 >     "She doesn’t pick up."
 > ```
 
-只有这样格式的ryp，才能代码才可以识别原始文本然后进行替换。
+只有这样格式的rpy，才能代码才可以识别原始文本然后进行替换。
 
 ### 3.从旧版本翻译项目合并到新版本中（如果你在第1步跳过，这里也请跳过）
 
@@ -200,3 +201,4 @@ n {tl_dir} {游戏名} {版本}
 ## Todo List:
 1. [x] ~~添加excel导入导出功能~~ (Done at 20230819)
 2. [ ] 添加英语文档
+3. [ ] 添加AI模型翻译

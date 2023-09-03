@@ -12,11 +12,8 @@ from config.config import default_config, CONFIG_FILE
 
 from prettytable import PrettyTable
 
-from store.fetch import preparse_rpy_file
 from store.file_store import save_to_html, load_from_html, load_from_excel, save_to_excel
 from store.index import project_index
-from trans import web_translator
-from trans.thread_trans import concurrent_translator
 from util.file import exists_dir, file_name, exists_file, mkdir
 from util.misc import my_input, yes
 
@@ -201,10 +198,25 @@ def translate_cmd(proj_idx: int, api_name: str, lang: str = None):
         assert lang in proj.untranslated_langs, f'The selected_lang {lang} is not not Found! Available language(s) are {proj.untranslated_langs}.'
     assert api_name.strip() != '', f'api_name is empty!'
     driver_path = default_config.get_global('CHROME_DRIVER')
-    translator_class = web_translator.__dict__[api_name]
-    translator = concurrent_translator(proj, lambda: translator_class(driver_path))
-    translator.start(lang)
-    proj.save_by_default()
+    def save_import():
+        try:
+            import trans
+            return trans
+        except Exception as e:
+            logging.error(e)
+        return None
+    wt = save_import()
+    if wt is not None:
+        translator_class = wt.web_translator.__dict__[api_name]
+        translator = wt.thread_trans.concurrent_translator(proj, lambda: translator_class(driver_path))
+        translator.start(lang)
+        proj.save_by_default()
+    else:
+        print('To use web translator, please install the package "selenium" (pip install selenium) and download a compatible chrome driver for your chrome brower.\n'
+              'You can find chrome drivers in this website: https://chromedriver.storage.googleapis.com/index.html (Version under 116) '
+              'or https://googlechromelabs.github.io/chrome-for-testing/#stable (Version 116 or higher).\n'
+              'Then config the path of chrome driver in config.ini (CHROME_DRIVER=Your path (chromedriver.exe))')
+
 
 
 def apply_cmd(proj_idx: int, lang: str = None, greedy: bool = True):
