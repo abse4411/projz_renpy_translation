@@ -6,7 +6,6 @@ from typing import List, Tuple
 
 import numpy as np
 import tqdm
-from past.builtins import raw_input
 
 from config.config import default_config
 

@@ -4,9 +4,11 @@
 - 可用的API机翻引擎：Google(速度较快，效果一般)，Caiyun(推荐，速度较快，效果好)，Youdao(速度较快)，Baidu(速度较快)~~
 - 部分代码来自[Maooookai(Mirage)](https://github.com/Maooookai/WebTranslator), [DrDRR](https://github.com/DrDRR/RenPy-WebTranslator/commits?author=DrDRR "View all commits by DrDRR")，Salute!
 - 该代码仅供学习使用。
+- 点击[parse_console.exe](parse_console.exe)即可运行，无需安装任何东西。如果你要自定代码，见：[运行环境准备](#运行环境准备)
 
 ***
 # Changelog:
+* V0.3.4: 我们把程序和运行环境打包成exe，现在你不需要python环境就可以运行程序。仅支持64位的Windows 10, 11系统
 * V0.3.3: 修复`apply`命令替换空文本的问题；翻译文本识别改进；新命令`accept`:针对那些不需要翻译文本，现在你可以把未翻译文本合并到翻译的文本中
 * V0.3.2: 修复翻译文本识别问题，现在能识别更多的翻译文本；新命令`dump`:现在你可以把一个项目所有翻译文本导出为excel
 * V0.3.1: 添加excel文件的导入导出功能，功能与`savehtml`和`loadhtml`命令类似
@@ -42,12 +44,12 @@ python3 parse_console.py
 ** PS： 注意后续将过度到这个版本，旧版本的`incre_parse.py`和`parse.py`将被移除。这个新版本仍在开发中，后续改进将会持续推进**
 
 ## 运行环境准备
+我们已经打包成exe文件，点击目录下的[parse_console.exe](parse_console.exe)即可运行。
 
-- python3, `pip install prettytable tqdm pandas`
 
-  注意如果不想要使用Selenium调用Chrom的API翻译(caiyun，baidu，google，youdao)， Selenium不是必须的。 如果你想使用API翻译请安装Selenium：`pip install selenium`
-
-- chrome, chrome driver(注意Chrome版本，如果不对请前往 [此链接，版本116以下](https://registry.npmmirror.com/binary.html?path=chromedriver/) 或者 [此链接，版本116或更高](https://googlechromelabs.github.io/chrome-for-testing/#stable)下载对应的chromedriver.exe)
+**_如果你想要自修改代码并运行，请按以下步骤进行_**：
+1. 安装python3, 在本目录打开控制台输入：`pip install -r requirements.txt`
+2. 安装chrome, 下载对应的chrome driver(注意Chrome版本，如果不对请前往 [此链接，版本116以下](https://registry.npmmirror.com/binary.html?path=chromedriver/) 或者 [此链接，版本116或更高](https://googlechromelabs.github.io/chrome-for-testing/#stable)下载对应的chromedriver.exe)
 
 
 ## 快速开始：

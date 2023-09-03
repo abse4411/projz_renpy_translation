@@ -2,6 +2,7 @@ import distutils
 import glob
 import logging
 import os.path
+import sys
 from collections import defaultdict
 from typing import List
 
@@ -150,7 +151,7 @@ def list_cmd(proj_idx: int = None):
 
 def quit():
     print('Have a nice day! Bye bye! :-)')
-    exit(0)
+    sys.exit(0)
 
 
 def old_cmd(dir: str, name: str, tag: str, greedy: bool = True):
@@ -203,7 +204,7 @@ def translate_cmd(proj_idx: int, api_name: str, lang: str = None):
             import trans
             return trans
         except Exception as e:
-            logging.error(e)
+            logging.exception(e)
         return None
     wt = save_import()
     if wt is not None:
