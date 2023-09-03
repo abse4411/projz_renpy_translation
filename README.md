@@ -4,7 +4,7 @@
 - 可用的API机翻引擎：Google(速度较快，效果一般)，Caiyun(推荐，速度较快，效果好)，Youdao(速度较快)，Baidu(速度较快)~~
 - 部分代码来自[Maooookai(Mirage)](https://github.com/Maooookai/WebTranslator), [DrDRR](https://github.com/DrDRR/RenPy-WebTranslator/commits?author=DrDRR "View all commits by DrDRR")，Salute!
 - 该代码仅供学习使用。
-- 点击[parse_console.exe](parse_console.exe)即可运行，无需安装任何东西。如果你要自定代码，见：[运行环境准备](#运行环境准备)
+- 点击[parse_console.exe](parse_console.exe)即可运行，无需安装任何东西。如果你要修改代码并运行，见：[运行环境准备](#运行环境准备)
 
 ***
 # Changelog:
@@ -31,8 +31,9 @@
 
 ## <mark>新的版本!!!</mark>
 
-使用控制台方式来交互，不需要额外的文件拷贝，多线程支持（加快翻译速度）。请使用新的版本直接运行：
+使用控制台方式来交互，不需要额外的文件拷贝，多线程支持（加快翻译速度）。 直接打开（推荐）：[parse_console.exe](parse_console.exe)
 
+或者安装好环境后，运行python脚本：
 ```shell
 python3 parse_console.py
 ```
@@ -47,7 +48,7 @@ python3 parse_console.py
 我们已经打包成exe文件，点击目录下的[parse_console.exe](parse_console.exe)即可运行。
 
 
-**_如果你想要自修改代码并运行，请按以下步骤进行_**：
+**_如果你想要修改代码并运行，请按以下步骤进行：_**
 1. 安装python3, 在本目录打开控制台输入：`pip install -r requirements.txt`
 2. 安装chrome, 下载对应的chrome driver(注意Chrome版本，如果不对请前往 [此链接，版本116以下](https://registry.npmmirror.com/binary.html?path=chromedriver/) 或者 [此链接，版本116或更高](https://googlechromelabs.github.io/chrome-for-testing/#stable)下载对应的chromedriver.exe)
 
