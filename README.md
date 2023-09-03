@@ -14,7 +14,7 @@
 * V0.3.1: 添加excel文件的导入导出功能，功能与`savehtml`和`loadhtml`命令类似
 * V0.3.0: 改进翻译索引，减少对翻译文本的丢弃
 * V0.2.0: 使用`savehtml`和`loadhtml`快速翻译，见下文
-## <mark>使用`savehtml`和`loadhtml`⚡快速⚡翻译</mark>
+## <mark>使用`savehtml`和`loadhtml`⚡快速⚡翻译（浏览器自带快速翻译）</mark>
 使用`savehtml`和`loadhtml`命令，导出未翻译文本为html文件，然后借助Chrome或者Microsoft Edge浏览器翻译网页并保存覆盖原始html文件，实现翻译文本快速导入。请输入`help`命令获取详细信息。
 ### 使用步骤：
 1. 使用`savehtml {proj_idx}`命令，导出未翻译文本为html文件，然后用Chrome或者Microsoft Edge打开它。
@@ -45,7 +45,7 @@ python3 parse_console.py
 ** PS： 注意后续将过度到这个版本，旧版本的`incre_parse.py`和`parse.py`将被移除。这个新版本仍在开发中，后续改进将会持续推进**
 
 ## 运行环境准备
-我们已经打包成exe文件，点击目录下的[parse_console.exe](parse_console.exe)即可运行。
+我们已经打包好所有环境成exe文件，点击目录下的[parse_console.exe](parse_console.exe)即可运行。
 
 
 **_如果你想要修改代码并运行，请按以下步骤进行：_**
@@ -55,7 +55,7 @@ python3 parse_console.py
 
 ## 快速开始：
 
-首先请配置你的`chrome driver`文件路径，在`config.ini`中修改`CHROME_DRIVER`选项：
+（可选的）首先请配置你的`chrome driver`文件路径，在`config.ini`中修改`CHROME_DRIVER`选项（如果你不想要调用API翻译功能，这步可以跳过）：
 
 ```ini
 [GLOBAL]
@@ -69,7 +69,7 @@ NUM_WORKERS=2
 CHROME_DRIVER=D:\Users\Surface Book2\Downloads\chromedriver_win32\chromedriver.exe
 ```
 
-然后打开控制台交互程序：
+然后打开控制台交互程序[parse_console.exe](parse_console.exe)，或者安装好环境后运行python脚本：
 
 ```shell
 python3 parse_console.py
