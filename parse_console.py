@@ -77,9 +77,9 @@ def help_cmd():
                    'If the {html_file} is not specified, we will find the corresponding html file for the project {proj_idx} \n'
                    f'at "{default_config.project_path}/html/{{project.full_name}}.html".'])
     table.add_row(['saveexcel or se', 'saveexcel {proj_idx} or\nsaveexcel {proj_idx} {lang} {limit}',
-                   'It works like savehtml, BUT save as an excel file. For augments\' description Please see to savehtml.'])
+                   'It works like savehtml, BUT save as an excel file. For augments\' description, please see savehtml.'])
     table.add_row(['loadexcel or le', 'loadexcel {proj_idx} or\nloadexcel {proj_idx} {lang} {excel_file}',
-                   'It works like loadhtml, BUT read from an excel file. For augments\' description Please see to loadhtml.'])
+                   'It works like loadhtml, BUT read from an excel file. For augments\' description, please see loadhtml.'])
     table.add_row(['dump', 'dump {proj_idx}',
                    'Dump all translation and untranslation data of project {proj_idx} to an excel file.'])
     table.add_row(['accept or ac', 'accept {proj_idx} or accept {proj_idx} {lang}',
