@@ -1,7 +1,7 @@
 # RenPy rpy翻译文件机翻工具
 
 - 用于迁移旧版本的rpy翻译文件和自动翻译rpy翻译文件, 机翻采用Selenium调用Chrom的API翻译(可选)或者使用浏览器自带快速翻译(推荐)。
-- 可用的API机翻引擎：Google(速度较快，效果一般)，Caiyun(推荐，速度较快，效果好)，Youdao(速度较快)，Baidu(速度较快)~~
+- 可用的API机翻引擎：Google(速度较快，效果一般)，Caiyun(推荐，速度较快，效果好)，Youdao(速度较快)，Baidu(速度较快)
 - 部分代码来自[Maooookai(Mirage)](https://github.com/Maooookai/WebTranslator), [DrDRR](https://github.com/DrDRR/RenPy-WebTranslator/commits?author=DrDRR "View all commits by DrDRR")，Salute!
 - 该代码仅供学习使用。
 - 点击[parse_console.exe](parse_console.exe)即可运行，无需安装任何东西。如果你要修改代码并运行，见：[运行环境准备](#运行环境准备)
@@ -41,8 +41,6 @@ python3 parse_console.py
 运行效果：
 
 ![](imgs/console_preview.png)
-
-** PS： 注意后续将过度到这个版本，旧版本的`incre_parse.py`和`parse.py`将被移除。这个新版本仍在开发中，后续改进将会持续推进**
 
 ## 运行环境准备
 我们已经打包好所有环境成exe文件，点击目录下的[parse_console.exe](parse_console.exe)即可运行。
