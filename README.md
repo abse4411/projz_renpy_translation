@@ -46,6 +46,7 @@ python3 parse_console.py
 
 ## 运行环境准备
 我们已经打包好所有环境成exe文件，点击目录下的[parse_console.exe](parse_console.exe)即可运行。
+如果你想要调用API翻译功能，请下面的的步骤2装chrome和对应的chrome driver。
 
 
 **_如果你想要修改代码并运行，请按以下步骤进行：_**
@@ -74,6 +75,9 @@ CHROME_DRIVER=D:\Users\Surface Book2\Downloads\chromedriver_win32\chromedriver.e
 ```shell
 python3 parse_console.py
 ```
+### 流程速览
+![](imgs/pipline.png)
+
 
 ### 1.从旧版本renpy翻译构建(如果没有，请跳过)：
 
