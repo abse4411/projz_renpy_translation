@@ -13,6 +13,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 from store.index import project_index
 from trans.template import default_template
+from util.misc import my_input
 
 
 class concurrent_translator:
