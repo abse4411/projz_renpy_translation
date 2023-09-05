@@ -12,7 +12,7 @@ from config.config import default_config
 from concurrent.futures import ThreadPoolExecutor
 
 from store.index import project_index
-from util.misc import my_input, var_list, strip_tags, strip_breaks
+from trans.template import default_template
 
 
 class concurrent_translator:
@@ -52,32 +52,14 @@ class concurrent_translator:
         try:
             logging.info(
                 f'Starting translating {len(untranslated_lines)} untranslated line(s)')
-            last_output_text = None
+            proxy_translator = default_template(web_translator)
             for tid, line in untranslated_lines:
                 if line.strip() == '':
                     logging.warning(f'Empty text [{line}] found!')
                     translated_lines.append((tid, line))
                     continue
-                raw_line = line
-                line = strip_tags(line)
-                renpy_vars = var_list(line)
-                # replace the var by another name
-                tvar_list = [f'T{i}' for i in range(len(renpy_vars))]
-                t_line = line
-                for i in range(len(tvar_list)):
-                    t_line = t_line.replace(renpy_vars[i], tvar_list[i])
-                new_text = web_translator.translate(t_line)
-                if new_text is None:
-                    logging.warning(f'Error in translating [{raw_line}], it will ignored!')
-                    continue
-                if new_text == last_output_text:
-                    logging.warning(f'Error in translating [{raw_line}] (The translated text ({new_text}) is the same as the last translated text), it will ignored!')
-                    continue
-                last_output_text = new_text
-                new_text = strip_breaks(new_text)
-                # convert the var back
-                for i in range(len(tvar_list)):
-                    new_text = new_text.replace(tvar_list[i], renpy_vars[i])
+                new_text = proxy_translator.translate(line)
+                if new_text is None: continue
 
                 translated_lines.append((tid, '@@' + new_text))
                 if len(translated_lines) > 20:

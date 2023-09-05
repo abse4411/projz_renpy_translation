@@ -201,8 +201,8 @@ def translate_cmd(proj_idx: int, api_name: str, lang: str = None):
     driver_path = default_config.get_global('CHROME_DRIVER')
     def save_import():
         try:
-            import trans
-            return trans
+            import trans.web
+            return trans.web
         except Exception as e:
             logging.exception(e)
         return None
