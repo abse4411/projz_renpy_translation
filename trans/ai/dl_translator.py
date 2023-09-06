@@ -1,5 +1,6 @@
 import logging
 import os.path
+import time
 from typing import List, Tuple
 
 import tqdm
@@ -11,7 +12,7 @@ from config.config import default_config
 import dl_translate as dlt
 
 from util.file import exists_dir
-from util.misc import my_input
+from util.misc import my_input, strip_tags, var_list
 
 AVAILABLE_MODELS = ['m2m100', 'mbart50', 'nllb200']
 
@@ -21,13 +22,16 @@ class trans_wrapper(translator):
         save_dir = default_config.get_global('MODEL_SAVE_PATH')
         self.model_family = model_family
         self.proj = proj
+        logging.info(f'Start loading the {model_family} model')
+        st_time = time.time()
         if save_dir is not None:
             model_path = os.path.join(save_dir, model_family)
+            logging.info(f'Loading the {model_family} model from: {model_path}')
             assert exists_dir(model_path), f'The path ({model_path}) not a valid directory!'
-            self.mt = dlt.TranslationModel(model_path, model_family="m2m100")
-
+            self.mt = dlt.TranslationModel(model_path, model_family=model_family)
         else:
             self.mt = dlt.TranslationModel(model_family)
+        logging.info(f'The model is loaded in {time.time()-st_time:.1f}s')
 
     def determine_translation_target(self):
         ava_langs = list(self.mt.available_languages())
@@ -99,18 +103,32 @@ class trans_wrapper(translator):
 
         for b in tqdm.tqdm(batches, desc=f'Translating'):
             translated_lines = []
-            tids, texts = [], []
+            tids, texts, raw_texts = [], [], []
+            vars_list = []
             for tid, text in b:
                 if text.strip() == '':
                     logging.warning(f'Empty text [{text}] found!')
                     translated_lines.append((tid, text))
                     continue
                 tids.append(tid)
-                texts.append(text)
+                clear_text = strip_tags(text)
+                raw_texts.append(clear_text)
+                renpy_vars = var_list(clear_text)
+                tvar_list = [f'T{i}' for i in range(len(renpy_vars))]
+                vars_list.append((renpy_vars, tvar_list))
+                for i in range(len(renpy_vars)):
+                    clear_text = clear_text.replace(renpy_vars[i], tvar_list[i])
+                texts.append(clear_text)
             res = self.translate_batch(texts)
             assert len(res) == len(tids)
-            for tid, newtext in zip(tids, res):
-                translated_lines.append((tid, '@@' + newtext))
+            for tid, new_text, raw_text, vs in zip(tids, res, raw_texts,  vars_list):
+                if new_text.strip() == '':
+                    logging.warning(f'Error in translating [{raw_text}], the new text [{new_text}] is empty! It will ignored!')
+                    continue
+                renpy_vars, tvar_list = vs
+                for i in range(len(tvar_list)):
+                    new_text = new_text.replace(tvar_list[i], renpy_vars[i])
+                translated_lines.append((tid, '@@' + new_text))
             self.proj.update(translated_lines, lang)
         self.proj.save_by_default()
 
@@ -127,6 +145,7 @@ class trans_wrapper(translator):
 
 
 if __name__ == '__main__':
+    import log.logger
     p = project_index.init_from_dir(r'translated/tmp_renpy_game/game', 'a', 'a', False)
     t = trans_wrapper(p, 'm2m100')
     t.translate_all('chinese')
