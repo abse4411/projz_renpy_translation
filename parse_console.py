@@ -240,8 +240,7 @@ def dltranslate_cmd(proj_idx: int, model_name: str, lang: str = None):
         return
     def save_import():
         try:
-            import trans.ai
-            return trans.ai
+            raise RuntimeError('Not support!')
         except Exception as e:
             logging.exception(e)
         return None

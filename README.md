@@ -89,11 +89,17 @@ python3 parse_console.py
 如果你想要调用API翻译功能，请根据下面的步骤2的装chrome和对应的chrome driver。
 如果你想要加速AI离线翻译，请根据下面的步骤3的装支持的CUDA和对应的pytorch。
 
-
 **_如果你想要修改代码并运行，或者使用完整的功能，请按以下步骤进行：_**
 1. 安装python3, 在本目录打开控制台输入：`pip install -r requirements.txt`
 2. (可选，如果你要使用Selenium调用Chrom的API翻译)安装chrome, 下载对应的chrome driver(注意Chrome版本，如果不对请前往 [此链接，版本116以下](https://registry.npmmirror.com/binary.html?path=chromedriver/) 或者 [此链接，版本116或更高](https://googlechromelabs.github.io/chrome-for-testing/#stable)下载对应的chromedriver.exe)
 3. (可选，如果你要使用NVIDIA显卡**加速**AI离线翻译)安装根据你的NVIDIA安装支持CUDA和对应的pytorch：[https://pytorch.org](https://pytorch.org)
+
+
+## 注意
+目录中的`parse_console.exe`不支持AI离线翻译！！！由于支持AI离线翻译的完整版的`parse_console_full.exe`文件过大无法上传，请从下面链接下载后放在当前目录使用：
+* [BaiduPan]：[https://pan.baidu.com/s/1BfDtz3bODTBSioamwEPJug?pwd=j2xg](https://pan.baidu.com/s/1BfDtz3bODTBSioamwEPJug?pwd=j2xg)
+* [GoogleDrive]：[https://drive.google.com/file/d/1kXLCEGvCuW9vUW3ghpxM1tvL8-3zdT6Z/view?usp=drive_link](https://drive.google.com/file/d/1kXLCEGvCuW9vUW3ghpxM1tvL8-3zdT6Z/view?usp=drive_link)
+
 
 ## 快速开始：
 
