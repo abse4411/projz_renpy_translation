@@ -66,9 +66,7 @@
     ![dlt_settarget.png](imgs%2Fdlt_settarget.png)
 3. 设置模型前向每次翻译文本数量，如果你不使用显卡加速，设置4左右，看个人电脑内存情况，如果用显卡加速可以设置大一点：
     ![dlt_setbz.png](imgs%2Fdlt_setbz.png)
-4. `Ctrl + S` 保存文件，并覆盖原始的html文件。
-5. 使用`loadhtml {proj_idx}`命令，把翻译过的html文件导入项目。
-6. 使用`apply {proj_idx}`命令生成rpy文件即可。
+4. 等待翻译完后使用`apply {proj_idx}`命令生成rpy文件即可。
 ---
 
 ## <mark>新的版本!!!</mark>
