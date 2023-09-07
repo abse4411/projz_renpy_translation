@@ -24,7 +24,7 @@ class trans_wrapper(translator):
         self.proj = proj
         logging.info(f'Start loading the {model_family} model')
         st_time = time.time()
-        if save_dir is not None:
+        if save_dir is not None and save_dir.strip() != '':
             model_path = os.path.join(save_dir, model_family)
             logging.info(f'Loading the {model_family} model from: {model_path}')
             assert exists_dir(model_path), f'The path ({model_path}) not a valid directory!'
@@ -37,12 +37,23 @@ class trans_wrapper(translator):
         ava_langs = list(self.mt.available_languages())
         ava_indexes = list(range(len(ava_langs)))
 
-        table = PrettyTable(
-            ['Index', 'Language'])
-        for i, lang in enumerate(ava_langs):
-            table.add_row([f'{i}', lang])
-        print(table)
+        cols = 4
+        rows = [['Index', 'Language'] * cols]
+        tmp_row = []
+        for i, l in enumerate(ava_langs):
+            tmp_row.append(f'{i}')
+            tmp_row.append(l)
+            if len(tmp_row) % (cols*2) == 0:
+                rows.append(tmp_row)
+                tmp_row = []
+        if len(tmp_row) != 0:
+            fillers = ['']*(cols*2 - len(tmp_row))
+            rows.append(tmp_row+fillers)
+        table = PrettyTable(header=False)
+        for r in rows:
+            table.add_row(r)
         while True:
+            print(table)
             args = my_input(
                 'Please set the translation target (enter two language indexes from above table, like "0 1" which means that translating text from source language 0 into language 1),\n'
                 ' or enter Q/q to exit): ')
@@ -79,9 +90,6 @@ class trans_wrapper(translator):
                 print(e)
 
     def translate_all(self, lang: str):
-        if self.proj.untranslation_size(lang) <= 0:
-            logging.info(f'All texts in {self.proj.full_name} of language {lang} are translated!')
-            return
         untranslated_lines = self.proj.untranslated_lines(lang)
 
         yes = self.determine_translation_target()
@@ -89,7 +97,7 @@ class trans_wrapper(translator):
             logging.info(f'Stopped by user')
             return
         logging.info(f'Set the translation target: {self.source} -> {self.target}')
-        self.determine_batch_size()
+        yes = self.determine_batch_size()
         if not yes:
             logging.info(f'Stopped by user')
             return

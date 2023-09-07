@@ -1,13 +1,17 @@
 # RenPy rpy翻译文件机翻工具
 
-- 用于迁移旧版本的rpy翻译文件和自动翻译rpy翻译文件, 机翻采用Selenium调用Chrom的API翻译(可选)或者使用浏览器自带快速翻译(推荐)。
-- 可用的API机翻引擎：Google(速度较快，效果一般)，Caiyun(推荐，速度较快，效果好)，Youdao(速度较快)，Baidu(速度较快)
+- 用于迁移旧版本的rpy翻译文件和自动翻译rpy翻译文件, 机翻采用：
+    1.Selenium调用Chrom的API翻译(可选)
+    2.浏览器自带快速翻译(推荐)
+    3.基于开源项目[dl-translate](https://github.com/xhluca/dl-translate)的AI离线翻译
+- 可用的API翻译引擎：Google(速度较快，效果一般)，Caiyun(推荐，速度较快，效果好)，Youdao(速度较快)，Baidu(速度较快)
 - 部分代码来自[Maooookai(Mirage)](https://github.com/Maooookai/WebTranslator), [DrDRR](https://github.com/DrDRR/RenPy-WebTranslator/commits?author=DrDRR "View all commits by DrDRR")，Salute!
 - 该代码仅供学习使用。
 - 点击[parse_console.exe](parse_console.exe)即可运行，无需安装任何东西。如果你要修改代码并运行，见：[运行环境准备](#运行环境准备)
 
 ***
 # Changelog:
+* V0.3.5: 基于开源项目[dl-translate](https://github.com/xhluca/dl-translate)，我们集成AI模型进行翻译，实现离线翻译的功能。 对应的新命令为`dltranslate`。
 * V0.3.4: 我们把程序和运行环境打包成exe，现在你不需要python环境就可以运行程序。仅支持64位的Windows 10, 11系统
 * V0.3.3: 修复`apply`命令替换空文本的问题；翻译文本识别改进；新命令`accept`:针对那些不需要翻译文本，现在你可以把未翻译文本合并到翻译的文本中
 * V0.3.2: 修复翻译文本识别问题，现在能识别更多的翻译文本；新命令`dump`:现在你可以把一个项目所有翻译文本导出为excel
@@ -28,6 +32,44 @@
 5. 使用`loadhtml {proj_idx}`命令，把翻译过的html文件导入项目。
 6. 使用`apply {proj_idx}`命令生成rpy文件即可。
 ---
+## <mark>使用`dltranslate`命令进行AI翻译</mark>
+使用方法和`translate`命令类似：`dltranslate {proj_idx} {model_name}`，需要注意的是：
+* {model_name} 可选的模型有：m2m100, mbart50, and nllb200
+* 可利用NVIDIA显卡进行加速，你需要安装显卡支持CUDA和对应的pytorch（[https://pytorch.org](https://pytorch.org)）包，如何安装请网上搜索：安装显卡支持CUDA和对应的pytorch。
+* 如果没有NVIDIA显卡或者不想使用显卡加速，exe已经集成相应pytoch环境直接运行即可,使用CPU进行翻译，速度较慢且对内存要求高。
+* 如果在运行过程下载模型遇到问题：
+
+    ![dlt_downloaderror.png](imgs/dlt_downloaderror.png)
+
+    请手动下载模型到本地目录，假设你的保存模型目录为：`C:\hf_models`，可用模型下载地址如下：
+
+    m2m100：https://huggingface.co/facebook/m2m100_418M/tree/main
+    
+    mbart50：https://huggingface.co/facebook/mbart-large-50-many-to-many-mmt/tree/main
+    
+    nllb200：https://huggingface.co/facebook/nllb-200-distilled-600M/tree/main
+    
+    选择一个模型，在模型`C:\hf_models`目录下建立一个模型同名文件夹，如`m2m100`，`mbart50`，`nllb200`，然后把所有文件下载到对应模型文件夹下，例如：`C:\hf_models\m2m100`：
+
+    ![dlt_downloadmodel.png](imgs/dlt_downloadmodel.png)
+    
+    等文件都下载完后在配置文件`config.ini`中设置`MODEL_SAVE_PATH`选项：
+    ```ini
+    # path for saving deep models
+    MODEL_SAVE_PATH=C:\hf_models
+    ```
+    最后重新执行exe即可。
+
+### 使用步骤：
+1. 输入`dltranslate {proj_idx} {model_name}`命令，可以参考`translate`命令，只是`model_name`可选的有：`m2m100`，`mbart50`，`nllb200`
+2. 设置翻译目标，例如你想从英语翻译到中文，分别输入英语和中文对应索引号就行：
+    ![dlt_settarget.png](imgs%2Fdlt_settarget.png)
+3. 设置模型前向每次翻译文本数量，如果你不使用显卡加速，设置4左右，看个人电脑内存情况，如果用显卡加速可以设置大一点：
+    ![dlt_setbz.png](imgs%2Fdlt_setbz.png)
+4. `Ctrl + S` 保存文件，并覆盖原始的html文件。
+5. 使用`loadhtml {proj_idx}`命令，把翻译过的html文件导入项目。
+6. 使用`apply {proj_idx}`命令生成rpy文件即可。
+---
 
 ## <mark>新的版本!!!</mark>
 
@@ -43,14 +85,15 @@ python3 parse_console.py
 ![](imgs/console_preview.png)
 
 ## 运行环境准备
-我们已经打包好所有环境成exe文件，点击目录下的[parse_console.exe](parse_console.exe)即可运行。
-如果你想要调用API翻译功能，请下面的的步骤2装chrome和对应的chrome driver。
+我们已经打包好所有环境（已安装必要的包）成exe文件，点击目录下的[parse_console.exe](parse_console.exe)即可运行。
+如果你想要调用API翻译功能，请根据下面的步骤2的装chrome和对应的chrome driver。
+如果你想要加速AI离线翻译，请根据下面的步骤3的装支持的CUDA和对应的pytorch。
 
 
-**_如果你想要修改代码并运行，请按以下步骤进行：_**
+**_如果你想要修改代码并运行，或者使用完整的功能，请按以下步骤进行：_**
 1. 安装python3, 在本目录打开控制台输入：`pip install -r requirements.txt`
-2. 安装chrome, 下载对应的chrome driver(注意Chrome版本，如果不对请前往 [此链接，版本116以下](https://registry.npmmirror.com/binary.html?path=chromedriver/) 或者 [此链接，版本116或更高](https://googlechromelabs.github.io/chrome-for-testing/#stable)下载对应的chromedriver.exe)
-
+2. (可选，如果你要使用Selenium调用Chrom的API翻译)安装chrome, 下载对应的chrome driver(注意Chrome版本，如果不对请前往 [此链接，版本116以下](https://registry.npmmirror.com/binary.html?path=chromedriver/) 或者 [此链接，版本116或更高](https://googlechromelabs.github.io/chrome-for-testing/#stable)下载对应的chromedriver.exe)
+3. (可选，如果你要使用NVIDIA显卡**加速**AI离线翻译)安装根据你的NVIDIA安装支持CUDA和对应的pytorch：[https://pytorch.org](https://pytorch.org)
 
 ## 快速开始：
 
@@ -206,4 +249,4 @@ n {tl_dir} {游戏名} {版本}
 ## Todo List:
 1. [x] ~~添加excel导入导出功能~~ (Done at 20230819)
 2. [ ] 添加英语文档
-3. [ ] 添加AI模型翻译
+3. [ ] ~~添加AI模型翻译~~ (Done at 20230908)

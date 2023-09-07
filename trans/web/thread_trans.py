@@ -74,9 +74,6 @@ class concurrent_translator:
             web_translator.close()
 
     def start(self, lang:str):
-        if self.proj.untranslation_size(lang) <= 0:
-            logging.info(f'All texts in {self.proj.full_name} of language {lang} are translated!')
-            return
         untranslated_lines = self.proj.untranslated_lines(lang)
         batches = []
         batch_size = max((len(untranslated_lines)+1) // self.num_workers, 1)

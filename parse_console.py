@@ -55,6 +55,10 @@ def help_cmd():
                    'Translate all untranslated texts using the translation API {tran_api} for the project {proj_idx}.\n'
                    'The argument {lang} is optional, or specify it to use this language {lang}.\n'
                    'Available translation APIs are caiyu, google, baidu, and youdao.'])
+    table.add_row(['dltranslate or dlt', 'dltranslate {proj_idx} {model_name} or\ndltranslate {proj_idx} {model_name} {lang}',
+                   'Translate all untranslated texts using the translation AI model {model_name} for the project {proj_idx}.\n'
+                   'The argument {lang} is optional, or specify it to use this language {lang}.\n'
+                   'Available translation models are m2m100, mbart50, and nllb200.'])
     table.add_row(['merge or m', 'merge {sproj_idx} {tproj_idx} or\nmerge {sproj_idx} {tproj_idx} {lang}',
                    'Merge translated texts from a project {sproj_idx} to the target project {tproj_idx}.\n'
                    'The argument {lang} is optional, or specify it to use this language {lang}.'
@@ -198,6 +202,9 @@ def translate_cmd(proj_idx: int, api_name: str, lang: str = None):
     else:
         assert lang in proj.untranslated_langs, f'The selected_lang {lang} is not not Found! Available language(s) are {proj.untranslated_langs}.'
     assert api_name.strip() != '', f'api_name is empty!'
+    if proj.untranslation_size(lang) <= 0:
+        logging.info(f'All texts in {proj.full_name} of language {lang} are translated!')
+        return
     driver_path = default_config.get_global('CHROME_DRIVER')
     def save_import():
         try:
@@ -217,6 +224,36 @@ def translate_cmd(proj_idx: int, api_name: str, lang: str = None):
               'You can find chrome drivers in this website: https://chromedriver.storage.googleapis.com/index.html (Version under 116) '
               'or https://googlechromelabs.github.io/chrome-for-testing/#stable (Version 116 or higher).\n'
               'Then config the path of chrome driver in config.ini (CHROME_DRIVER=Your path (chromedriver.exe))')
+
+def dltranslate_cmd(proj_idx: int, model_name: str, lang: str = None):
+    # projs = _list_projects()
+    proj = project_index.load_from_file(_list_projects_and_select([proj_idx])[0])
+    if lang is None:
+        lang = proj.first_untranslated_lang
+        logging.info(
+            f'Selecting the default language {lang} for translating. If you want change to another language, please specify the argument {{lang}}')
+    else:
+        assert lang in proj.untranslated_langs, f'The selected_lang {lang} is not not Found! Available language(s) are {proj.untranslated_langs}.'
+    assert model_name.strip() != '', f'model_name is empty!'
+    if proj.untranslation_size(lang) <= 0:
+        logging.info(f'All texts in {proj.full_name} of language {lang} are translated!')
+        return
+    def save_import():
+        try:
+            import trans.ai
+            return trans.ai
+        except Exception as e:
+            logging.exception(e)
+        return None
+    wt = save_import()
+    if wt is not None:
+        assert model_name in wt.AVAILABLE_MODELS, f'model name must be one of {wt.AVAILABLE_MODELS}'
+        t = wt.trans_wrapper(proj, model_name)
+        t.translate_all(lang)
+        proj.save_by_default()
+    else:
+        print('To use the AI translator, please install these listed package in requirement.txt. (pip install -r requirements.txt)\n'
+              'You can also use pytorch with CUDA support to enable faster translation, see: https://pytorch.org/\n')
 
 
 
@@ -340,6 +377,8 @@ def main():
         'o': old_cmd,
         'translate': translate_cmd,
         't': translate_cmd,
+        'dltranslate': dltranslate_cmd,
+        'dlt': dltranslate_cmd,
         'merge': merge_cmd,
         'm': merge_cmd,
         'apply': apply_cmd,
@@ -384,6 +423,6 @@ def main():
                     f'Sorry, it seems to be a invalid command. Available commands are {list(register_commands.keys())}.')
     pass
 
-
+# package cmd: pyinstaller -i imgs/proz_icon.ico -F parse_console.py --copy-metadata tqdm --copy-metadata regex --copy-metadata requests --copy-metadata packaging --copy-metadata filelock --copy-metadata numpy --copy-metadata tokenizers --copy-metadata huggingface-hub --copy-metadata safetensors --copy-metadata accelerate --copy-metadata pyyaml
 if __name__ == '__main__':
     main()
