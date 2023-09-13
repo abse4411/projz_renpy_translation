@@ -43,12 +43,12 @@ def help_cmd():
                    'Create an untranslated index from the translation dir ({tl_path}) in renpy.\n It may like: D:\\my_renpy\game\\tl\\chinese.'
                    ' All texts are regard as untranslated ones.\n The {name} and {tag} are using while saving.]\n'
                    'The argument {greedy} is optional, or specify it by True to scan more translation item,\n'
-                   'which also discard less invalid lines. Default as False.'])
+                   'which also discard less invalid lines. Default as True.'])
     table.add_row(['old or o', 'old {tl_path} {name} {tag}\nnew {tl_path} {name} {tag} {greedy=True}',
                    'Create a translated index from the translation dir ({tl_path}) in renpy.\n It may like: D:\\my_renpy\game\\tl\\chinese.'
                    ' All texts are regard as translated ones.\n The {name} and {tag} are using while saving.\n'
                    'The argument {greedy} is optional, or specify it by True to scan more translation item,\n'
-                   'which also discard less invalid lines. Default as False.'])
+                   'which also discard less invalid lines. Default as True.'])
     table.add_row(['delete or d', 'delete {proj_idx}', 'Delete the specified project {proj_idx}.'])
     table.add_row(['clear or c', 'clear', f'Clear all projects in {default_config.project_path}.'])
     table.add_row(['translate or t', 'translate {proj_idx} {tran_api} or\ntranslate {proj_idx} {tran_api} {lang}',
@@ -56,7 +56,7 @@ def help_cmd():
                    'The argument {lang} is optional, or specify it to use this language {lang}.\n'
                    'Available translation APIs are caiyu, google, baidu, and youdao.'])
     table.add_row(['dltranslate or dlt', 'dltranslate {proj_idx} {model_name} or\ndltranslate {proj_idx} {model_name} {lang}',
-                   'Translate all untranslated texts using the translation AI model {model_name} for the project {proj_idx}.\n'
+                   'Translate all untranslated texts using the AI translation model {model_name} for the project {proj_idx}.\n'
                    'The argument {lang} is optional, or specify it to use this language {lang}.\n'
                    'Available translation models are m2m100, mbart50, and nllb200.'])
     table.add_row(['merge or m', 'merge {sproj_idx} {tproj_idx} or\nmerge {sproj_idx} {tproj_idx} {lang}',
@@ -68,7 +68,7 @@ def help_cmd():
                    'Apply all translated texts of project {proj_idx} to rpy files. \nThe  built directory structure is the same as that of the original project.'
                    f' All rpy files will be save in {default_config.project_path}\n'
                    'The argument {lang} is optional, or specify it to use this language {lang}.\n'
-                   'The argument {greedy} is optional, or specify it by True to scan more translation item'])
+                   'The argument {greedy} is optional, or specify it by True to scan more translation item. Default as True.'])
     table.add_row(['savehtml or sh', 'savehtml {proj_idx} or\nsavehtml {proj_idx} {lang} {limit}',
                    'Save untranslated texts of project {proj_idx} to a html file where Chrome or Microsoft Edge can perform translating.\n'
                    'Please use the Chrome or Microsoft Edge to translate the html file, then save to overwrite it.\n'
@@ -423,6 +423,6 @@ def main():
                     f'Sorry, it seems to be a invalid command. Available commands are {list(register_commands.keys())}.')
     pass
 
-# package cmd: pyinstaller -i imgs/proz_icon.ico -F parse_console.py --copy-metadata tqdm --copy-metadata regex --copy-metadata requests --copy-metadata packaging --copy-metadata filelock --copy-metadata numpy --copy-metadata tokenizers --copy-metadata huggingface-hub --copy-metadata safetensors --copy-metadata accelerate --copy-metadata pyyaml
+# package cmd: pyinstaller -i imgs/proz_icon.ico -F parse_console.py --copy-metadata tqdm --copy-metadata regex --copy-metadata requests --copy-metadata packaging --copy-metadata filelock --copy-metadata numpy --copy-metadata tokenizers --copy-metadata huggingface-hub --copy-metadata safetensors --copy-metadata accelerate --copy-metadata pyyaml --copy-metadata sentencepiece
 if __name__ == '__main__':
     main()

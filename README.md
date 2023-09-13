@@ -95,8 +95,8 @@ python3 parse_console.py
 
 ## 注意
 目录中的`parse_console.exe`不支持AI离线翻译！！！由于支持AI离线翻译的完整版的`parse_console_full.exe`文件过大无法上传，请从下面链接下载后放在当前目录使用：
-* [BaiduPan]：[https://pan.baidu.com/s/1BfDtz3bODTBSioamwEPJug?pwd=j2xg](https://pan.baidu.com/s/1BfDtz3bODTBSioamwEPJug?pwd=j2xg)
-* [GoogleDrive]：[https://drive.google.com/file/d/1kXLCEGvCuW9vUW3ghpxM1tvL8-3zdT6Z/view?usp=drive_link](https://drive.google.com/file/d/1kXLCEGvCuW9vUW3ghpxM1tvL8-3zdT6Z/view?usp=drive_link)
+* [BaiduPan]：[https://pan.baidu.com/s/1zyPWqLXmtM7PpvdFS62yag?pwd=47um](https://pan.baidu.com/s/1zyPWqLXmtM7PpvdFS62yag?pwd=47um)
+* [GoogleDrive]：[https://drive.google.com/file/d/1oP9XuYUGU4xDGk7OdkPt-31Z-ykffq7q/view?usp=drive_link](https://drive.google.com/file/d/1oP9XuYUGU4xDGk7OdkPt-31Z-ykffq7q/view?usp=drive_link)
 
 
 ## 快速开始：
