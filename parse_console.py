@@ -224,7 +224,7 @@ def translate_cmd(proj_idx: int, api_name: str, num_workers: int = None, lang: s
         translator.start(lang)
         proj.save_by_default()
     else:
-        print('To use web translator, please install the package "selenium" (pip install selenium) and download a compatible chrome driver for your chrome brower.\n'
+        print('To use the web translator, please install the package "selenium" (pip install selenium) and download a compatible chrome driver for your chrome brower.\n'
               'You can find chrome drivers in this website: https://chromedriver.storage.googleapis.com/index.html (Version under 116) '
               'or https://googlechromelabs.github.io/chrome-for-testing/#stable (Version 116 or higher).\n'
               'Then config the path of chrome driver in config.ini (CHROME_DRIVER=Your path (chromedriver.exe))')
@@ -256,8 +256,8 @@ def dltranslate_cmd(proj_idx: int, model_name: str, lang: str = None):
         t.translate_all(lang)
         proj.save_by_default()
     else:
-        print('To use the AI translator, please install these listed package in requirement.txt. (pip install -r requirements.txt)\n'
-              'You can also use pytorch with CUDA support to enable faster translation, see: https://pytorch.org/\n')
+        print('To use the AI translator, please install these listed packages in requirement.txt. (pip install -r requirements.txt)\n'
+              'You can also use the pytorch with CUDA support to enable faster translation, see: https://pytorch.org/\n')
 
 
 
@@ -292,7 +292,7 @@ def clear_cmd():
 def savehtml_cmd(proj_idx: int, lang: str = None, limit: int = None):
     if limit is not None:
         limit = int(limit)
-        assert limit > 0, 'limit should be large than 0'
+        assert limit > 0, '{limit} should be large than 0'
     # projs = _list_projects()
     proj = project_index.load_from_file(_list_projects_and_select([proj_idx])[0])
     if lang is None:
@@ -330,7 +330,7 @@ def loadhtml_cmd(proj_idx: int, lang: str = None, html_file: str = None):
 def saveexcel_cmd(proj_idx: int, lang: str = None, limit: int = None):
     if limit is not None:
         limit = int(limit)
-        assert limit > 0, 'limit should be large than 0'
+        assert limit > 0, '{limit} should be large than 0'
     # projs = _list_projects()
     proj = project_index.load_from_file(_list_projects_and_select([proj_idx])[0])
     if lang is None:
