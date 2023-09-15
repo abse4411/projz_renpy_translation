@@ -11,6 +11,7 @@
 
 ***
 # Changelog:
+* V0.3.6: 修复了使用web翻译多线程的问题，部分命令功能改进
 * V0.3.5: 基于开源项目[dl-translate](https://github.com/xhluca/dl-translate)，我们集成AI模型进行翻译，实现离线翻译的功能。 对应的新命令为`dltranslate`。
 * V0.3.4: 我们把程序和运行环境打包成exe，现在你不需要python环境就可以运行程序。仅支持64位的Windows 10, 11系统
 * V0.3.3: 修复`apply`命令替换空文本的问题；翻译文本识别改进；新命令`accept`:针对那些不需要翻译文本，现在你可以把未翻译文本合并到翻译的文本中
