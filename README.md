@@ -21,7 +21,7 @@
 ## <mark>使用`savehtml`和`loadhtml`⚡快速⚡翻译（浏览器自带快速翻译）</mark>
 使用`savehtml`和`loadhtml`命令，导出未翻译文本为html文件，然后借助Chrome或者Microsoft Edge浏览器翻译网页并保存覆盖原始html文件，实现翻译文本快速导入。请输入`help`命令获取详细信息。
 ### 使用步骤：
-1. 使用`savehtml {proj_idx}`命令，导出未翻译文本为html文件，然后用Chrome或者Microsoft Edge打开它。
+1. 使用`savehtml {proj_idx}`命令，导出未翻译文本为html文件，然后用~~Chrome~~(不建议)或者Microsoft Edge打开它。
 2. 右键，使用翻译网页功能,或者在地址栏右边找到翻译网页按钮：
 
 ![](imgs/trans_menu.png)
@@ -121,7 +121,7 @@ CHROME_DRIVER=D:\Users\Surface Book2\Downloads\chromedriver_win32\chromedriver.e
 python3 parse_console.py
 ```
 ### 流程速览
-![](imgs/pipline.png)
+![](imgs/pipeline.png)
 
 
 ### 1.从旧版本renpy翻译构建(如果没有，请跳过)：
@@ -209,10 +209,11 @@ n {tl_dir} {游戏名} {版本}
 使用`translate`或者`t`命令，只需要指定要翻译项目索引和翻译引擎即可：
 
 ```shell
- t {project_idx} {translation_API}
+ t {project_idx} {translation_API} {num_workers=1}
 ```
 
 可用的`{translation_API}`有caiyu, google, baidu, and youdao。我们移除旧版本的`deepl`，因为它的问题很多。
+`{num_workers}` 是可选的，表示要启动的浏览器数量，数量越多翻译速度越快，但是资源消耗量大。
 
 一个例子：
 

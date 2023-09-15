@@ -51,9 +51,11 @@ def help_cmd():
                    'which also discard less invalid lines. Default as True.'])
     table.add_row(['delete or d', 'delete {proj_idx}', 'Delete the specified project {proj_idx}.'])
     table.add_row(['clear or c', 'clear', f'Clear all projects in {default_config.project_path}.'])
-    table.add_row(['translate or t', 'translate {proj_idx} {tran_api} or\ntranslate {proj_idx} {tran_api} {lang}',
+    table.add_row(['translate or t', 'translate {proj_idx} {tran_api} or\ntranslate {proj_idx} {tran_api} {num_workers} or\nq'
+                                     'translate {proj_idx} {tran_api} {num_workers} {lang}',
                    'Translate all untranslated texts using the translation API {tran_api} for the project {proj_idx}.\n'
                    'The argument {lang} is optional, or specify it to use this language {lang}.\n'
+                   'The argument {num_workers=1} is optional, or specify it to set the number of browsers to launch.  Default as 1.\n'
                    'Available translation APIs are caiyu, google, baidu, and youdao.'])
     table.add_row(['dltranslate or dlt', 'dltranslate {proj_idx} {model_name} or\ndltranslate {proj_idx} {model_name} {lang}',
                    'Translate all untranslated texts using the AI translation model {model_name} for the project {proj_idx}.\n'
@@ -70,7 +72,7 @@ def help_cmd():
                    'The argument {lang} is optional, or specify it to use this language {lang}.\n'
                    'The argument {greedy} is optional, or specify it by True to scan more translation item. Default as True.'])
     table.add_row(['savehtml or sh', 'savehtml {proj_idx} or\nsavehtml {proj_idx} {lang} {limit}',
-                   'Save untranslated texts of project {proj_idx} to a html file where Chrome or Microsoft Edge can perform translating.\n'
+                   'Save untranslated texts of project {proj_idx} to a html file where Chrome (NOT recommend) or Microsoft Edge can perform translating.\n'
                    'Please use the Chrome or Microsoft Edge to translate the html file, then save to overwrite it.\n'
                    'The argument {limit} is optional, or specify it to limit the number of output lines.\n'
                    'The argument {lang} is optional, or specify it to use this language {lang}.\n'
@@ -192,8 +194,10 @@ def merge_cmd(source_idx: int, target_idx: int, lang: str = None):
         tproj.save_by_default()
 
 
-def translate_cmd(proj_idx: int, api_name: str, lang: str = None):
+def translate_cmd(proj_idx: int, api_name: str, num_workers: int = None, lang: str = None):
     # projs = _list_projects()
+    if num_workers is not None:
+        num_workers = int(num_workers)
     proj = project_index.load_from_file(_list_projects_and_select([proj_idx])[0])
     if lang is None:
         lang = proj.first_untranslated_lang
@@ -216,7 +220,7 @@ def translate_cmd(proj_idx: int, api_name: str, lang: str = None):
     wt = save_import()
     if wt is not None:
         translator_class = wt.web_translator.__dict__[api_name]
-        translator = wt.thread_trans.concurrent_translator(proj, lambda: translator_class(driver_path))
+        translator = wt.thread_trans.concurrent_translator(proj, lambda: translator_class(driver_path), num_workers=num_workers)
         translator.start(lang)
         proj.save_by_default()
     else:

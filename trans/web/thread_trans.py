@@ -17,10 +17,14 @@ from util.misc import my_input
 
 
 class concurrent_translator:
-    def __init__(self, proj: project_index, translator_class):
-        self.num_workers = default_config.num_workers
+    def __init__(self, proj: project_index, translator_class, num_workers: int = None):
+        if num_workers is None:
+            self.num_workers = default_config.num_workers
+        else:
+            assert num_workers > 0
+            self.num_workers = num_workers
         self.translator_class = translator_class
-        self.executor = ThreadPoolExecutor(max_workers=default_config.num_workers)
+        self.executor = ThreadPoolExecutor(max_workers=self.num_workers)
         self.proj = proj
 
     def safe_update(self,translated_lines: List[Tuple[str, str]], lang:str):
@@ -75,8 +79,9 @@ class concurrent_translator:
 
     def start(self, lang:str):
         untranslated_lines = self.proj.untranslated_lines(lang)
+        logging.info(f'There are {len(untranslated_lines)} lines to be translated')
         batches = []
-        batch_size = max((len(untranslated_lines)+1) // self.num_workers, 1)
+        batch_size = max((len(untranslated_lines)+1) // self.num_workers + 2, 1)
         if batch_size == 1:
             batches = [[untranslated_lines]]
         else:
@@ -92,10 +97,20 @@ class concurrent_translator:
         for b in batches:
             self.sem.acquire()
             threads.append(self.executor.submit(self.translate, b, lang))
+            logging.info('Launching a browser...')
         logging.info('Waiting for all threads...')
-        self.sem.acquire()
+        for i in range(len(batches)):
+            self.sem.acquire()
         self.sem.release()
         print('Now you can do any operation on these opened browsers, like setting your translation setting: English -> Chinese.')
+        def _all_done(ts):
+            for t in ts:
+                if not t.done():
+                    return False
+            return True
+        if _all_done(threads):
+            logging.warning('Error in launching browsers!')
+            return
         while True:
             yes = my_input('After all, enter Y/y to start, or Q/q to exit:')
             yes = yes.strip().lower()
@@ -107,11 +122,6 @@ class concurrent_translator:
         self.pbar = tqdm.tqdm(total=len(untranslated_lines), desc=f'Translating')
         self.event.set()
         if yes == 'y':
-            def _all_done(ts):
-                for t in ts:
-                    if not t.done():
-                        return False
-                return True
 
             while not _all_done(threads):
                 time.sleep(10)
