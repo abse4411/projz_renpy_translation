@@ -14,6 +14,8 @@ class VAR_NAME:
     OLD = "old"
     NEW = "new"
 
+split_regex = re.compile('("\s+")')
+
 def text_type(text: str):
     if text:
         text = text.strip()
@@ -36,7 +38,15 @@ def text_type(text: str):
                 # ch_name[optional] "Hello world!"
             '''
             if shape_pos != -1 and shape_pos < first_quote:
-                var_name = text[shape_pos+1:first_quote].strip()
+                ''' match like this
+                    # "ch_name" "Hello world!"
+                '''
+                m_res = split_regex.search(text)
+                if m_res is not None:
+                    var_name = text[first_quote:m_res.start(1)]
+                    quote_content = text[m_res.end(1):last_quote]
+                else:
+                    var_name = text[shape_pos+1:first_quote].strip()
                 return quote_content, TEXT_TYPE.RAW, var_name
             new_pos = text.find("new ")
             ''' if an new line like this:
@@ -45,7 +55,15 @@ def text_type(text: str):
             if new_pos != -1 and new_pos < first_quote and text[:new_pos].strip() == '' and text[new_pos:first_quote].strip() == VAR_NAME.NEW:
                 return quote_content, TEXT_TYPE.NEW, VAR_NAME.NEW
             else:
-                var_name = text[:first_quote].strip()
+                ''' match like this
+                    "ch_name" "Hello world!"
+                '''
+                m_res = split_regex.search(text)
+                if m_res is not None:
+                    var_name = text[first_quote:m_res.start(1)]
+                    quote_content = text[m_res.end(1):last_quote]
+                else:
+                    var_name = text[:first_quote].strip()
                 return quote_content, TEXT_TYPE.NEW, var_name
     return None, TEXT_TYPE.OTHER, None
 
