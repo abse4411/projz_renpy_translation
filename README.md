@@ -5,7 +5,7 @@
     2.浏览器自带快速翻译(推荐)
     3.基于开源项目[dl-translate](https://github.com/xhluca/dl-translate)的AI离线翻译
 - 可用的API翻译引擎：Google(速度较快，效果一般)，Caiyun(推荐，速度较快，效果好)，Youdao(速度较快)，Baidu(速度较快)
-- 我们项目参考了这些项目，见: [Acknowledgement](#Acknowledgement(致谢))
+- 我们项目参考了这些项目，见: [Acknowledgement](#Acknowledgement)
 - 该代码仅供学习使用。我们不提供任何游戏文件。
 - 点击[parse_console.exe](parse_console.exe)即可运行，无需安装任何库。如果你要修改代码并运行，见：[运行环境准备](#运行环境准备)
 
@@ -257,7 +257,7 @@ n {tl_dir} {游戏名} {版本}
 2. [ ] 添加英语文档
 3. [ ] ~~添加AI模型翻译~~ (Done at 20230908)
 
-## Acknowledgement(致谢)
+## Acknowledgement
 我们参考或调用代码：
 * 早期项目代码（web网页翻译）参考：[Maooookai(Mirage)](https://github.com/Maooookai/WebTranslator), [DrDRR](https://github.com/DrDRR/RenPy-WebTranslator/commits?author=DrDRR "View all commits by DrDRR")
 * 使用的AI离线翻译库：[dl-translate](https://github.com/xhluca/dl-translate)
