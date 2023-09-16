@@ -257,7 +257,7 @@ n {tl_dir} {游戏名} {版本}
 2. [ ] 添加英语文档
 3. [ ] ~~添加AI模型翻译~~ (Done at 20230908)
 
-## Acknowledgement (致谢)
+## Acknowledgement(致谢)
 我们参考或调用代码：
 * 早期项目代码（web网页翻译）参考：[Maooookai(Mirage)](https://github.com/Maooookai/WebTranslator), [DrDRR](https://github.com/DrDRR/RenPy-WebTranslator/commits?author=DrDRR "View all commits by DrDRR")
 * 使用的AI离线翻译库：[dl-translate](https://github.com/xhluca/dl-translate)
