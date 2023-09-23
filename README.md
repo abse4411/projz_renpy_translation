@@ -8,6 +8,8 @@
 - 我们项目参考了这些项目，见: [Acknowledgement](#Acknowledgement)
 - 该代码仅供学习使用。我们不提供任何游戏文件。
 - 点击[parse_console.exe](parse_console.exe)即可运行，无需安装任何库。如果你要修改代码并运行，见：[运行环境准备](#运行环境准备)
+- 本项目由Python实现，因此直接运行`parse_console.py`文件会比`parse_console.exe`速度快且方便。
+如何安装python环境请自选搜索网上教程。虽然有exe文件提供免环境直接运行，但是部分功能（AI离线翻译）会受限。
 
 ***
 # Changelog:
@@ -35,9 +37,9 @@
 ---
 ## <mark>使用`dltranslate`命令进行AI翻译</mark>
 使用方法和`translate`命令类似：`dltranslate {proj_idx} {model_name}`，需要注意的是：
+* 需要手动安装python环境，安装环境后打开控制台并输入命令`pip install -r requirements.txt`安装依赖
 * {model_name} 可选的模型有：m2m100, mbart50, and nllb200
 * 可利用NVIDIA显卡进行加速，你需要安装显卡支持CUDA和对应的pytorch（[https://pytorch.org](https://pytorch.org)）包，如何安装请网上搜索：安装显卡支持CUDA和对应的pytorch。
-* 如果没有NVIDIA显卡或者不想使用显卡加速，exe已经集成相应pytoch环境直接运行即可,使用CPU进行翻译，速度较慢且对内存要求高。
 * 如果在运行过程下载模型遇到问题：
 
     ![dlt_downloaderror.png](imgs/dlt_downloaderror.png)
@@ -90,7 +92,7 @@ python3 parse_console.py
 
 **_如果你想要修改代码并运行，或者使用完整的功能，请按以下步骤进行：_**
 1. 安装python3, 在本目录打开控制台输入：`pip install -r requirements.txt`
-2. (可选，如果你要使用Selenium调用Chrom的API翻译)安装chrome, 下载对应的chrome driver(注意Chrome版本，如果不对请前往 [此链接，版本116以下](https://registry.npmmirror.com/binary.html?path=chromedriver/) 或者 [此链接，版本116或更高](https://googlechromelabs.github.io/chrome-for-testing/#stable)下载对应的chromedriver.exe)
+2. (可选，如果你要使用Selenium调用Chrom的API翻译)安装chrome, 下载对应的chrome driver(注意Chrome版本(版本信息可以在Chrome：设置->关于Chrome)，前往 [此链接，版本116以下](https://registry.npmmirror.com/binary.html?path=chromedriver/) 或者 [此链接，版本116或更高](https://googlechromelabs.github.io/chrome-for-testing/#stable)下载对应的chromedriver.exe)
 3. (可选，如果你要使用NVIDIA显卡**加速**AI离线翻译)安装根据你的NVIDIA安装支持CUDA和对应的pytorch：[https://pytorch.org](https://pytorch.org)
 
 
@@ -205,9 +207,10 @@ n {tl_dir} {游戏名} {版本}
 
 我们看到新版本`mygame v0.0.2`中已经翻译文本和为翻译的文本数量发生改变，这说明`merge`起作用了。
 
-### 4.使用翻译引擎翻译剩余的文本：
+### 4.使用API翻译引擎翻译剩余的文本：
 
-使用`translate`或者`t`命令，只需要指定要翻译项目索引和翻译引擎即可：
+使用`translate`或者`t`命令，只需要指定要翻译项目索引和翻译引擎即可（注意如果你没有[运行环境准备](#运行环境准备)步骤2的chrome和相应的chromedriver，以下命令无法运行。
+你可以使用[savehtml和loadhtml命令代替这个步骤](#mark使用savehtml和loadhtml快速翻译浏览器自带快速翻译mark)）：
 
 ```shell
  t {project_idx} {translation_API} {num_workers=1}
