@@ -3,7 +3,7 @@ from typing import Any
 from cmd.io import new_cmd, old_cmd, savehtml_cmd, loadhtml_cmd, saveexcel_cmd, loadexcel_cmd, dumptoexcel_cmd, \
     updatefromexcel_cmd
 from cmd.manage import delete_cmd, list_cmd, clear_cmd
-from cmd.project import merge_cmd, apply_cmd, acceptuntrans_cmd
+from cmd.project import merge_cmd, apply_cmd, acceptuntrans_cmd, revert_cmd
 from cmd.trans import translate_cmd, dltranslate_cmd
 
 _REGISTERED_CMDS = {
@@ -19,6 +19,8 @@ _REGISTERED_CMDS = {
     'm': merge_cmd,
     'apply': apply_cmd,
     'a': apply_cmd,
+    'revert': revert_cmd,
+    'r': revert_cmd,
     'list': list_cmd,
     'l': list_cmd,
     'delete': delete_cmd,

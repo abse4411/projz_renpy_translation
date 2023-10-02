@@ -138,6 +138,13 @@ class project_index:
             return self._raw_data.translated_lines[(lang, tid)].new_str
         return None
 
+    def untranslate(self, tid:str, lang:str):
+        if (lang, tid) in self._raw_data.translated_lines:
+            return self._raw_data.translated_lines[(lang, tid)].old_str
+        if (lang, tid) in self._raw_data.untranslated_lines:
+            return self._raw_data.untranslated_lines[(lang, tid)].old_str
+        return None
+
     @classmethod
     def init_from_dir(cls, source_dir: str, name: str, tag: str, is_translated=True, strict=False):
         ryp_files = walk_and_select(source_dir, lambda x: x.endswith('.rpy'))
@@ -267,14 +274,14 @@ class project_index:
                         parsed_item = preparsed_data[line_no]
                         trans_txt = self.translate(parsed_item.identifier, lang)
                         if trans_txt is None:
-                            unapply_cnt += 1
+                            unapply_cnt_i += 1
                         else:
                             apply_cnt_i += 1
                             lb = text.find('"')
                             rb = text.rfind('"')
                             text = text[:lb+1] + trans_txt + text[rb:]
                     else:
-                        unapply_cnt += 1
+                        unapply_cnt_i += 1
                 r.update(text)
                 text = r.next()
                 line_no += 1
@@ -284,6 +291,57 @@ class project_index:
             unapply_cnt += unapply_cnt_i
         logging.info(
             f'{len(rpy_files)} rpy file(s) are translated with {apply_cnt} translated line(s) and {unapply_cnt} untranslated line(s) in language {lang}.')
+        logging.info(f'You can find output rpy files in {save_dir}.')
+
+
+    def revert_by_default(self, lang:str=None, strict=False):
+        lang = self.select_or_check_lang(lang, True)
+        self.revert(default_config.project_path, lang, strict=strict)
+    def revert(self, save_dir:str, lang:str=None, strict=False):
+        lang = self.select_or_check_lang(lang, True)
+        save_dir = os.path.join(save_dir, self.full_name)
+        mkdir(save_dir)
+        rpy_files = walk_and_select(self.source_dir, lambda x: x.endswith('.rpy'))
+        apply_cnt = 0
+        unapply_cnt = 0
+        abs_source_dir = os.path.abspath(self.source_dir)
+        for rpy_file in tqdm.tqdm(rpy_files,
+                                  desc=f'Reverting translated texts on {self.full_name} in language {lang}, you can found it in {save_dir}.'):
+            rpy_file = os.path.abspath(rpy_file)
+            preparsed_data = self.perparse_with_linenumber(rpy_file, selected_lang=lang, skip_unmatch=False, strict=strict)
+            base_dir = os.path.join(save_dir, file_dir(rpy_file[len(abs_source_dir):]).strip(os.sep))
+            mkdir(base_dir)
+            r = replacer(rpy_file, save_dir=base_dir)
+            r.start(force=True)
+            apply_cnt_i = 0
+            unapply_cnt_i = 0
+            text = r.next()
+            line_no = 1
+            while text is not None:
+                ori_text, ttype, _ = text_type(text)
+                if ttype == TEXT_TYPE.NEW:
+                    raw_text = None
+                    if line_no in preparsed_data:
+                        parsed_item = preparsed_data[line_no]
+                        raw_text = parsed_item.old_str
+                        if raw_text is None:
+                            raw_text = self.untranslate(parsed_item.identifier, lang)
+                    if raw_text is None:
+                        unapply_cnt_i += 1
+                    else:
+                        apply_cnt_i += 1
+                        lb = text.find('"')
+                        rb = text.rfind('"')
+                        text = text[:lb+1] + raw_text + text[rb:]
+                r.update(text)
+                text = r.next()
+                line_no += 1
+            logging.info(
+                f'{rpy_file} is untranslated with {apply_cnt_i} line(s) and {unapply_cnt_i} ignored line(s) in language {lang}.')
+            apply_cnt += apply_cnt_i
+            unapply_cnt += unapply_cnt_i
+        logging.info(
+            f'{len(rpy_files)} rpy file(s) are untranslated with {apply_cnt} line(s) and {unapply_cnt} ignored line(s) in language {lang}.')
         logging.info(f'You can find output rpy files in {save_dir}.')
 
     @classmethod

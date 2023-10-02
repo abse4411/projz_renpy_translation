@@ -33,3 +33,9 @@ def apply_cmd(proj_idx: int, lang: str = None, greedy: bool = True):
     strict_mode = not (distutils.util.strtobool(greedy) if isinstance(greedy, str) else greedy)
     proj = project_index.load_from_file(_list_projects_and_select([proj_idx])[0])
     proj.apply_by_default(lang, strict=strict_mode)
+
+def revert_cmd(proj_idx: int, lang: str = None, greedy: bool = True):
+    # projs = _list_projects()
+    strict_mode = not (distutils.util.strtobool(greedy) if isinstance(greedy, str) else greedy)
+    proj = project_index.load_from_file(_list_projects_and_select([proj_idx])[0])
+    proj.revert_by_default(lang, strict=strict_mode)

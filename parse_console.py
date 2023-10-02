@@ -19,12 +19,13 @@ from store.index import project_index
 from util.file import exists_dir, file_name, exists_file, mkdir
 from util.misc import my_input, yes
 
+__VERSION__ = '0.3.7'
+
 
 def help_cmd():
-    print("RenPy rpy文件机翻工具")
-    print("By abse4411(Github:https://github.com/abse4411/projz_renpy), version 3.0")
-    table = PrettyTable(
-        ['Command', 'Usage', 'Help'])
+    print("RenPy翻译 rpy翻译文件机翻工具 - translator for Renpy rpy files, renpy translation, rpy translation")
+    print(f"By abse4411(https://github.com/abse4411/projz_renpy_translation), version {__VERSION__}")
+    table = PrettyTable(['Command', 'Usage', 'Help'])
     table.hrules = prettytable.ALL
     table.add_row(['new or n', 'new {tl_path} {name} {tag} or\nnew {tl_path} {name} {tag} {greedy=True}',
                    'Create an untranslated index from the translation dir ({tl_path}) in renpy.\n It may like: D:\\my_renpy\game\\tl\\chinese.'
@@ -56,28 +57,37 @@ def help_cmd():
                    ])
     table.add_row(['apply or a', 'apply {proj_idx} or apply {proj_idx} {lang} or\n'
                                  'apply {proj_idx} {lang} {greedy=True}',
-                   'Apply all translated texts of project {proj_idx} to rpy files. \nThe  built directory structure is the same as that of the original project.'
+                   'Apply all translated texts of project {proj_idx} to rpy files. \nThe built directory structure is the same as that of the original project.'
                    f' All rpy files will be save in {default_config.project_path}\n'
                    'The argument {lang} is optional, or specify it to use this language {lang}.\n'
                    'The argument {greedy} is optional, or specify it by True to scan more translation item. Default as True.'])
-    table.add_row(['savehtml or sh', 'savehtml {proj_idx} or\nsavehtml {proj_idx} {lang} {limit}',
+    table.add_row(['revert or r', 'revert {proj_idx} or revert {proj_idx} {lang} or\n'
+                                 'revert {proj_idx} {lang} {greedy=True}',
+                   'Revert all translated texts back to untranslated ones of project {proj_idx} to rpy files. This is an reverse operation of apply.\n'
+                   'For arguments\' description, please refer to apply.'])
+    table.add_row(['savehtml or sh', 'savehtml {proj_idx} or\nsavehtml {proj_idx} {lang} or\nsavehtml {proj_idx} {lang} {limit}',
                    'Save untranslated texts of project {proj_idx} to a html file where Chrome (NOT recommend) or Microsoft Edge can perform translating.\n'
                    'Please use the Chrome or Microsoft Edge to translate the html file, then save to overwrite it.\n'
                    'The argument {limit} is optional, or specify it to limit the number of output lines.\n'
                    'The argument {lang} is optional, or specify it to use this language {lang}.\n'
                    'After all, use loadhtml {proj_idx} to update translated texts!'])
-    table.add_row(['loadhtml or lh', 'loadhtml {proj_idx} or\nloadhtml {proj_idx} {lang} {html_file}',
+    table.add_row(['loadhtml or lh', 'loadhtml {proj_idx} or\nloadhtml {proj_idx} {lang} or\nloadhtml {proj_idx} {lang} {html_file}',
                    'Load translated texts from a translated html file, and apply to untranslated texts of project {proj_idx}.\n'
                    'The argument {lang} is optional, or specify it to use this language {lang}.\n'
                    'If the {html_file} is not specified, we will find the corresponding html file for the project {proj_idx} \n'
                    f'at "{default_config.project_path}/html/{{project.full_name}}.html".'])
-    table.add_row(['saveexcel or se', 'saveexcel {proj_idx} or\nsaveexcel {proj_idx} {lang} {limit}',
+    table.add_row(['saveexcel or se', 'saveexcel {proj_idx} or\nsaveexcel {proj_idx} {lang} or\nsaveexcel {proj_idx} {lang} {limit}',
                    'It works like savehtml, BUT save as an excel file. For augments\' description, please see savehtml.'])
-    table.add_row(['loadexcel or le', 'loadexcel {proj_idx} or\nloadexcel {proj_idx} {lang} {excel_file}',
+    table.add_row(['loadexcel or le', 'loadexcel {proj_idx} or\nloadexcel {proj_idx} {lang} or\nloadexcel {proj_idx} {lang} {excel_file}',
                    'It works like loadhtml, BUT read from an excel file. For augments\' description, please see loadhtml.'])
-    table.add_row(['dump', 'dump {proj_idx}',
-                   'Dump all translation and untranslation data of project {proj_idx} to an excel file.'])
-    table.add_row(['accept or ac', 'accept {proj_idx} or accept {proj_idx} {lang}',
+    table.add_row(['dump or du', 'dump {proj_idx}  or\ndump {proj_idx} {lang} or\ndump {proj_idx} {lang} {scope}',
+                   'Dump all translation or untranslation (specified by argument {scope}) data of project {proj_idx} \nin language (specified by argument {lang}) to an excel file.\n'
+                   'The argument {lang} is optional, or specify it to use this language {lang}.\n'
+                   'The argument {scope} is optional, available scopes are [trans, untrans, all].  Default as all.'])
+    table.add_row(['update or up', 'update {proj_idx} or\nupdate {proj_idx} {lang} or\nupdate {proj_idx} {lang} {excel_file}',
+                   'Update all translation or untranslation (specified by argument {scope}) data of project {proj_idx} \nin language (specified by argument {lang}) from an excel file.\n'
+                    'It works like loadexcel, please refer to loadexcel.'])
+    table.add_row(['accept or ac', 'accept {proj_idx} or accept {proj_idx} {lang} or \n',
                    'Accept all untranslated texts as translated texts for project {proj_idx}.\n'
                    'The argument {lang} is optional, or specify it to use this language {lang}.'])
     table.add_row(['list or l', 'list or list {proj_idx}',
