@@ -145,22 +145,44 @@ def load_from_excel(file_name: str, tids_and_untranslated_texts: List[Tuple[str,
     return res
 
 
-def dump_to_excel(save_dir:str, proj: project_index, lang: str, scope: str):
+def dump_to_excel(save_file:str, proj: project_index, lang: str, scope: str):
     columns = [HEAD_NAME.INDEX_STR, HEAD_NAME.LANGUAGE_STR, HEAD_NAME.LINE_STR, HEAD_NAME.RAW_TEXT_STR, HEAD_NAME.NEW_TEXT_STR,
               HEAD_NAME.CODE_INFO_STR, HEAD_NAME.FILE_STR]
     lang, sorted_data = group_by_file(proj, lang, scope)
     if lang is None or len(sorted_data) == 0:
         logging.info(f'Not translation or untranslation data ({lang}) in the current project')
         return
-    save_name = os.path.join(save_dir, f'{proj.full_name}_lange_{lang.strip()}.xlsx')
     cnt = 0
-    with ExcelWriter(save_name) as writer:
+    with ExcelWriter(save_file) as writer:
         for file, data in tqdm.tqdm(sorted_data.items(), total=len(sorted_data), desc='Saving to file...'):
             df = pd.DataFrame(unpack_items(data))
             cnt += len(df)
             df = df.reindex(columns=columns)
             df.to_excel(writer, sheet_name=file.strip(), index=False)
-    logging.info(f'All translation or untranslation data ({lang}, count:{cnt}) are save to {save_name}')
+    logging.info(f'All translation or untranslation data ({lang}, count:{cnt}) are save to {save_file}')
+
+def update_from_excel(save_file:str, proj: project_index, lang: str):
+    use_cnt = 0
+    unuse_cnt = 0
+    df = pd.read_excel(save_file, sheet_name=None)
+    res = []
+    for sheet in tqdm.tqdm(df.keys(), total=len(df), desc='Reading from the file...'):
+        sheet_data = df[sheet]
+        for tid, lang, new_str in zip(sheet_data[HEAD_NAME.INDEX_STR], sheet_data[HEAD_NAME.LANGUAGE_STR],
+                                      sheet_data[HEAD_NAME.NEW_TEXT_STR]):
+            if pd.isna(new_str) or str(lang).strip() != lang:
+                unuse_cnt += 1
+                continue
+            else:
+                tid, new_str = str(tid).strip(), str(new_str)
+                if proj.translate(tid, lang) == new_str:
+                    unuse_cnt += 1
+                    continue
+                res.append((tid, new_str))
+                use_cnt += 1
+    logging.info(f'There are {use_cnt} updated line(s) and {unuse_cnt} unused line(s) in {save_file}')
+    return res
+
 
 if __name__ == '__main__':
     import log.logger

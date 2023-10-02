@@ -1,6 +1,7 @@
 from typing import Any
 
-from cmd.io import new_cmd, old_cmd, savehtml_cmd, loadhtml_cmd, saveexcel_cmd, loadexcel_cmd, dumptoexcel_cmd
+from cmd.io import new_cmd, old_cmd, savehtml_cmd, loadhtml_cmd, saveexcel_cmd, loadexcel_cmd, dumptoexcel_cmd, \
+    updatefromexcel_cmd
 from cmd.manage import delete_cmd, list_cmd, clear_cmd
 from cmd.project import merge_cmd, apply_cmd, acceptuntrans_cmd
 from cmd.trans import translate_cmd, dltranslate_cmd
@@ -33,6 +34,9 @@ _REGISTERED_CMDS = {
     'loadexcel': loadexcel_cmd,
     'le': loadexcel_cmd,
     'dump': dumptoexcel_cmd,
+    'du': dumptoexcel_cmd,
+    'update': updatefromexcel_cmd,
+    'up': updatefromexcel_cmd,
     'accept': acceptuntrans_cmd,
     'ac': acceptuntrans_cmd,
 }

@@ -66,7 +66,7 @@ class project_index:
         self.check_lang(lang, True)
         tid_texts = []
         for tid, item in self._raw_data.translated_lines[lang].items():
-            tid_texts.append((tid, item.old_str))
+            tid_texts.append((tid, item.new_str))
         return tid_texts
 
     @property
@@ -105,27 +105,33 @@ class project_index:
     def file_name(self):
         return f'{self.full_name}.pt'
 
-    def update(self, tids_and_translated_texts: List[Tuple[str, str]], lang:str):
+    def update(self, tids_and_translated_texts: List[Tuple[str, str]], lang:str, skip_untrans_while_notin=True):
         self.check_lang(lang, False)
         self._raw_data.translated_lines.safe_add_key(lang)
         translated_lines = self._raw_data.translated_lines[lang]
         untranslated_lines = self._raw_data.untranslated_lines[lang]
         for tid, text in tids_and_translated_texts:
+            checked = False
             if tid not in untranslated_lines:
-                logging.warning(
-                    f'Non-existent untranslated text (identifier={tid}) in untranslated_lines, this translation won\'t be added')
-                continue
-            else:
-                if tid in translated_lines:
+                if skip_untrans_while_notin:
                     logging.warning(
-                        f'Existent translated text for ({translated_lines[tid].old_str}) in translated_lines:{translated_lines[tid]}, it will be replaced by the new translation: {text}')
-                    tline = translated_lines[tid]
-                    tline.new_str = text
-                    if tid in untranslated_lines: untranslated_lines.pop(tid)
-                else:
-                    utline = untranslated_lines.pop(tid)
-                    utline.new_str = text
-                    translated_lines[tid] = utline
+                        f'Non-existent untranslated text (identifier={tid}) in untranslated_lines, this translation won\'t be added')
+                    continue
+            else:
+                checked=True
+            if tid in translated_lines:
+                logging.warning(
+                    f'Existent translated text for ({translated_lines[tid].old_str}) in translated_lines:{translated_lines[tid]}, \nit will be replaced by the new translation: {text}')
+                tline = translated_lines[tid]
+                tline.new_str = text
+                if tid in untranslated_lines: untranslated_lines.pop(tid)
+            elif checked:
+                utline = untranslated_lines.pop(tid)
+                utline.new_str = text
+                translated_lines[tid] = utline
+            else:
+                logging.warning(
+                    f'Discard the translated text ({text}) with unknown identifier: {tid}')
 
     def translate(self, tid:str, lang:str):
         if (lang, tid) in self._raw_data.translated_lines:

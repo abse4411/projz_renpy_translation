@@ -88,21 +88,16 @@ def group_and_sort(items:List[translation_item]):
 def group_by_file(proj: project_index, lang: str=None, scope: str = EXPORT_SCOPE.ALL):
     item_list = []
     if scope == EXPORT_SCOPE.TRANS:
-        lang = proj.select_or_check_lang(lang, True)
+        proj.check_lang(lang, True)
         item_list += proj.raw_translated_items(lang)
     elif scope == EXPORT_SCOPE.UNTRANS:
-        lang = proj.select_or_check_lang(lang, False)
+        proj.check_lang(lang, False)
         item_list += proj.raw_untranslated_items(lang)
     elif scope == EXPORT_SCOPE.ALL:
-        lang = proj.select_or_check_lang(lang, False, assert_existing=False)
-        if lang is not None:
+        if lang in proj.untranslated_langs:
             item_list += proj.raw_untranslated_items(lang)
-        if lang is None:
-            lang = proj.select_or_check_lang(lang, True, assert_existing=True)
+        if lang in proj.translated_langs:
             item_list += proj.raw_translated_items(lang)
-        else:
-            if lang in proj.translated_langs:
-                item_list += proj.raw_translated_items(lang)
     else:
         raise ValueError(scope)
     if len(item_list) == 0:
