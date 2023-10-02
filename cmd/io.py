@@ -4,7 +4,8 @@ import os
 
 from cmd.util import _list_projects_and_select
 from config.config import default_config
-from store.file_store import save_to_html, load_from_html, save_to_excel, load_from_excel
+from store.file_store import save_to_html, load_from_html, save_to_excel, load_from_excel, dump_to_excel
+from store.format import EXPORT_SCOPE
 from store.index import project_index
 from util.file import exists_dir, mkdir, exists_file
 
@@ -89,9 +90,9 @@ def loadexcel_cmd(proj_idx: int, lang: str = None, excel_file: str = None):
     proj.save_by_default()
 
 
-def dumptoexcel_cmd(proj_idx: int):
+def dumptoexcel_cmd(proj_idx: int, lang: str = None, scope: str = EXPORT_SCOPE.ALL):
     proj = project_index.load_from_file(_list_projects_and_select([proj_idx])[0])
     save_path = os.path.join(default_config.project_path, 'excel')
     mkdir(save_path)
-    save_file = os.path.join(save_path, f'{proj.full_name}_dump.xlsx')
-    proj.dump_to_excel(save_file)
+    # save_file = os.path.join(save_path, f'{proj.full_name}_dump.xlsx')
+    dump_to_excel(save_path, proj, lang, scope)

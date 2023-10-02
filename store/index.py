@@ -21,11 +21,11 @@ class project_index:
         self._raw_data = raw_data
 
     def untranslation_size(self, lang:str=None):
-        assert lang in self.untranslated_langs, f'The selected_lang {lang} is not not Found! Available language(s) are {self.untranslated_langs}.'
+        self.check_lang(lang, False)
         return self._raw_data.untranslated_lines.len(lang)
 
     def translation_size(self, lang:str=None):
-        assert lang in self.translated_langs, f'The selected_lang {lang} is not not Found! Available language(s) are {self.translated_langs}.'
+        self.check_lang(lang, True)
         return self._raw_data.translated_lines.len(lang)
 
     @property
@@ -215,11 +215,13 @@ class project_index:
 
     def check_lang(self, lang:str, is_translated_langs:bool):
         assert lang in (self.translated_langs if is_translated_langs else self.untranslated_langs),\
-            f'The selected lang {lang} is not not Found! Available language(s) are {self.translated_langs if is_translated_langs else self.untranslated_langs}.'
+            f'The selected lang {lang} is not found! Available language(s) are {self.translated_langs if is_translated_langs else self.untranslated_langs}.'
 
-    def select_or_check_lang(self, lang:str, is_translated_langs:bool):
+    def select_or_check_lang(self, lang:str, is_translated_langs:bool, assert_existing=True):
         if lang is None:
             lang = self.first_translated_lang if is_translated_langs else self.first_untranslated_lang
+            if assert_existing:
+                assert lang is not None, f'Available {"translated" if is_translated_langs else "untranslated"} language(s) not Found!'
             logging.info(
                 f'Selecting the default language {lang} for the current operation. If you want change to another language, please specify the argument {{lang}}.')
         else:
@@ -291,58 +293,13 @@ class project_index:
         with open(file, 'wb') as f:
             pickle.dump(self._raw_data, f)
 
-    def dump_to_excel(self, file_name: str):
-        columns = ['Translation Identifier', 'Language', 'Raw Text', 'New Text', 'File', 'Line', 'Code Info']
+    def raw_untranslated_items(self, lang:str):
+        self.check_lang(lang, False)
+        return list(self._raw_data.untranslated_lines[lang].values())
 
-        def sort_and_unpack(tran_list: list):
-            def _item_cmp(x: translation_item, y: translation_item):
-                if x.file < y.file:
-                    return 1
-                elif x.file == y.file:
-                    if x.line < y.line:
-                        return 1
-                    elif x.line == y.line:
-                        return 0
-                return -1
-
-            tran_list.sort(key=cmp_to_key(_item_cmp))
-            excel_id_data = []
-            excel_la_data = []
-            excel_rt_data = []
-            excel_nt_data = []
-            excel_fi_data = []
-            excel_li_data = []
-            excel_co_data = []
-            for d in tran_list:
-                excel_id_data.append(d.identifier)
-                excel_la_data.append(d.lang)
-                excel_rt_data.append(d.old_str)
-                excel_nt_data.append(d.new_str)
-                excel_fi_data.append(d.file)
-                excel_li_data.append(d.line)
-                excel_co_data.append(d.code)
-            return excel_id_data, excel_la_data, excel_rt_data, excel_nt_data, excel_fi_data, excel_li_data, excel_co_data
-
-        pd_dict = dict()
-        for lang in self.translated_langs + self.untranslated_langs:
-            if lang in self.translated_langs and self.translation_size(lang) > 0:
-                res = sort_and_unpack(list(self._raw_data.translated_lines[lang].values()))
-                df = pd.DataFrame({columns[i]: res[i] for i in range(len(columns))})
-                df.reindex(columns=columns)
-                pd_dict[f'Translated {lang}'] = df
-            if lang in self.untranslated_langs and self.untranslation_size(lang) > 0:
-                res = sort_and_unpack(list(self._raw_data.untranslated_lines[lang].values()))
-                df = pd.DataFrame({columns[i]: res[i] for i in range(len(columns))})
-                df.reindex(columns=columns)
-                pd_dict[f'Untranslated {lang}'] = df
-
-        with ExcelWriter(file_name) as writer:
-            for sheet_name in sorted(pd_dict.keys()):
-                pd_dict[sheet_name].to_excel(writer, sheet_name=sheet_name, index=False)
-        logging.info(f'All translation and untranslation data are save to {file_name}')
-
-def group_lines_by_file(self, lang:str):
-    pass
+    def raw_translated_items(self, lang:str):
+        self.check_lang(lang, True)
+        return list(self._raw_data.translated_lines[lang].values())
 
 
 if __name__ == '__main__':

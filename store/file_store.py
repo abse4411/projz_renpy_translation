@@ -3,7 +3,11 @@ import logging
 import os
 from typing import List, Tuple
 
+from pandas import ExcelWriter
+import tqdm
+
 from config.config import default_config
+from store.format import group_by_file, HEAD_NAME, unpack_items
 from store.index import project_index
 import pandas as pd
 
@@ -94,11 +98,8 @@ def load_from_html(file_name: str, tids_and_untranslated_texts: List[Tuple[str, 
     logging.info(f'There are {use_cnt} translated line(s) and {unuse_cnt} untranslated line(s) in {file_name}')
     return res
 
-INDEX_STR = 'Translation Index (Don\'t modify)'
-RAW_TEXT_STR = 'Raw Text'
-NEW_TEXT_STR = 'Translated Text'
 def save_to_excel(file_name: str, tids_and_untranslated_texts: List[Tuple[str, str]]):
-    columns = [INDEX_STR, RAW_TEXT_STR, NEW_TEXT_STR]
+    columns = [HEAD_NAME.INDEX_STR, HEAD_NAME.RAW_TEXT_STR, HEAD_NAME.NEW_TEXT_STR]
     excel_id_data = []
     excel_rt_data = []
     excel_nt_data = []
@@ -106,10 +107,10 @@ def save_to_excel(file_name: str, tids_and_untranslated_texts: List[Tuple[str, s
         excel_id_data.append(text_id(tid))
         excel_rt_data.append(raw_text)
         excel_nt_data.append(raw_text)
-    df = pd.DataFrame({INDEX_STR:excel_id_data,
-                  RAW_TEXT_STR:excel_rt_data,
-                  NEW_TEXT_STR:excel_nt_data})
-    df.reindex(columns=columns)
+    df = pd.DataFrame({HEAD_NAME.INDEX_STR:excel_id_data,
+                  HEAD_NAME.RAW_TEXT_STR:excel_rt_data,
+                  HEAD_NAME.NEW_TEXT_STR:excel_nt_data})
+    df = df.reindex(columns=columns)
     df.to_excel(file_name, index=False)
     logging.info(f'Save untranslated {len(tids_and_untranslated_texts)} translations to {file_name}')
 
@@ -120,7 +121,7 @@ def load_from_excel(file_name: str, tids_and_untranslated_texts: List[Tuple[str,
     unuse_cnt = 0
     df = pd.read_excel(file_name)
     i = 0
-    for encrypted_tid, old_str, new_str in zip(df[INDEX_STR], df[RAW_TEXT_STR], df[NEW_TEXT_STR]):
+    for encrypted_tid, old_str, new_str in zip(df[HEAD_NAME.INDEX_STR], df[HEAD_NAME.RAW_TEXT_STR], df[HEAD_NAME.NEW_TEXT_STR]):
         encrypted_tid, old_str, new_str = str(encrypted_tid).strip().upper(), str(old_str).strip(), str(new_str).strip()
         if encrypted_tid == '' or new_str == '' or old_str == '' or new_str == old_str:
             logging.info(f'[Line {i}] Skipping corrupted translation for raw_text({old_str}) and translated_text({new_str})')
@@ -143,6 +144,23 @@ def load_from_excel(file_name: str, tids_and_untranslated_texts: List[Tuple[str,
     logging.info(f'There are {use_cnt} translated line(s) and {unuse_cnt} untranslated line(s) in {file_name}')
     return res
 
+
+def dump_to_excel(save_dir:str, proj: project_index, lang: str, scope: str):
+    columns = [HEAD_NAME.INDEX_STR, HEAD_NAME.LANGUAGE_STR, HEAD_NAME.LINE_STR, HEAD_NAME.RAW_TEXT_STR, HEAD_NAME.NEW_TEXT_STR,
+              HEAD_NAME.CODE_INFO_STR, HEAD_NAME.FILE_STR]
+    lang, sorted_data = group_by_file(proj, lang, scope)
+    if lang is None or len(sorted_data) == 0:
+        logging.info(f'Not translation or untranslation data ({lang}) in the current project')
+        return
+    save_name = os.path.join(save_dir, f'{proj.full_name}_lange_{lang.strip()}.xlsx')
+    cnt = 0
+    with ExcelWriter(save_name) as writer:
+        for file, data in tqdm.tqdm(sorted_data.items(), total=len(sorted_data), desc='Saving to file...'):
+            df = pd.DataFrame(unpack_items(data))
+            cnt += len(df)
+            df = df.reindex(columns=columns)
+            df.to_excel(writer, sheet_name=file.strip(), index=False)
+    logging.info(f'All translation or untranslation data ({lang}, count:{cnt}) are save to {save_name}')
 
 if __name__ == '__main__':
     import log.logger
