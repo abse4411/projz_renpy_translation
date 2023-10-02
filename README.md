@@ -8,8 +8,8 @@
 
 <!-- [![PyPI](https://badge.fury.io/py/opencompass.svg)](https://pypi.org/project/opencompass/) -->
 
-[📘文档（Chinese only）]() |
-[🛠安装](https://github.com/abse4411/projz_renpy_translation#%E8%BF%90%E8%A1%8C%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87) |
+[📘文档（Chinese only）](#) |
+[🛠安装](#运行环境准备) |
 [🤔Reporting Issues](https://github.com/abse4411/projz_renpy_translation/issues)
 
 简体中文 | [English (N/A)](#帮助我们翻译help-us-translate-the-documentation)
