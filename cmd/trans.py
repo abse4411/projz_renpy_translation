@@ -9,13 +9,8 @@ def translate_cmd(proj_idx: int, api_name: str, num_workers: int = None, lang: s
     if num_workers is not None:
         num_workers = int(num_workers)
     proj = project_index.load_from_file(_list_projects_and_select([proj_idx])[0])
-    if lang is None:
-        lang = proj.first_untranslated_lang
-        logging.info(
-            f'Selecting the default language {lang} for translating. If you want change to another language, please specify the argument {{lang}}')
-    else:
-        assert lang in proj.untranslated_langs, f'The selected_lang {lang} is not not Found! Available language(s) are {proj.untranslated_langs}.'
-    assert api_name.strip() != '', f'api_name is empty!'
+    lang = proj.select_or_check_lang(lang, False)
+    assert api_name.strip() != '', f'API name is empty!'
     if proj.untranslation_size(lang) <= 0:
         logging.info(f'All texts in {proj.full_name} of language {lang} are translated!')
         return
@@ -47,13 +42,8 @@ def translate_cmd(proj_idx: int, api_name: str, num_workers: int = None, lang: s
 def dltranslate_cmd(proj_idx: int, model_name: str, lang: str = None):
     # projs = _list_projects()
     proj = project_index.load_from_file(_list_projects_and_select([proj_idx])[0])
-    if lang is None:
-        lang = proj.first_untranslated_lang
-        logging.info(
-            f'Selecting the default language {lang} for translating. If you want change to another language, please specify the argument {{lang}}')
-    else:
-        assert lang in proj.untranslated_langs, f'The selected_lang {lang} is not not Found! Available language(s) are {proj.untranslated_langs}.'
-    assert model_name.strip() != '', f'model_name is empty!'
+    lang = proj.select_or_check_lang(lang, False)
+    assert model_name.strip() != '', f'model name is empty!'
     if proj.untranslation_size(lang) <= 0:
         logging.info(f'All texts in {proj.full_name} of language {lang} are translated!')
         return

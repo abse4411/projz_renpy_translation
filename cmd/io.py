@@ -31,10 +31,7 @@ def savehtml_cmd(proj_idx: int, lang: str = None, limit: int = None):
         assert limit > 0, '{limit} should be large than 0'
     # projs = _list_projects()
     proj = project_index.load_from_file(_list_projects_and_select([proj_idx])[0])
-    if lang is None:
-        lang = proj.first_untranslated_lang
-        logging.info(
-            f'Selecting the default language {lang} for savehtml. If you want change to another language, please specify the argument {{lang}}')
+    lang = proj.select_or_check_lang(lang, False)
     save_path = os.path.join(default_config.project_path, 'html')
     mkdir(save_path)
     save_file = os.path.join(save_path, f'{proj.full_name}.html')
@@ -48,10 +45,7 @@ def savehtml_cmd(proj_idx: int, lang: str = None, limit: int = None):
 def loadhtml_cmd(proj_idx: int, lang: str = None, html_file: str = None):
     # projs = _list_projects()
     proj = project_index.load_from_file(_list_projects_and_select([proj_idx])[0])
-    if lang is None:
-        lang = proj.first_untranslated_lang
-        logging.info(
-            f'Selecting the default language {lang} for loadhtml. If you want change to another language, please specify the argument {{lang}}')
+    lang = proj.select_or_check_lang(lang, False)
     if html_file is None:
         save_path = os.path.join(default_config.project_path, 'html')
         html_file = os.path.join(save_path, f'{proj.full_name}.html')
@@ -69,10 +63,7 @@ def saveexcel_cmd(proj_idx: int, lang: str = None, limit: int = None):
         assert limit > 0, '{limit} should be large than 0'
     # projs = _list_projects()
     proj = project_index.load_from_file(_list_projects_and_select([proj_idx])[0])
-    if lang is None:
-        lang = proj.first_untranslated_lang
-        logging.info(
-            f'Selecting the default language {lang} for saveexcel. If you want change to another language, please specify the argument {{lang}}')
+    lang = proj.select_or_check_lang(lang, False)
     save_path = os.path.join(default_config.project_path, 'excel')
     mkdir(save_path)
     save_file = os.path.join(save_path, f'{proj.full_name}.xlsx')
@@ -86,10 +77,7 @@ def saveexcel_cmd(proj_idx: int, lang: str = None, limit: int = None):
 def loadexcel_cmd(proj_idx: int, lang: str = None, excel_file: str = None):
     # projs = _list_projects()
     proj = project_index.load_from_file(_list_projects_and_select([proj_idx])[0])
-    if lang is None:
-        lang = proj.first_untranslated_lang
-        logging.info(
-            f'Selecting the default language {lang} for loadexcel. If you want change to another language, please specify the argument {{lang}}')
+    lang = proj.select_or_check_lang(lang, False)
     if excel_file is None:
         save_path = os.path.join(default_config.project_path, 'excel')
         excel_file = os.path.join(save_path, f'{proj.full_name}.xlsx')

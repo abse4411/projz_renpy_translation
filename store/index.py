@@ -56,14 +56,14 @@ class project_index:
         return trans_dict, untrans_dict, invalid_dict
 
     def untranslated_lines(self, lang:str):
-        assert lang in self.untranslated_langs, f'The selected_lang {lang} is not not Found! Available language(s) are {self.untranslated_langs}.'
+        self.check_lang(lang, False)
         tid_texts = []
         for tid, item in self._raw_data.untranslated_lines[lang].items():
             tid_texts.append((tid, item.old_str))
         return tid_texts
 
     def translated_lines(self, lang:str):
-        assert lang in self.translated_langs, f'The selected_lang {lang} is not not Found! Available language(s) are {self.translated_langs}.'
+        self.check_lang(lang, True)
         tid_texts = []
         for tid, item in self._raw_data.translated_lines[lang].items():
             tid_texts.append((tid, item.old_str))
@@ -106,7 +106,7 @@ class project_index:
         return f'{self.full_name}.pt'
 
     def update(self, tids_and_translated_texts: List[Tuple[str, str]], lang:str):
-        assert lang in self.untranslated_langs, f'The selected_lang {lang} is not not Found! Available language(s) are {self.untranslated_langs}.'
+        self.check_lang(lang, False)
         self._raw_data.translated_lines.safe_add_key(lang)
         translated_lines = self._raw_data.translated_lines[lang]
         untranslated_lines = self._raw_data.untranslated_lines[lang]
@@ -157,8 +157,7 @@ class project_index:
 
     def accept_untranslation(self, selected_lang:str=None):
         acce_cnt = 0
-        if selected_lang is not None:
-            assert selected_lang in self.untranslated_langs, f'The selected_lang {selected_lang} is not not Found! Available language(s) are {self.untranslated_langs}.'
+        selected_lang = self.select_or_check_lang(selected_lang, False)
         for lang, new_dict in self._raw_data.untranslated_lines.items():
             if selected_lang is not None and lang != selected_lang:
                 continue
@@ -177,8 +176,7 @@ class project_index:
     def merge_from(self, proj, selected_lang:str=None):
         merge_cnt = 0
         unmerge_cnt = 0
-        if selected_lang is not None:
-            assert selected_lang in self.untranslated_langs, f'The selected_lang {selected_lang} is not not Found! Available language(s) are {self.untranslated_langs}.'
+        selected_lang = self.select_or_check_lang(selected_lang, False)
         for lang, new_dict in self._raw_data.untranslated_lines.items():
             if selected_lang is not None and lang != selected_lang:
                 continue
@@ -215,16 +213,25 @@ class project_index:
                 linenumber_map[line_no] = item
         return linenumber_map
 
+    def check_lang(self, lang:str, is_translated_langs:bool):
+        assert lang in (self.translated_langs if is_translated_langs else self.untranslated_langs),\
+            f'The selected lang {lang} is not not Found! Available language(s) are {self.translated_langs if is_translated_langs else self.untranslated_langs}.'
+
+    def select_or_check_lang(self, lang:str, is_translated_langs:bool):
+        if lang is None:
+            lang = self.first_translated_lang if is_translated_langs else self.first_untranslated_lang
+            logging.info(
+                f'Selecting the default language {lang} for the current operation. If you want change to another language, please specify the argument {{lang}}.')
+        else:
+            self.check_lang(lang, is_translated_langs)
+        return lang
 
     def apply_by_default(self, lang:str=None, strict=False):
-        if lang is None:
-            lang = self.first_translated_lang
-            logging.info(
-                f'Selecting the default language {lang} for apply_by_default. If you want change to another language, please specify the argument {{lang}}.')
+        lang = self.select_or_check_lang(lang, True)
         self.apply(default_config.project_path, lang, strict=strict)
 
-    def apply(self, save_dir:str, lang:str, strict=False):
-        assert lang in self.translated_langs, f'The selected_lang {lang} is not not Found! Available language(s) are {self.translated_langs}.'
+    def apply(self, save_dir:str, lang:str=None, strict=False):
+        lang = self.select_or_check_lang(lang, True)
         save_dir = os.path.join(save_dir, self.full_name)
         mkdir(save_dir)
         rpy_files = walk_and_select(self.source_dir, lambda x: x.endswith('.rpy'))
@@ -333,6 +340,9 @@ class project_index:
             for sheet_name in sorted(pd_dict.keys()):
                 pd_dict[sheet_name].to_excel(writer, sheet_name=sheet_name, index=False)
         logging.info(f'All translation and untranslation data are save to {file_name}')
+
+def group_lines_by_file(self, lang:str):
+    pass
 
 
 if __name__ == '__main__':
