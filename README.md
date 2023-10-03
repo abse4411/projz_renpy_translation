@@ -1,7 +1,6 @@
 <div align="center">
   <img src="imgs/proz_icon.ico" />
   <br />
-  <br />
 
 [![](https://img.shields.io/badge/projz_renpy_translation-0.3.7-brightgreen.svg)](https://github.com/abse4411/projz_renpy_translation)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/abse4411/projz_renpy_translation/blob/devp/LICENSE)
