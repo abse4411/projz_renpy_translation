@@ -5,7 +5,6 @@
 [![](https://img.shields.io/badge/projz_renpy_translation-0.3.7-brightgreen.svg)](https://github.com/abse4411/projz_renpy_translation)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/abse4411/projz_renpy_translation/blob/devp/LICENSE)
 
-<!-- [![PyPI](https://badge.fury.io/py/opencompass.svg)](https://pypi.org/project/opencompass/) -->
 
 [📘文档（Chinese only）](#) |
 [🛠安装](#运行环境准备) |
