@@ -116,11 +116,11 @@ If you like this project, you can help us translate this page. That would be gre
   
       请手动下载模型到本地目录，假设您的保存模型目录为：`C:\hf_models`，可用模型下载地址如下：
   
-      m2m100：https://huggingface.co/facebook/m2m100_418M/tree/main
+      - m2m100：https://huggingface.co/facebook/m2m100_418M/tree/main
   
-      mbart50：https://huggingface.co/facebook/mbart-large-50-many-to-many-mmt/tree/main
+      - mbart50：https://huggingface.co/facebook/mbart-large-50-many-to-many-mmt/tree/main
   
-      nllb200：https://huggingface.co/facebook/nllb-200-distilled-600M/tree/main
+      - nllb200：https://huggingface.co/facebook/nllb-200-distilled-600M/tree/main
   
       选择一个模型，在模型`C:\hf_models`目录下建立一个模型同名文件夹，如`m2m100`，`mbart50`，`nllb200`，然后把所有文件下(除了`rust_model.ot`)载到对应模型文件夹下，例如：`C:\hf_models\m2m100`：
   
@@ -128,10 +128,13 @@ If you like this project, you can help us translate this page. That would be gre
   
       等文件都下载完后在配置文件`config.ini`中设置`MODEL_SAVE_PATH`选项：
   
-        ```ini
-        # path for saving deep models
-        MODEL_SAVE_PATH=C:\hf_models
-        ```
+    ```ini
+    [GLOBAL]
+    ...
+    # path for saving deep models
+    MODEL_SAVE_PATH=C:\hf_models
+    ```
+  
       最后[运行程序](#启动)即可。
 
 ### 使用步骤：
