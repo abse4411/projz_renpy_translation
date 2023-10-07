@@ -184,7 +184,7 @@ CHROME_DRIVER=D:\Users\Surface Book2\Downloads\chromedriver_win32\chromedriver.e
 ## 3.安装CUDA支持的Pytorch
 🚨如果您不想加快您的AI翻译速度，请跳过此步骤。因为在[步骤1](#1安装python3和依赖库)中已经安装了Pytorch，因此您可以使用CPU进行AI翻译（这意味着您需要较大内存来支持加载AI模型）。
 
-无论您的电脑有具有NVIDIA GPU，您都可以在安装完后Pytorch后使用AI模型翻译功能。假如您刚好具有一块NVIDIA GPU，那么您可以利用CUDA支持的Pytorch加快您的AI翻译速度。
+无论您的电脑是否具有NVIDIA GPU，您都可以在安装完后Pytorch后使用AI模型翻译功能。假如您刚好具有一块NVIDIA GPU，那么您可以利用CUDA支持的Pytorch加快您的AI翻译速度。
 
 在[步骤1](#1安装python3和依赖库)中，`requirements.txt`指定pytorch版本为`2.0.1+cu117`，意味着这里默认安装支持具有CUDA版本为11.7支持的Pytorch。如果您NVIDIA GPU的CUDA版本刚好11.7则可以跳过本步骤。
 以下是步骤将引导您安装CUDA支持的Pytorch版本：
