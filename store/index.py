@@ -276,10 +276,13 @@ class project_index:
                         if trans_txt is None:
                             unapply_cnt_i += 1
                         else:
-                            apply_cnt_i += 1
-                            lb = text.find('"')
-                            rb = text.rfind('"')
-                            text = text[:lb+1] + trans_txt + text[rb:]
+                            quote_text = f'"{ori_text}"'
+                            sidx = text.rfind(quote_text)
+                            if sidx != -1:
+                                apply_cnt_i += 1
+                                text = text[:sidx+1] + trans_txt + text[sidx+len(quote_text)-1:]
+                            else:
+                                unapply_cnt_i += 1
                     else:
                         unapply_cnt_i += 1
                 r.update(text)
@@ -329,10 +332,13 @@ class project_index:
                     if raw_text is None:
                         unapply_cnt_i += 1
                     else:
-                        apply_cnt_i += 1
-                        lb = text.find('"')
-                        rb = text.rfind('"')
-                        text = text[:lb+1] + raw_text + text[rb:]
+                        quote_text = f'"{ori_text}"'
+                        sidx = text.rfind(quote_text)
+                        if sidx != -1:
+                            apply_cnt_i += 1
+                            text = text[:sidx + 1] + raw_text + text[sidx + len(quote_text) - 1:]
+                        else:
+                            unapply_cnt_i += 1
                 r.update(text)
                 text = r.next()
                 line_no += 1
