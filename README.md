@@ -31,6 +31,8 @@
   如果您想使用完整功能请安装完整的环境：[运行环境准备](#运行环境准备)
 ***
 
+👀已经了解以上内容，想要开始使用，请跳转到👉[这里](#运行环境准备)👈
+
 # 🙏帮助我们翻译(Help us translate the documentation)
 
 如果您觉得本项目有用，即使您不会进行Python开发，也可以帮助我们翻译这个界面到其他语言。😀
@@ -49,23 +51,23 @@ If you like this project, you can help us translate this page. That would be gre
 
 * V0.3.6: 修复了使用web翻译多线程的问题，部分命令功能改进
 
-* V0.3.5: 基于开源项目[dl-translate](https://github.com/xhluca/dl-translate)，我们集成AI模型进行翻译，实现离线翻译的功能。 对应的新命令为`dltranslate`，见[使用dltranslate命令进行ai翻译](#mark使用dltranslate命令进行ai翻译mark)
+* V0.3.5: 基于开源项目[dl-translate](https://github.com/xhluca/dl-translate)，我们集成AI模型进行翻译，实现离线翻译的功能。 对应的新命令为`dltranslate`，见[使用dltranslate命令进行ai翻译](#使用dltranslate命令进行ai翻译)
 
 * V0.3.4: 我们把程序和运行环境打包成exe，现在您不需要python环境就可以运行程序。仅支持64位的Windows 10, 11系统
 
 * V0.3.3: 修复`apply`命令替换空文本的问题；翻译文本识别改进；新命令`accept`:针对那些不需要翻译文本，现在您可以把未翻译文本合并到翻译的文本中
 
-* V0.3.2: 修复翻译文本识别问题，现在能识别更多的翻译文本；新命令`dump`:现在您可以把一个项目所有翻译文本导出为excel
+* V0.3.2: 修复翻译文本识别问题，现在能识别更多的翻译文本；新命令`dump`:现在您可以把一个项目所有翻译文本导出为excel，见[使用saveexcel和loadexcel快速翻译](#使用saveexcel和loadexcel快速翻译)
 
 * V0.3.1: 添加excel文件的导入导出功能（`saveexcel`和`loadexcel`命令），功能与`savehtml`和`loadhtml`命令类似
 
 * V0.3.0: 改进翻译索引，减少对翻译文本的丢弃
 
-* V0.2.0: 使用`savehtml`和`loadhtml`快速翻译，见[使用savehtml和loadhtml快速翻译浏览器自带网页翻译](#mark使用savehtml和loadhtml快速翻译浏览器自带网页翻译mark)
+* V0.2.0: 使用`savehtml`和`loadhtml`快速翻译，见[使用savehtml和loadhtml快速翻译](#使用savehtml和loadhtml快速翻译浏览器自带网页翻译)
 
 ***
 
-## <mark>使用`saveexcel`和`loadexcel`⚡快速⚡翻译</mark>
+## 使用`saveexcel`和`loadexcel`⚡快速⚡翻译
   
   使用`saveexcel`和`loadexcel`命令，导出未翻译文本为excel文件，然后借助Google翻译上传excel文件进行翻译，翻译完成覆盖原始html文件，实现翻译文本快速导入。请输入`help`命令获取详细信息。
   
@@ -80,7 +82,7 @@ If you like this project, you can help us translate this page. That would be gre
 
 ---
 
-## <mark>使用`savehtml`和`loadhtml`⚡快速⚡翻译（浏览器自带网页翻译）</mark>
+## 使用`savehtml`和`loadhtml`⚡快速⚡翻译（浏览器自带网页翻译）
   
   使用`savehtml`和`loadhtml`命令，导出未翻译文本为html文件，然后借助Microsoft Edge浏览器翻译网页并保存覆盖原始html文件，实现翻译文本快速导入。请输入`help`命令获取详细信息。
   
@@ -98,7 +100,7 @@ If you like this project, you can help us translate this page. That would be gre
 
 ---
 
-## <mark>使用`dltranslate`命令进行AI翻译🤖</mark>
+## 使用`dltranslate`命令进行AI翻译🤖
 
 使用方法和`translate`命令类似：`dltranslate {proj_idx} {model_name}`，🚨需要注意的是：
 
@@ -106,7 +108,7 @@ If you like this project, you can help us translate this page. That would be gre
 
 * {model_name} 可选的模型有：m2m100, mbart50, and nllb200
 
-* 可利用NVIDIA GPU进行加速，需要安装NVIDIA GPU支持CUDA的Pytorch版本，见[运行环境准备-3.安装cuda支持的pytorch](#3安装cuda支持的pytorch)。
+* 可利用NVIDIA GPU进行加速，需要安装NVIDIA GPU支持CUDA的Pytorch版本，见[运行环境准备-步骤3](#3安装cuda支持的pytorch)。
 
   * 如果在运行过程下载模型遇到以下问题：
   
@@ -330,13 +332,13 @@ n {tl_dir} {游戏名} {版本}
 
 ## 4.使用翻译引擎翻译剩余的文本：
 在这里，您可以使用以下命令完成剩余文本的翻译：
-- [savehtml和loadhtml命令](#mark使用savehtml和loadhtml快速翻译浏览器自带网页翻译mark)
-- [dltranslate命令](#mark使用dltranslate命令进行ai翻译mark)
-- [saveexcel和loadexcel命令](#mark使用saveexcel和loadexcel快速翻译mark)
+- [savehtml和loadhtml命令](#使用savehtml和loadhtml快速翻译浏览器自带网页翻译)
+- [dltranslate命令](#使用dltranslate命令进行ai翻译)
+- [saveexcel和loadexcel命令](#使用saveexcel和loadexcel快速翻译)
 
 下面我们将介绍最原始翻译命令：
 
-使用`translate`或者`t`命令，只需要指定要翻译项目索引和翻译引擎即(注意如果您没有完成[运行环境准备-2](#2安装chrome浏览器和chrome-driver)步骤，导致缺少Chrome浏览器和相应的chromedriver)以下命令无法运行：
+使用`translate`或者`t`命令，只需要指定要翻译项目索引和翻译引擎即(注意如果您没有完成[运行环境准备-步骤2](#2安装chrome浏览器和chrome-driver)，导致缺少Chrome浏览器和相应的chromedriver)以下命令无法运行：
 ：
 
 ```shell
