@@ -338,13 +338,16 @@ n {tl_dir} {游戏名} {版本}
 
 下面我们将介绍最原始翻译命令：
 
-使用`translate`或者`t`命令，只需要指定要翻译项目索引和翻译引擎即(注意如果您没有完成[运行环境准备-步骤2](#2安装chrome浏览器和chrome-driver)，导致缺少Chrome浏览器和相应的chromedriver)以下命令无法运行：
-：
 
+
+🚨注意🚨
+
+如果您没有完成[运行环境准备-步骤2](#2安装chrome浏览器和chrome-driver)，导致缺少Chrome浏览器和相应的chromedriver，`translate`命令将无法运行。
+
+使用`translate`或者`t`命令，只需要指定要翻译项目索引和翻译引擎即可。
 ```shell
  t {project_idx} {translation_API} {num_workers=1}
 ```
-
 可用的`{translation_API}`有caiyu, google, baidu, and youdao。我们移除旧版本的`deepl`，因为它的问题很多。
 `{num_workers}` 是可选的，表示要启动的浏览器数量，数量越多翻译速度越快，但是资源消耗量大。
 
