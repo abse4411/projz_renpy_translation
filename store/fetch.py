@@ -309,13 +309,13 @@ def update_untranslated_lines_new(rpy_file: str, translated_lines: i18n_translat
                     continue
                 if tid in old_dict:
                     old_item = old_dict[tid]
-                    new_item.new_str = None
                     logging.warning(
                         f'{rpy_file}[L{line}]: Duplicate translation identifier({tid}) is found! This may result in error in renpy.'
                         f' Replacing old translation item with new one.\n'
                         f'\tDetailed info:\n'
                         f'\told:{old_item}\n'
                         f'\tnew:{new_item}')
+                new_item.new_str = None
                 old_dict[tid] = new_item
         else:
             for tid, new_item in new_dict.items():

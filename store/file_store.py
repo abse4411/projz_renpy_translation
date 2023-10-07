@@ -116,17 +116,18 @@ def load_from_excel(file_name: str, tids_and_untranslated_texts: List[Tuple[str,
     unmap = dict()
     use_cnt = 0
     unuse_cnt = 0
-    df = pd.read_excel(file_name, header=None, skiprows=[0], usecols=[0, 1], names=[HEAD_NAME.INDEX_STR, HEAD_NAME.NEW_TEXT_STR])
+    df = pd.read_excel(file_name, na_filter=False,
+                       header=None,
+                       skiprows=[0],
+                       usecols=[0, 1],
+                       names=[HEAD_NAME.INDEX_STR, HEAD_NAME.NEW_TEXT_STR])
     i = 0
     for encrypted_tid, new_str in zip(df[HEAD_NAME.INDEX_STR], df[HEAD_NAME.NEW_TEXT_STR]):
-        if pd.isna(encrypted_tid) or pd.isna(new_str):
-            logging.info(f'[Line {i}] Skipping corrupted translation')
+        encrypted_tid, new_str = str(encrypted_tid).strip().upper(), str(new_str).strip()
+        if encrypted_tid == '' or new_str == '':
+            logging.info(f'[Line {i}] Skipping corrupted translation for translated_text({new_str})')
         else:
-            encrypted_tid, new_str = str(encrypted_tid).strip().upper(), str(new_str).strip()
-            if encrypted_tid == '' or new_str == '':
-                logging.info(f'[Line {i}] Skipping corrupted translation for translated_text({new_str})')
-            else:
-                unmap[encrypted_tid] = new_str
+            unmap[encrypted_tid] = new_str
     logging.info(f'Found {len(unmap)} translations in {file_name}')
     res = []
     for tid, raw_text in tids_and_untranslated_texts:
@@ -164,23 +165,21 @@ def dump_to_excel(save_file:str, proj: project_index, lang: str, scope: str):
 def update_from_excel(save_file:str, proj: project_index, lang: str):
     use_cnt = 0
     unuse_cnt = 0
-    df = pd.read_excel(save_file, sheet_name=None)
+    df = pd.read_excel(save_file, sheet_name=None, na_filter=False)
     res = []
     for sheet in tqdm.tqdm(df.keys(), total=len(df), desc='Reading from the file...'):
         sheet_data = df[sheet]
         for tid, lang, new_str in zip(sheet_data[HEAD_NAME.INDEX_STR], sheet_data[HEAD_NAME.LANGUAGE_STR],
                                       sheet_data[HEAD_NAME.NEW_TEXT_STR]):
-            if pd.isna(new_str) or str(lang).strip() != lang:
+            tid, new_str = str(tid), str(new_str).strip()
+            if new_str == '':
+                new_str = None
+            raw_text = proj.translate(tid, lang)
+            if new_str == raw_text or (raw_text is not None and raw_text.strip() == new_str):
                 unuse_cnt += 1
                 continue
-            else:
-                tid, new_str = str(tid).strip(), str(new_str)
-                raw_text = proj.translate(tid, lang)
-                if raw_text is not None and raw_text.strip() == new_str:
-                    unuse_cnt += 1
-                    continue
-                res.append((tid, new_str))
-                use_cnt += 1
+            res.append((tid, new_str))
+            use_cnt += 1
     logging.info(f'There are {use_cnt} updated line(s) and {unuse_cnt} unused line(s) in {save_file}')
     return res
 
