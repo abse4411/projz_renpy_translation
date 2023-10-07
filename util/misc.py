@@ -33,6 +33,14 @@ def text_type(text: str):
                 old "Hello world!"
             '''
             if old_pos != -1 and old_pos < first_quote and text[:old_pos].strip() == '' and text[old_pos:first_quote].strip() == VAR_NAME.OLD:
+                m_res = split_regex.search(text)
+                if m_res is not None:
+                    ''' if an old line like this:
+                        old "guy" "Hello world!"
+                    '''
+                    var_name = text[first_quote+1:m_res.start(1)]
+                    quote_content = text[m_res.end(1):last_quote]
+                    return quote_content, TEXT_TYPE.RAW, var_name
                 return quote_content, TEXT_TYPE.RAW, VAR_NAME.OLD
             ''' else if an old line like this:
                 # ch_name[optional] "Hello world!"
@@ -43,16 +51,24 @@ def text_type(text: str):
                 '''
                 m_res = split_regex.search(text)
                 if m_res is not None:
-                    var_name = text[first_quote:m_res.start(1)]
+                    var_name = text[first_quote+1:m_res.start(1)]
                     quote_content = text[m_res.end(1):last_quote]
                 else:
                     var_name = text[shape_pos+1:first_quote].strip()
                 return quote_content, TEXT_TYPE.RAW, var_name
             new_pos = text.find("new ")
-            ''' if an new line like this:
+            ''' if a new line like this:
                 new "Hello world!"
             '''
             if new_pos != -1 and new_pos < first_quote and text[:new_pos].strip() == '' and text[new_pos:first_quote].strip() == VAR_NAME.NEW:
+                m_res = split_regex.search(text)
+                if m_res is not None:
+                    ''' if a new line like this:
+                        new "guy" "Hello world!"
+                    '''
+                    var_name = text[first_quote+1:m_res.start(1)]
+                    quote_content = text[m_res.end(1):last_quote]
+                    return quote_content, TEXT_TYPE.NEW, var_name
                 return quote_content, TEXT_TYPE.NEW, VAR_NAME.NEW
             else:
                 ''' match like this
@@ -60,7 +76,7 @@ def text_type(text: str):
                 '''
                 m_res = split_regex.search(text)
                 if m_res is not None:
-                    var_name = text[first_quote:m_res.start(1)]
+                    var_name = text[first_quote+1:m_res.start(1)]
                     quote_content = text[m_res.end(1):last_quote]
                 else:
                     var_name = text[:first_quote].strip()

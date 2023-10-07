@@ -57,7 +57,10 @@ def determine_new_line(info_dict:dict, in_group=False, strict=False):
             old "Self-voicing disabled." <---[raw_line]
             new "Self-voicing disabled."  <---[current line] (i)
         '''
-        if raw_var != VAR_NAME.OLD or new_var != VAR_NAME.NEW or id_line>=raw_line: return None
+        if ((raw_var != new_var and (raw_var != VAR_NAME.OLD or new_var != VAR_NAME.NEW))
+                or (raw_var == new_var and raw_var is None)
+                or id_line >= raw_line):
+            return None
         if strict:
             if code_data is not None and code_line + 1 == raw_line and raw_text is not None and raw_line + 1 == new_line:
                 return translation_item(
