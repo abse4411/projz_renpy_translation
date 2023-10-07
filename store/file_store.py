@@ -86,7 +86,7 @@ def load_from_html(file_name: str, tids_and_untranslated_texts: List[Tuple[str, 
     for tid, raw_text in tids_and_untranslated_texts:
         encrypted_tid = text_id(tid)
         if encrypted_tid in unmap:
-            if raw_text == unmap[encrypted_tid]:
+            if raw_text is not None and raw_text.strip() == unmap[encrypted_tid]:
                 logging.info(f'Skipping corrupted translation: "{raw_text}" for raw_text({raw_text})==translated_text({unmap[encrypted_tid]})')
                 unuse_cnt += 1
             else:
@@ -121,18 +121,21 @@ def load_from_excel(file_name: str, tids_and_untranslated_texts: List[Tuple[str,
     unuse_cnt = 0
     df = pd.read_excel(file_name)
     i = 0
-    for encrypted_tid, old_str, new_str in zip(df[HEAD_NAME.INDEX_STR], df[HEAD_NAME.RAW_TEXT_STR], df[HEAD_NAME.NEW_TEXT_STR]):
-        encrypted_tid, old_str, new_str = str(encrypted_tid).strip().upper(), str(old_str).strip(), str(new_str).strip()
-        if encrypted_tid == '' or new_str == '' or old_str == '' or new_str == old_str:
-            logging.info(f'[Line {i}] Skipping corrupted translation for raw_text({old_str}) and translated_text({new_str})')
+    for encrypted_tid, new_str in zip(df[HEAD_NAME.INDEX_STR], df[HEAD_NAME.NEW_TEXT_STR]):
+        if pd.isna(encrypted_tid) or pd.isna(new_str):
+            logging.info(f'[Line {i}] Skipping corrupted translation')
         else:
-            unmap[encrypted_tid] = new_str
+            encrypted_tid, new_str = str(encrypted_tid).strip().upper(), str(new_str).strip()
+            if encrypted_tid == '' or new_str == '':
+                logging.info(f'[Line {i}] Skipping corrupted translation for translated_text({new_str})')
+            else:
+                unmap[encrypted_tid] = new_str
     logging.info(f'Found {len(unmap)} translations in {file_name}')
     res = []
     for tid, raw_text in tids_and_untranslated_texts:
         encrypted_tid = text_id(tid)
         if encrypted_tid in unmap:
-            if raw_text == unmap[encrypted_tid]:
+            if raw_text is not None and raw_text.strip() == unmap[encrypted_tid]:
                 logging.info(f'Skipping corrupted translation: "{raw_text}" for raw_text({raw_text})==translated_text({unmap[encrypted_tid]})')
                 unuse_cnt += 1
             else:
@@ -175,7 +178,8 @@ def update_from_excel(save_file:str, proj: project_index, lang: str):
                 continue
             else:
                 tid, new_str = str(tid).strip(), str(new_str)
-                if proj.translate(tid, lang) == new_str:
+                raw_text = proj.translate(tid, lang)
+                if raw_text is not None and raw_text.strip() == new_str:
                     unuse_cnt += 1
                     continue
                 res.append((tid, new_str))
