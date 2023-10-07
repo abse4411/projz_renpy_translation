@@ -99,16 +99,13 @@ def load_from_html(file_name: str, tids_and_untranslated_texts: List[Tuple[str, 
     return res
 
 def save_to_excel(file_name: str, tids_and_untranslated_texts: List[Tuple[str, str]]):
-    columns = [HEAD_NAME.INDEX_STR, HEAD_NAME.RAW_TEXT_STR, HEAD_NAME.NEW_TEXT_STR]
+    columns = [HEAD_NAME.INDEX_STR, HEAD_NAME.NEW_TEXT_STR]
     excel_id_data = []
-    excel_rt_data = []
     excel_nt_data = []
     for tid, raw_text in tids_and_untranslated_texts:
         excel_id_data.append(text_id(tid))
-        excel_rt_data.append(raw_text)
         excel_nt_data.append(raw_text)
     df = pd.DataFrame({HEAD_NAME.INDEX_STR:excel_id_data,
-                  HEAD_NAME.RAW_TEXT_STR:excel_rt_data,
                   HEAD_NAME.NEW_TEXT_STR:excel_nt_data})
     df = df.reindex(columns=columns)
     df.to_excel(file_name, index=False)
@@ -119,7 +116,7 @@ def load_from_excel(file_name: str, tids_and_untranslated_texts: List[Tuple[str,
     unmap = dict()
     use_cnt = 0
     unuse_cnt = 0
-    df = pd.read_excel(file_name)
+    df = pd.read_excel(file_name, header=None, skiprows=[0], usecols=[0, 1], names=[HEAD_NAME.INDEX_STR, HEAD_NAME.NEW_TEXT_STR])
     i = 0
     for encrypted_tid, new_str in zip(df[HEAD_NAME.INDEX_STR], df[HEAD_NAME.NEW_TEXT_STR]):
         if pd.isna(encrypted_tid) or pd.isna(new_str):
