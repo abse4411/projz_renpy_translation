@@ -127,7 +127,10 @@ class trans_wrapper(translator):
                 for i in range(len(renpy_vars)):
                     clear_text = clear_text.replace(renpy_vars[i], tvar_list[i])
                 texts.append(clear_text)
-            res = self.translate_batch(texts)
+            if len(texts) > 0:
+                res = self.translate_batch(texts)
+            else:
+                continue
             assert len(res) == len(tids)
             for tid, new_text, raw_text, vs in zip(tids, res, raw_texts,  vars_list):
                 if new_text.strip() == '':
