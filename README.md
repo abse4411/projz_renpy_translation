@@ -267,7 +267,7 @@ python3 parse_console.py
 ```shell
 o {tl_dir} {游戏名} {版本}
 ```
-<details open>
+<details>
 <summary><b>💡关于old命令 (点击展开)</b></summary>
 
 - 它会递归扫描{tl_dir}目录下所有后缀名为`.rpy`的文件。
@@ -305,7 +305,7 @@ l
 ```shell
 n {tl_dir} {游戏名} {版本}
 ```
-<details open>
+<details>
 <summary><b>💡关于new命令 (点击展开)</b></summary>
 
 - 它会递归扫描{tl_dir}目录下所有后缀名为`.rpy`的文件。
@@ -353,7 +353,7 @@ n {tl_dir} {游戏名} {版本}
 ```shell
  m {旧翻译项目索引} {新翻译项目索引}
 ```
-<details open>
+<details>
 <summary><b>💡关于merge命令 (点击展开)</b></summary>
 
 - 它会根据具有相同的索引号的文本将一个翻译项目中的已经翻译文本应用到另一个项目的未翻译文本中。
@@ -411,7 +411,7 @@ n {tl_dir} {游戏名} {版本}
 ```shell
  a {project_idx}
 ```
-<details open>
+<details>
 <summary><b>💡关于apply命令 (点击展开)</b></summary>
 
 - 注意它不会对任何rpy文件做出修改，生成的rpy文件所在目录你可以在`PROJECT_PATH/你的项目名_版本名`中找到。
