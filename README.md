@@ -2,7 +2,7 @@
   <img src="imgs/proz_icon.ico" />
   <br />
 
-[![](https://img.shields.io/badge/projz_renpy_translation-0.3.7-brightgreen.svg)](https://github.com/abse4411/projz_renpy_translation)
+[![](https://img.shields.io/badge/projz_renpy_translation-0.3.8-brightgreen.svg)](https://github.com/abse4411/projz_renpy_translation)
 [![](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/abse4411/projz_renpy_translation/blob/devp/LICENSE)
 
 [📘文档（Chinese only）](#) |
@@ -42,11 +42,11 @@ If you like this project, you can help us translate this page. That would be gre
 ***
 
 # 📜Changelog:
-* V0.3.8: 
+* V0.3.8(当前): 
   
   * 添加了新命令`removeempty`，它可以帮助您把项目中空字符串的已翻译文本转换到未翻译的文本中(new_str='' while old_str!='')，以便重新翻译。
   * 在配置文件中[config.ini](config.ini)增加了新的配置项：`REMOVE_MARKS`，设置为True时，`apply`命令产生的文本不会有带有特殊标记（'@$'或'@@'）
-  * 修复`apply`命令的已知问题，添加一个新的参数`skip_unmatch`，设置为True时，apply会跳过那些new_str!=old_str的文本。
+  * 修复`apply`命令的已知问题，添加一个新的参数`skip_unmatch`，设置为True时，apply命令在生成rpy文件时会跳过那些new_str!=old_str的文本。
 
 * V0.3.7: 
   
@@ -107,7 +107,7 @@ If you like this project, you can help us translate this page. That would be gre
 
 ## 使用`dltranslate`命令进行AI翻译🤖
 
-使用方法和`translate`命令类似：`dltranslate {proj_idx} {model_name}`，🚨需要注意的是：
+使用方法和`translate`命令类似：`dltranslate {proj_idx} {model_name}`，🚨需要注意🚨的是：
 
 * 需要安装Python3环境，见[运行环境准备](#运行环境准备)
 
@@ -157,10 +157,10 @@ If you like this project, you can help us translate this page. That would be gre
 我们已经打包好所有环境依赖（Python3和依赖库）成exe文件，点击目录下的👉[parse_console.exe](parse_console.exe)即可运行。
 也就是说您可以完全***跳过本步骤***，快进到⏩[快速开始](#快速开始)。如果使用exe运行，您将无法使用AI模型翻译🤖。
 
-## 🚨注意🚨
-- 如果您想要使用Web翻译功能🌐，请根据下面的[步骤2](#2安装chrome浏览器和chrome-driver)安装Chrome浏览器和对应的chrome driver后在打开[parse_console.exe](parse_console.exe)运行。
-- 如果您使用AI翻译功能🤖，请根据下面的[步骤1](#1安装python3和依赖库)安装Python3环境，然后使用python脚本运行：`python3 parse_console.py`
-- 如果您想*⚡加速⚡*AI翻译功能🤖，请根据下面的[步骤3](#3安装cuda支持的pytorch)的装支持的CUDA和对应的pytorch，然后使用python脚本运行：`python3 parse_console.py`
+> **🚨注意🚨**<br />
+> - 如果您想要使用Web翻译功能🌐，请根据下面的[步骤2](#2安装chrome浏览器和chrome-driver)安装Chrome浏览器和对应的chrome driver后在打开[parse_console.exe](parse_console.exe)运行。
+> - 如果您使用AI翻译功能🤖，请根据下面的[步骤1](#1安装python3和依赖库)安装Python3环境，然后使用python脚本运行：`python3 parse_console.py`
+> - 如果您想*⚡加速⚡*AI翻译功能🤖，请根据下面的[步骤3](#3安装cuda支持的pytorch)的装支持的CUDA和对应的pytorch，然后使用python脚本运行：`python3 parse_console.py`
 
 ## 1.安装Python3和依赖库
 建议使用[Miniconda](https://docs.conda.io/projects/miniconda/en/latest/)安装Python3虚拟环境。当您安装完成时，在当前代码目录下打开一个控制台窗口，并激活一个虚拟Python3环境，运行以下命令：
@@ -170,7 +170,8 @@ pip install -r requirements.txt
 这将安装程序运行所需要Python依赖库。
 
 ## 2.安装Chrome浏览器和chrome driver
-🚨如果您不想使用Web翻译功能，请跳过此步骤。
+> **🚨注意🚨**<br />
+> 如果您不想使用Web翻译功能，请跳过此步骤。
 
 下载并安装[Chrome浏览器](https://www.google.com/chrome/)。安装完成后，进入：设置->关于Chrome，找到您的Chrome版本，前往以下链接下载对应的chrome driver：
 * [Chrome版本116.x.xxxx.xxx以下](https://registry.npmmirror.com/binary.html?path=chromedriver/) 
@@ -187,7 +188,8 @@ CHROME_DRIVER=D:\Users\Surface Book2\Downloads\chromedriver_win32\chromedriver.e
 ```
 
 ## 3.安装CUDA支持的Pytorch
-🚨如果您不想加快您的AI翻译速度，请跳过此步骤。因为在[步骤1](#1安装python3和依赖库)中已经安装了Pytorch，因此您可以使用CPU进行AI翻译（这意味着您需要较大内存来支持加载AI模型）。
+> **🚨注意🚨**<br />
+> 如果您不想加快您的AI翻译速度，请跳过此步骤。因为在[步骤1](#1安装python3和依赖库)中已经安装了Pytorch，因此您可以使用CPU进行AI翻译（这意味着您需要较大内存来支持加载AI模型）。
 
 无论您的电脑是否具有NVIDIA GPU，您都可以在安装完后Pytorch后使用AI模型翻译功能。假如您刚好具有一块NVIDIA GPU，那么您可以利用CUDA支持的Pytorch加快您的AI翻译速度。
 
@@ -254,7 +256,7 @@ python3 parse_console.py
 ![](imgs/console_preview.png)
 
 
-# ▶快速开始
+# 🏹快速开始
 ## 👀流程速览
 ![](imgs/pipeline.png)
 
@@ -265,6 +267,20 @@ python3 parse_console.py
 ```shell
 o {tl_dir} {游戏名} {版本}
 ```
+<details open>
+<summary><b>💡关于old命令 (点击展开)</b></summary>
+
+- 它会递归扫描{tl_dir}目录下所有后缀名为`.rpy`的文件。
+- 它只获取每个rpy中的new_str!=old_str的文本，也就是我们认为原始文本"Hello world!"的翻译文本为："你好世界！"，如下所示：
+    > ```txt
+    > # game/ImaniEvents.rpy:11
+    > translate chinese callimanimorning_88744462:
+    > 
+    >     # "Hello world!"   <= old_str
+    >     "你好世界！"        <= new_str
+    > ```
+  并把"callimanimorning_88744462"作为翻译的索引号，这与RenPy行为保持一致。
+</details>
 
 `{tl_dir}`为游戏翻译文件所在目录，例如`D:\my_renpy\game\tl\chinese`。`{游戏名}`和`{版本}`请自定义，注意保存项目文件时候会用到它们（保存的项目文件为：`{游戏名}_{版本}.pt`），确保它们符合系统文件名要求。
 
@@ -272,7 +288,7 @@ o {tl_dir} {游戏名} {版本}
 
 ![](imgs/old.png)
 
-然后试试`list`或`l`命令，他将列出当前翻译项目：
+然后试试`list`或`l`命令，他将列出当前存在和翻译项目和它们对应索引号：
 
 ```shell
 l
@@ -289,16 +305,28 @@ l
 ```shell
 n {tl_dir} {游戏名} {版本}
 ```
+<details open>
+<summary><b>💡关于new命令 (点击展开)</b></summary>
 
+- 它会递归扫描{tl_dir}目录下所有后缀名为`.rpy`的文件。
+- 它只获取每个rpy中的new_str==old_str的文本，也就是我们认为原始文本"Hello world!"的待翻译文本，如下所示：
+    > ```txt
+    > # game/ImaniEvents.rpy:11
+    > translate chinese callimanimorning_88744462:
+    > 
+    >     # "Hello world!"   <= old_str
+    >     "Hello world!"     <= new_str
+    > ```
+  并把"callimanimorning_88744462"作为翻译的索引号，这与RenPy行为保持一致。
+</details>
 它参数说明和`old`命令类似。
 
 一个例子：
 
 ![](imgs/new.png)
 
-**🚨注意🚨**
-
-我们使用RenPy SDK生成翻译文件时候需要保留原始文本，不要勾选未翻译生成空字符串的选项：
+> **🚨注意🚨**<br />
+> 我们使用RenPy SDK生成翻译文件时候需要保留原始文本，不要勾选未翻译生成空字符串的选项：
 
 ![](./imgs/renpy.png)
 
@@ -325,7 +353,12 @@ n {tl_dir} {游戏名} {版本}
 ```shell
  m {旧翻译项目索引} {新翻译项目索引}
 ```
+<details open>
+<summary><b>💡关于merge命令 (点击展开)</b></summary>
 
+- 它会根据具有相同的索引号的文本将一个翻译项目中的已经翻译文本应用到另一个项目的未翻译文本中。
+- 注意它不会对任何rpy文件做出修改，合并过程只发生在保存的pt文件（这是我们翻译项目保存的二进制文件）中。pt文件所在目录你可以在[config.ini](config.ini)的`PROJECT_PATH`中找到。
+</details>
 一个例子：
 
 ![](imgs/merge.png)
@@ -347,10 +380,8 @@ n {tl_dir} {游戏名} {版本}
 下面我们将介绍最原始翻译命令：
 
 
-
-🚨注意🚨
-
-如果您没有完成[运行环境准备-步骤2](#2安装chrome浏览器和chrome-driver)，导致缺少Chrome浏览器和相应的chromedriver，`translate`命令将无法运行。
+> **🚨注意🚨**<br />
+> 如果您没有完成[运行环境准备-步骤2](#2安装chrome浏览器和chrome-driver)，导致缺少Chrome浏览器和相应的chromedriver，`translate`命令将无法运行。
 
 使用`translate`或者`t`命令，只需要指定要翻译项目索引和翻译引擎即可。
 ```shell
@@ -380,7 +411,13 @@ n {tl_dir} {游戏名} {版本}
 ```shell
  a {project_idx}
 ```
+<details open>
+<summary><b>💡关于apply命令 (点击展开)</b></summary>
 
+- 注意它不会对任何rpy文件做出修改，生成的rpy文件所在目录你可以在`PROJECT_PATH/你的项目名_版本名`中找到。
+- apply命令只使用翻译的文本替换未翻译的new_str，因此生成rpy文件结构不会改变。
+- apply命令默认会为翻译文本添加特殊标记(`@@`或者`@$`)。
+</details>
 一个例子：
 
 ![](imgs/apply.png)
@@ -391,13 +428,12 @@ n {tl_dir} {游戏名} {版本}
 
 这意味您可以将这个文件夹剪切到新版本游戏中的原始目录进行替换，当然请记得做好备份工作。
 
-**🚨注意🚨**
+> **🚨注意🚨**<br />
+> 在使用`apply`命令后翻译文本前面会带有一些特殊符号：
+> - 使用翻译引擎的翻译文本在前面会带有`@@`符号，它表明这段文本经过了机器翻译，这用于后期翻译润色工作。
+> - 使用old命令产生的翻译文本在前面会带有`@$`符号，这用于指示这是来至旧版本的翻译。
 
-在使用`apply`命令后翻译文本前面会带有一些特殊符号：
-- 使用翻译引擎的翻译文本在前面会带有`@@`符号，它表明这段文本经过了机器翻译，这用于后期翻译润色工作。
-- 使用old命令产生的翻译文本在前面会带有`@$`符号，这用于指示这是来至旧版本的翻译。
-
-如果您需要在去除它们，在配置文件中[config.ini](config.ini)设置配置项`REMOVE_MARKS`=True，重新使用`apply`命令即可。
+> 如果您需要在去除它们，在配置文件中[config.ini](config.ini)设置配置项`REMOVE_MARKS`=True，重新启动程序后，再使用`apply`命令即可。
 # 🗒Todo List:
 
 1. [x] ~~添加excel导入导出功能~~ (Done at 20230819)
