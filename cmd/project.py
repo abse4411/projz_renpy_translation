@@ -28,14 +28,21 @@ def merge_cmd(source_idx: int, target_idx: int, lang: str = None):
         tproj.save_by_default()
 
 
-def apply_cmd(proj_idx: int, lang: str = None, greedy: bool = True):
+def apply_cmd(proj_idx: int, lang: str = None, greedy: bool = True, skip_unmatch: bool = True):
     # projs = _list_projects()
     strict_mode = not (distutils.util.strtobool(greedy) if isinstance(greedy, str) else greedy)
+    skip_unmatch = distutils.util.strtobool(skip_unmatch) if isinstance(skip_unmatch, str) else skip_unmatch
     proj = project_index.load_from_file(_list_projects_and_select([proj_idx])[0])
-    proj.apply_by_default(lang, strict=strict_mode)
+    proj.apply_by_default(lang, strict=strict_mode, skip_unmatch=skip_unmatch)
 
 def revert_cmd(proj_idx: int, lang: str = None, greedy: bool = True):
     # projs = _list_projects()
     strict_mode = not (distutils.util.strtobool(greedy) if isinstance(greedy, str) else greedy)
     proj = project_index.load_from_file(_list_projects_and_select([proj_idx])[0])
     proj.revert_by_default(lang, strict=strict_mode)
+
+def remove_empty_translation_cmd(proj_idx: int, lang: str = None):
+    # projs = _list_projects()
+    proj = project_index.load_from_file(_list_projects_and_select([proj_idx])[0])
+    proj.remove_empty_translation(lang)
+    proj.save_by_default()

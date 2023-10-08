@@ -56,15 +56,23 @@ def help_cmd():
                    'The argument {lang} is optional, or specify it to use this language {lang}.'
                    ])
     table.add_row(['apply or a', 'apply {proj_idx} or\n apply {proj_idx} {lang} or\n'
-                                 'apply {proj_idx} {lang} {greedy=True}',
+                                 'apply {proj_idx} {lang} {greedy=True} or\n'
+                                 'apply {proj_idx} {lang} {greedy=True} {skip_unmatch=True}',
                    'Apply all translated texts of project {proj_idx} to rpy files. \nThe built directory structure is the same as that of the original project.'
                    f' All rpy files will be save in {default_config.project_path}\n'
                    'The argument {lang} is optional, or specify it to use this language {lang}.\n'
-                   'The argument {greedy} is optional, or specify it by True to scan more translation item. Default as True.'])
+                   'The argument {greedy} is optional, or specify it by True to scan more translation item. Default as True.\n'
+                   'The argument {skip_unmatch} is optional, \nor specify it by True to skip applying translated text to a new line where new_str!=old_str. Default as True.\n'
+                   ''])
     table.add_row(['revert or r', 'revert {proj_idx} or\n revert {proj_idx} {lang} or\n'
                                  'revert {proj_idx} {lang} {greedy=True}',
                    'Revert all translated texts back to untranslated ones of project {proj_idx} to rpy files. \nThis is an reverse operation of apply.\n'
                    'For arguments\' description, please refer to apply.'])
+    table.add_row(['removeempty or re', 'remove_empty {proj_idx} or\n revert {proj_idx} {lang}',
+                   'The argument {lang} is optional, or specify it to use this language {lang}.\n'
+                   'Remove all translated lines with empty string, and move them to untranslated lines.'
+                   '\nThis cmd helps you to find those translated lines with new_str=='' while old_str=='','
+                   '\n and put them back to untranslated lines.'])
     table.add_row(['savehtml or sh', 'savehtml {proj_idx} or\nsavehtml {proj_idx} {lang} or\nsavehtml {proj_idx} {lang} {limit}',
                    'Save untranslated texts of project {proj_idx} to a html file,\n where Chrome (NOT recommend) or Microsoft Edge can perform translating.\n'
                    'Please use the Chrome or Microsoft Edge to translate the html file, then save to overwrite it.\n'

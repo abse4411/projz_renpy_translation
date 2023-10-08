@@ -39,6 +39,7 @@ def my_hash(text: str):
     t = MAGIC_NUMBER
     for b in byte_arr:
         t = ((-t << 1) + 2 * b) ^ b
+    if t < 0: t = -t
     return t
 
 

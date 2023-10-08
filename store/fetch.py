@@ -16,6 +16,16 @@ TEXT_TYPE_TRANS_ID = "TRANS_ID"
 TEXT_TYPE_TRANS_CODE = "TRANS_CODE"
 
 
+def safely_add_prefix(new_str):
+    if new_str is not None and not (new_str.startswith('@$') or new_str.startswith('@@')):
+        return '@$' + new_str
+    return new_str
+
+def safely_remove_prefix(new_str):
+    if new_str is not None and (new_str.startswith('@$') or new_str.startswith('@@')):
+        return new_str[len('@$'):]
+    return new_str
+
 def get_trans_info(text):
     if text:
         text = text.strip()
@@ -252,10 +262,6 @@ def preparse_rpy_file(rpy_file, strict=False, verbose=True) -> Tuple[i18n_transl
 
 def update_translated_lines_new(rpy_file: str, translated_lines: i18n_translation_dict, strict=False):
     new_i18n_dict, discard_list = preparse_rpy_file(rpy_file, strict=strict)
-    def safe_add_prefix(new_str):
-        if new_str is not None and not (new_str.startswith('@$') or new_str.startswith('@@')):
-            return '@$' + new_str
-        return new_str
     # collect some translated items without raw text from discarded items if not in strict mode
     if not strict:
         ''' we collect translated items like:
@@ -270,7 +276,7 @@ def update_translated_lines_new(rpy_file: str, translated_lines: i18n_translatio
             if item.identifier != item.old_str and item.old_str is None\
                     and item.identifier is not None and item.new_str is not None \
                     and item.new_str != '' and item.lang is not None:
-                item.new_str = safe_add_prefix(item.new_str)
+                item.new_str = safely_add_prefix(item.new_str)
                 if (item.lang, item.identifier) not in new_i18n_dict:
                     new_i18n_dict[(item.lang, item.identifier)] = item
                 else:
@@ -285,7 +291,7 @@ def update_translated_lines_new(rpy_file: str, translated_lines: i18n_translatio
             old_dict = translated_lines[lang]
             for tid, new_item in new_dict.items():
                 line = new_item.line
-                new_item.new_str = safe_add_prefix(new_item.new_str)
+                new_item.new_str = safely_add_prefix(new_item.new_str)
                 if tid in old_dict:
                     old_item = old_dict[tid]
                     logging.warning(
@@ -297,7 +303,7 @@ def update_translated_lines_new(rpy_file: str, translated_lines: i18n_translatio
                 old_dict[tid] = new_item
         else:
             for tid, new_item in new_dict.items():
-                new_item.new_str = safe_add_prefix(new_item.new_str)
+                new_item.new_str = safely_add_prefix(new_item.new_str)
                 translated_lines[(lang, tid)] = new_item
 
 def update_untranslated_lines_new(rpy_file: str, translated_lines: i18n_translation_dict, strict=False):

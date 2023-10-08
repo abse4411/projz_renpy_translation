@@ -1,3 +1,4 @@
+import distutils
 import logging
 
 import configparser
@@ -11,6 +12,7 @@ class config:
     GLOBAL_SEC = 'GLOBAL'
     LOG_PATH = './projz/log'
     PROJECT_PATH = './projz'
+    REMOVE_MARKS = False
     NUM_WORKERS = 2
     def __init__(self, config_file):
         self.log = logging.getLogger(__name__)
@@ -40,6 +42,12 @@ class config:
         if self.cfg:
             return self.get_global('PROJECT_PATH')
         return self.PROJECT_PATH
+
+    @property
+    def remove_marks(self):
+        if self.cfg:
+            return distutils.util.strtobool(self.get_global('REMOVE_MARKS'))
+        return self.REMOVE_MARKS
 
     def get_global(self, key: str):
         return self.get(self.GLOBAL_SEC, key)

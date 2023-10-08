@@ -10,7 +10,8 @@ import tqdm
 from pandas import ExcelWriter
 
 from config.config import default_config
-from store.fetch import update_translated_lines_new, update_untranslated_lines_new, preparse_rpy_file
+from store.fetch import update_translated_lines_new, update_untranslated_lines_new, preparse_rpy_file, \
+    safely_remove_prefix
 from store.item import project_item_new, i18n_translation_dict, translation_item
 from util.file import walk_and_select, mkdir, file_dir, exists_file
 from util.misc import replacer, text_type, TEXT_TYPE
@@ -241,11 +242,35 @@ class project_index:
             self.check_lang(lang, is_translated_langs)
         return lang
 
-    def apply_by_default(self, lang:str=None, strict=False):
+    def remove_empty_translation(self, lang:str=None):
         lang = self.select_or_check_lang(lang, True)
-        self.apply(default_config.project_path, lang, strict=strict)
+        if self.translation_size(lang) == 0:
+            logging.info(f'None of translated items in {lang}.')
+            return
+        self._raw_data.untranslated_lines.safe_add_key(lang)
+        trans_dict = self._raw_data.translated_lines[lang]
+        untran_dict = self._raw_data.untranslated_lines[lang]
+        found_cnt = 0
+        for tid in list(trans_dict.keys()):
+            item = trans_dict[tid]
+            tmp_str = str(item.new_str)
+            if tmp_str.startswith('@@') or tmp_str.startswith('@$'):
+                tmp_str = tmp_str[2:]
+            if item.old_str.strip() != '' and tmp_str.strip() == '':
+                trans_dict.pop(tid)
+                if tid in untran_dict:
+                    logging.warning(f'Found existing item ({untran_dict[tid]}) in untranslated items , current item is {item}. It will be skipped!')
+                else:
+                    item.new_str = None
+                    untran_dict[tid] = item
+                found_cnt += 1
+        logging.info(f'{found_cnt} translated item(s) with empty translated text are moved to untranslated lines.')
 
-    def apply(self, save_dir:str, lang:str=None, strict=False):
+    def apply_by_default(self, lang:str=None, strict=False, skip_unmatch=True):
+        lang = self.select_or_check_lang(lang, True)
+        self.apply(default_config.project_path, lang, strict=strict, skip_unmatch=skip_unmatch)
+
+    def apply(self, save_dir:str, lang:str=None, strict=False, skip_unmatch=True):
         lang = self.select_or_check_lang(lang, True)
         save_dir = os.path.join(save_dir, self.full_name)
         mkdir(save_dir)
@@ -255,10 +280,11 @@ class project_index:
         apply_cnt = 0
         unapply_cnt = 0
         abs_source_dir = os.path.abspath(self.source_dir)
+        remove_marks = default_config.remove_marks
         for rpy_file in tqdm.tqdm(rpy_files,
                                   desc=f'Applying translated texts to {self.full_name} in language {lang}, you can found it in {save_dir}.'):
             rpy_file = os.path.abspath(rpy_file)
-            preparsed_data = self.perparse_with_linenumber(rpy_file, selected_lang=lang, skip_unmatch=True, strict=strict)
+            preparsed_data = self.perparse_with_linenumber(rpy_file, selected_lang=lang, skip_unmatch=skip_unmatch, strict=strict)
             base_dir = os.path.join(save_dir, file_dir(rpy_file[len(abs_source_dir):]).strip(os.sep))
             mkdir(base_dir)
             r = replacer(rpy_file, save_dir=base_dir)
@@ -280,6 +306,8 @@ class project_index:
                             sidx = text.rfind(quote_text)
                             if sidx != -1:
                                 apply_cnt_i += 1
+                                if remove_marks:
+                                    trans_txt = safely_remove_prefix(trans_txt)
                                 text = text[:sidx+1] + trans_txt + text[sidx+len(quote_text)-1:]
                             else:
                                 unapply_cnt_i += 1
@@ -300,6 +328,7 @@ class project_index:
     def revert_by_default(self, lang:str=None, strict=False):
         lang = self.select_or_check_lang(lang, True)
         self.revert(default_config.project_path, lang, strict=strict)
+
     def revert(self, save_dir:str, lang:str=None, strict=False):
         lang = self.select_or_check_lang(lang, True)
         save_dir = os.path.join(save_dir, self.full_name)
