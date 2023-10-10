@@ -62,7 +62,7 @@ class caiyun(abstract_web_translator):
         print('Wait the browser for loading the page...')
         time.sleep(5)
         self.inputArea = self.browser.find_element(By.CLASS_NAME, 'textinput')
-        self.tran_button = self.browser.find_element(By.XPATH, '//*[@id="app"]/div[2]/div[1]/div[2]/div/div[1]/div[3]')
+        self.tran_button = self.browser.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div[2]/div/div[1]/div[3]')
 
     def set_input(self, rawtext):
         self.inputArea.send_keys(rawtext)
@@ -140,10 +140,11 @@ class baidu(abstract_web_translator):
         print('Wait the browser for loading the page...')
         time.sleep(5)
         try:
-            self.browser.find_element(By.XPATH, '/html/body/div[1]/div[7]/div/div/div/a[2]').click()
+            self.browser.find_element(By.XPATH, '/html/body/div[1]/div[6]/div/div[2]/span').click()
         except:
             pass
         self.inputArea = self.browser.find_element(By.ID, 'baidu_translate_input')
+        #
         self.tran_button = self.browser.find_element(By.XPATH, '/html/body/div[1]/div[2]/div/div/div[1]/div[1]/div[1]/a[5]')
 
     def set_input(self, rawtext):
@@ -200,7 +201,7 @@ class google(abstract_web_translator):
 
     def get_output(self, rawtext) -> Optional[str]:
         try:
-            xpath = '/html/body/c-wiz/div/div[2]/c-wiz/div[2]/c-wiz/div/div[2]/div[3]/c-wiz[2]/div/div[9]/div/div[1]'
+            xpath = '/html/body/c-wiz/div/div[2]/c-wiz/div[2]/c-wiz/div[1]/div[2]/div[3]/c-wiz[2]/div/div[8]/div/div[1]'
             WebDriverWait(self.browser, 10).until(
                 lambda broswer: self.browser.find_element(By.XPATH, xpath))
             time.sleep(random.uniform(0.2, 1))
