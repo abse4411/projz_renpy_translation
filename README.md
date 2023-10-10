@@ -227,7 +227,7 @@ CHROME_DRIVER=D:\Users\Surface Book2\Downloads\chromedriver_win32\chromedriver.e
     ```bash
     pip uninstall torch torchaudio torchvision transformers
     ```
-    然后接着前往[Pytorch官网](https://pytorch.org)找到对应CUDA的Pytorch版本，打开控制台安装指令安装。如果没有发现相关的CUDA版本可以在[此链接](https://pytorch.org/get-started/previous-versions/)找到旧的CUDA支持的Pytorch版本。例如，以下是我找到关于CUDA11.7的Pytorch安装信息：
+    然后接着前往[Pytorch官网](https://pytorch.org)找到对应CUDA的Pytorch版本，打开控制台按照指令安装。如果没有发现相关的CUDA版本可以在[此链接](https://pytorch.org/get-started/previous-versions/)找到旧的CUDA支持的Pytorch版本。例如，以下是我找到关于CUDA11.7的Pytorch安装信息：
       ```bash
     # For Linux and Windows
     # ROCM 5.4.2 (Linux only)
