@@ -85,6 +85,8 @@ If you like this project, you can help us translate this page. That would be gre
 3. 使用`loadexcel {proj_idx}`命令，把翻译过的excel文件导入项目。
 4. 使用`apply {proj_idx}`命令生成rpy文件即可。
 
+> **😕翻译网站不支持文件excel文件？**<br />
+> - 您可以把excel文件内容粘贴到doc文件中，在上传doc文件进行翻译。当翻译完成后，把doc文件内翻译的内容重新覆盖原始excel文件即可。
 ---
 
 ## 使用`savehtml`和`loadhtml`⚡快速⚡翻译（浏览器自带网页翻译）
