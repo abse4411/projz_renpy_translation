@@ -14,6 +14,7 @@
 </div>
 
 # 🍕RenPy翻译工具
+- 本工具需要具有一定动手能力🔧，如果了解Renpy翻译流程更佳。
 - 通过本工具，您可用来：
   - 以项目为单位来管理您RenPy游戏翻译版本(在您的翻译文件夹下`/your_renpy_game/game/tl`)，支持多种语言(`/game/tl`下的子文件夹)
   - 合并/迁移您的同一游戏旧版本的翻译文本到新版本中。这可以让旧版本的翻译文本得到复用。
@@ -86,7 +87,7 @@ If you like this project, you can help us translate this page. That would be gre
 4. 使用`apply {proj_idx}`命令生成rpy文件即可。
 
 > **😕翻译网站不支持文件excel文件？**<br />
-> - 您可以把excel文件内容粘贴到doc文件中，在上传doc文件进行翻译。当翻译完成后，把doc文件内翻译的内容重新覆盖原始excel文件即可。
+> 您可以把excel文件内容粘贴到doc文件中，再上传doc文件进行翻译。当翻译完成后，把doc文件内翻译的内容重新覆盖原始excel文件即可。
 ---
 
 ## 使用`savehtml`和`loadhtml`⚡快速⚡翻译（浏览器自带网页翻译）
@@ -157,12 +158,12 @@ If you like this project, you can help us translate this page. That would be gre
 # 🛠运行环境准备
 
 我们已经打包好所有环境依赖（Python3和依赖库）成exe文件，点击目录下的👉[parse_console.exe](parse_console.exe)即可运行。
-也就是说您可以完全***跳过本步骤***，快进到⏩[快速开始](#快速开始)。如果使用exe运行，您将无法使用AI模型翻译🤖。
+也就是说您可以完全***跳过本步骤***，快进到⏩[快速开始](#快速开始)。如果使用exe运行，您将无法使用AI模型翻译🤖，而Web翻译需要🌐下载一些额外的软件，详细请见下的注意事项：
 
 > **🚨注意🚨**<br />
 > - 如果您想要使用Web翻译功能🌐，请根据下面的[步骤2](#2安装chrome浏览器和chrome-driver)安装Chrome浏览器和对应的chrome driver后在打开[parse_console.exe](parse_console.exe)运行。
-> - 如果您使用AI翻译功能🤖，请根据下面的[步骤1](#1安装python3和依赖库)安装Python3环境，然后使用python脚本运行：`python3 parse_console.py`
-> - 如果您想*⚡加速⚡*AI翻译功能🤖，请根据下面的[步骤3](#3安装cuda支持的pytorch)的装支持的CUDA和对应的pytorch，然后使用python脚本运行：`python3 parse_console.py`
+> - 如果您想要使用AI翻译功能🤖，请根据下面的[步骤1](#1安装python3和依赖库)安装Python3环境，然后使用python脚本运行：`python3 parse_console.py`
+> - 如果您想要*⚡加速⚡*AI翻译功能🤖，请根据下面的[步骤3](#3安装cuda支持的pytorch)的装支持的CUDA和对应的pytorch，然后使用python脚本运行：`python3 parse_console.py`
 
 ## 1.安装Python3和依赖库
 建议使用[Miniconda](https://docs.conda.io/projects/miniconda/en/latest/)安装Python3虚拟环境。当您安装完成时，在当前代码目录下打开一个控制台窗口，并激活一个虚拟Python3环境，运行以下命令：
