@@ -26,7 +26,8 @@
   - 使用一些辅助性工具(目前还在开发中)，比如将已翻译文本重置为未翻译状态，针对翻译项目的excel文件导入导出
 - 常见问题在[这里](#常见问题)
 - 命令说明在[这里](#命令说明)
-- 常见概念在[这里](#常见问题)的关于一些术语中
+- 常见概念在[这里](#常见问题)的术语
+- 配置文件[config.ini](config.ini)说明在[这里](#configini配置说明)
 - 我们项目参考了这些项目，见: [Acknowledgement](#Acknowledgement)
 - 该代码仅供学习使用，我们不提供任何游戏文件❗
 - 我们将运行环境和程序打包为exe，见代码目录下的[parse_console.exe](parse_console.exe)。因此您可以直接运行程序(仅限在64位的Windows系统)，而不需要安装任何依赖库(包括Python🐍!)。但是以下翻译功能将无法使用：
@@ -543,6 +544,25 @@ accept {proj_idx}
 +---------------+-------------------+----------------+--------------------+----------------------+
 ```
 
+# config.ini配置说明
+```text
+[GLOBAL]
+# 日志文件目录
+LOG_PATH=./projz/log
+# 生成的rpy保存目录
+PROJECT_PATH=./projz
+# translate命令默认启动浏览器数量
+NUM_WORKERS=2
+# chrome driver路径，这与translate命令有关
+CHROME_DRIVER=D:\Users\Surface Book2\Downloads\chromedriver_win32\chromedriver.exe
+# AI翻译保存地址，这与dltranslate命令有关
+MODEL_SAVE_PATH=
+# 使用apply命令生成rpy文件，是否移除`@@`或者`@$`符号
+REMOVE_MARKS=True
+# 使用'translate'或'dltranslate'命令，是否要去除<i>, <size>, <color>等标签
+STRIP_TAGS=False
+```
+
 # 常见问题
 <details>
 <summary>💡关于运行 (点击展开)</summary>
@@ -567,7 +587,7 @@ A: 这是我们保存项目的状态文件，它记录了一个翻译项目所�
 Q: 我如何手动修改翻译结果或者手动翻译？<br />
 A: 见[dump](#dump或du)和[update](#update或up)命令。
 
-Q: 使用`apply`命令会在文本前面产生`@@`或者`@$`的符号？<br />
+Q: 使用`apply`命令会在文本前面产生`@@`或者`@$`符号？<br />
 A: 见[apply](#5生成替换)命令中的注意事项。
 </details>
 

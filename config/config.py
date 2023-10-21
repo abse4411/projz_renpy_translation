@@ -13,6 +13,7 @@ class config:
     LOG_PATH = './projz/log'
     PROJECT_PATH = './projz'
     REMOVE_MARKS = False
+    REMOVE_TAGS = False
     NUM_WORKERS = 2
     def __init__(self, config_file):
         self.log = logging.getLogger(__name__)
@@ -48,6 +49,12 @@ class config:
         if self.cfg:
             return distutils.util.strtobool(self.get_global('REMOVE_MARKS'))
         return self.REMOVE_MARKS
+
+    @property
+    def remove_tags(self):
+        if self.cfg:
+            return distutils.util.strtobool(self.get_global('STRIP_TAGS'))
+        return self.REMOVE_TAGS
 
     def get_global(self, key: str):
         return self.get(self.GLOBAL_SEC, key)

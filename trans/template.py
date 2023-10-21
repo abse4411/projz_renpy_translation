@@ -1,5 +1,6 @@
 import logging
 
+from config.config import default_config
 from trans.base import translator
 from util.misc import strip_tags, var_list, strip_breaks
 
@@ -11,7 +12,10 @@ class default_template(translator):
 
     def translate(self, rawtext):
         raw_line = rawtext
-        line = strip_tags(rawtext)
+        if default_config.remove_tags:
+            line = strip_tags(rawtext)
+        else:
+            line = rawtext
         renpy_vars = var_list(line)
         # replace the var by another name
         tvar_list = [f'T{i}' for i in range(len(renpy_vars))]

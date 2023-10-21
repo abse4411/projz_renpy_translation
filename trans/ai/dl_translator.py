@@ -109,6 +109,7 @@ class trans_wrapper(translator):
         logging.info(
             f'Starting translating {len(untranslated_lines)} untranslated line(s)')
 
+        should_strip_tags = default_config.remove_tags
         for b in tqdm.tqdm(batches, desc=f'Translating'):
             translated_lines = []
             tids, texts, raw_texts = [], [], []
@@ -119,7 +120,10 @@ class trans_wrapper(translator):
                     translated_lines.append((tid, text))
                     continue
                 tids.append(tid)
-                clear_text = strip_tags(text)
+                if should_strip_tags:
+                    clear_text = strip_tags(text)
+                else:
+                    clear_text = text
                 raw_texts.append(clear_text)
                 renpy_vars = var_list(clear_text)
                 tvar_list = [f'T{i}' for i in range(len(renpy_vars))]
