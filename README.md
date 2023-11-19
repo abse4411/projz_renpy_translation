@@ -50,7 +50,8 @@ If you like this project, you can help us translate this page. That would be gre
 * V0.3.8a(功能改进):
 
   * 修复配置读取编码问题
-  * 现在您可以在config.ini设置RenPy keywords, 帮助程序扫描更多的文本，见[configini配置说明](#configini配置说明)
+  * 现在您可以在config.ini设置RenPy keywords, 帮助程序扫描更多的文本，见[configini配置说明](#configini配置说明)-KEYWORDS
+  * 现在您可以在config.ini配置translate和dltranslate命令去除{}标签，见[configini配置说明](#configini配置说明)-STRIP_TAGS
   * 文档补充
 
 * V0.3.8: 
