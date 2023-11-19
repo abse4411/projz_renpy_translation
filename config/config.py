@@ -14,13 +14,14 @@ class config:
     PROJECT_PATH = './projz'
     REMOVE_MARKS = False
     REMOVE_TAGS = False
+    KEYWORDS = []
     NUM_WORKERS = 2
     def __init__(self, config_file):
         self.log = logging.getLogger(__name__)
         try:
             cfg = configparser.ConfigParser()
             assert exists_file(config_file), f'config file {config_file} not found'
-            cfg.read(config_file)
+            cfg.read(config_file, encoding='utf-8')
             self.cfg = cfg
         except Exception as e:
             self.log.error(f'An error occurred while loading config file ({config_file}):{e}')
@@ -55,6 +56,14 @@ class config:
         if self.cfg:
             return distutils.util.strtobool(self.get_global('STRIP_TAGS'))
         return self.REMOVE_TAGS
+
+    @property
+    def keywords(self):
+        if self.cfg:
+            kws = self.get_global('KEYWORDS').split(',')
+            clean_kws = [i.strip() for i in kws if i.strip() != '']
+            return clean_kws
+        return self.KEYWORDS
 
     def get_global(self, key: str):
         return self.get(self.GLOBAL_SEC, key)

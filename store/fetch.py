@@ -4,6 +4,7 @@ from typing import List, Tuple
 
 from tqdm import tqdm
 
+from config.config import default_config
 from store.item import translation_item, i18n_translation_dict
 from util.misc import text_type, TEXT_TYPE, is_empty, VAR_NAME
 
@@ -144,6 +145,7 @@ def preparse_rpy_file(rpy_file, strict=False, verbose=True) -> Tuple[i18n_transl
     valid_cnt = 0
     invalid_cnt = 0
 
+    renpy_keywords = default_config.keywords
     # not under 'translate chinese string'-like group block
     in_group = False
     store = i18n_translation_dict()
@@ -152,13 +154,13 @@ def preparse_rpy_file(rpy_file, strict=False, verbose=True) -> Tuple[i18n_transl
         line = line.strip()
         if line == '': continue
         text, ttype, var_name = text_type(line)
-        if ttype == TEXT_TYPE.RAW:
+        if ttype == TEXT_TYPE.RAW and var_name not in renpy_keywords:
             raw_text = text
             if is_empty(text) and verbose:
                 logging.warning(f'{rpy_file}[L{i}]: The old text({text}) is empty')
             raw_line = i
             raw_var = var_name
-        elif ttype == TEXT_TYPE.NEW:
+        elif ttype == TEXT_TYPE.NEW and var_name not in renpy_keywords:
             if is_empty(text) and verbose:
                 logging.warning(f'{rpy_file}[L{i}]: The new text({text}) is empty!')
             info_dict = {

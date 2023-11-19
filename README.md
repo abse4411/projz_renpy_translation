@@ -47,7 +47,13 @@ If you like this project, you can help us translate this page. That would be gre
 ***
 
 # 📜Changelog:
-* V0.3.8(当前): 
+* V0.3.8a(功能改进):
+
+  * 修复配置读取编码问题
+  * 现在您可以在config.ini设置RenPy keywords, 帮助程序扫描更多的文本，见[configini配置说明](#configini配置说明)
+  * 文档补充
+
+* V0.3.8: 
   
   * 添加了新命令`removeempty`，它可以帮助您把项目中空字符串的已翻译文本转换到未翻译的文本中(new_str='' while old_str!='')，以便重新翻译。
   * 在配置文件中[config.ini](config.ini)增加了新的配置项：`REMOVE_MARKS`，设置为True时，`apply`命令产生的文本不会有带有特殊标记（'@$'或'@@'）
@@ -446,14 +452,23 @@ n {tl_dir} {游戏名} {版本}
 关于`new`, `old`, `list`, `merge`, `apply`和`translate`命令说明见[这里](#快速开始)
 ## dump或du
 ```shell
-dump {proj_idx}
+dump {proj_idx} {lang} {scope}
 ```
+- {lang} 是可选的，指定导出翻译语言
+- {scope} 是可选的，指定导出文本范围：
+  - `trans`：已翻译文本
+  - `untrans`：未翻译文本
+  - `all`：所有文本
+
 说明：该命令将指定的项目中所有未翻译和已翻译的文本按所在rpy文件行顺序导出在excel文件中，每个rpy文件占用一个sheet。excel文件保存在`PROJECT_PATH/excel`中。它通常配合[update](#update或up)命令使用。
 
 ## update或up
 ```shell
-update {proj_idx}
+update {proj_idx} {lang} {excel_file}
 ```
+- {lang} 是可选的，指定导入的翻译语言
+- {excel_file} 是可选的，指定导入的excel文件，默认从配置路径加载excel
+
 说明：该命令默认从`PROJECT_PATH/excel`加载对应项目的excel文件，并根据excel内容更新项目中未翻译和已翻译的文本。这使得您可以手动修改翻译结果，因此它可以配合[dump](#dump或du)命令使用。
 > **🚨注意🚨**<br />
 > 该命令仅关注excel文件的`Translation Index (Don't modify)`和`Translated Text`所在列，修改其他列不会影响命令的执行，因此其他列所在内容不会进行相应更新。
@@ -561,6 +576,13 @@ MODEL_SAVE_PATH=
 REMOVE_MARKS=True
 # 使用'translate'或'dltranslate'命令，是否要去除<i>, <size>, <color>等标签
 STRIP_TAGS=False
+# 添加RenPy一些关键字 (用','分割). 通过添加一些关键字，使得项目能够扫描下面这些翻译文本
+# 如果不添加无法扫描到
+#    # voice "sound/voice/eri/eri_0001.ogg"
+#    # eri "hello world！"
+#    voice "sound/voice/eri/eri_0001.ogg"
+#    eri "你好世界！"
+KEYWORDS=voice
 ```
 
 # 常见问题

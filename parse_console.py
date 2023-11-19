@@ -19,7 +19,7 @@ from store.index import project_index
 from util.file import exists_dir, file_name, exists_file, mkdir
 from util.misc import my_input, yes
 
-__VERSION__ = '0.3.7'
+__VERSION__ = '0.3.8'
 
 
 def help_cmd():
