@@ -6,7 +6,6 @@ from typing import List, Tuple
 import pickle
 
 import pandas as pd
-import tqdm
 from pandas import ExcelWriter
 
 from config.config import default_config
@@ -150,8 +149,7 @@ class project_index:
     def init_from_dir(cls, source_dir: str, name: str, tag: str, is_translated=True, strict=False):
         ryp_files = walk_and_select(source_dir, lambda x: x.endswith('.rpy'))
         lines = i18n_translation_dict()
-        for rpy_file in tqdm.tqdm(ryp_files,
-                                  desc=f'Getting {"translated" if is_translated else "untranslated"} texts from {source_dir}'):
+        for rpy_file in ryp_files:
             if is_translated:
                 update_translated_lines_new(rpy_file, lines, strict=strict)
             else:
@@ -281,8 +279,7 @@ class project_index:
         unapply_cnt = 0
         abs_source_dir = os.path.abspath(self.source_dir)
         remove_marks = default_config.remove_marks
-        for rpy_file in tqdm.tqdm(rpy_files,
-                                  desc=f'Applying translated texts to {self.full_name} in language {lang}, you can found it in {save_dir}.'):
+        for rpy_file in rpy_files:
             rpy_file = os.path.abspath(rpy_file)
             preparsed_data = self.perparse_with_linenumber(rpy_file, selected_lang=lang, skip_unmatch=skip_unmatch, strict=strict)
             base_dir = os.path.join(save_dir, file_dir(rpy_file[len(abs_source_dir):]).strip(os.sep))
@@ -337,8 +334,7 @@ class project_index:
         apply_cnt = 0
         unapply_cnt = 0
         abs_source_dir = os.path.abspath(self.source_dir)
-        for rpy_file in tqdm.tqdm(rpy_files,
-                                  desc=f'Reverting translated texts on {self.full_name} in language {lang}, you can found it in {save_dir}.'):
+        for rpy_file in rpy_files:
             rpy_file = os.path.abspath(rpy_file)
             preparsed_data = self.perparse_with_linenumber(rpy_file, selected_lang=lang, skip_unmatch=False, strict=strict)
             base_dir = os.path.join(save_dir, file_dir(rpy_file[len(abs_source_dir):]).strip(os.sep))

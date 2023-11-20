@@ -49,6 +49,7 @@ def list_cmd(proj_idx: int = None):
         print(table)
     else:
         proj = project_index.load_from_file(_list_projects_and_select([proj_idx])[0])
+        print('Project status:')
         table = PrettyTable(
             ['Project', 'Tag', 'Translated line(s)', 'Untranslated line(s)', 'Source dir', 'Num Rpys'])
         untrans_cnt = '\n'.join([f'{l}: {proj.untranslation_size(l)}' for l in proj.untranslated_langs])
@@ -57,6 +58,7 @@ def list_cmd(proj_idx: int = None):
             [proj.project_name, proj.project_tag, trans_cnt, untrans_cnt, proj.source_dir,
              proj.num_rpys])
         print(table)
+        print(f'Statistics collected from the source dir (Not the project): {proj.source_dir}')
         table = PrettyTable(
             ['Rpy file', 'Translated line(s)', 'Untranslated line(s)', 'Invalid line(s)', 'Sum'])
         table.hrules = prettytable.ALL

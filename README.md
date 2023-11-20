@@ -451,6 +451,9 @@ n {tl_dir} {游戏名} {版本}
 
 # 命令说明
 关于`new`, `old`, `list`, `merge`, `apply`和`translate`命令说明见[这里](#快速开始)
+> **💡提示💡**<br />
+> 每个命令的详细说明可以使用在程序运行后输入`help`查看
+
 ## dump或du
 ```shell
 dump {proj_idx} {lang} {scope}
