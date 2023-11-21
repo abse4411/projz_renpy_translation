@@ -19,12 +19,19 @@ from store.index import project_index
 from util.file import exists_dir, file_name, exists_file, mkdir
 from util.misc import my_input, yes
 
-__VERSION__ = '0.3.8'
+__VERSION__ = '0.3.8a'
 
 
 def help_cmd():
+    print(fr'''________  ________  ________        ___  ________     
+|\   __  \|\   __  \|\   __  \      |\  \|\_____  \    
+\ \  \|\  \ \  \|\  \ \  \|\  \     \ \  \\|___/  /|   
+ \ \   ____\ \   _  _\ \  \\\  \  __ \ \  \   /  / /   
+  \ \  \___|\ \  \\  \\ \  \\\  \|\  \\_\  \ /  /_/__  
+   \ \__\    \ \__\\ _\\ \_______\ \________\\________\
+    \|__|     \|__|\|__|\|_______|\|________|\|_______|   V{__VERSION__}''')
     print("RenPy翻译 rpy翻译文件机翻工具 - translator for Renpy rpy files, renpy translation, rpy translation")
-    print(f"By abse4411(https://github.com/abse4411/projz_renpy_translation), version {__VERSION__}")
+    print(f"By abse4411(https://github.com/abse4411/projz_renpy_translation)")
     table = PrettyTable(['Command', 'Usage', 'Help'])
     table.hrules = prettytable.ALL
     table.add_row(['new or n', 'new {tl_path} {name} {tag} or\nnew {tl_path} {name} {tag} {greedy=True}',
