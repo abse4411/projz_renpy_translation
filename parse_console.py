@@ -44,24 +44,25 @@ def help_cmd():
                    ' All texts are regard as translated ones.\n The {name} and {tag} are using while saving.\n'
                    'The argument {greedy} is optional, or specify it by True to scan more translation item,\n'
                    'which also discard less invalid lines. Default as True.'])
+    table.add_row(['reold or ro', 'reold {proj_idx} {tag} or\nreold {proj_idx} {greedy=True}',
+                   'Reload the project {proj_idx} by running: old proj.tl_path proj.name proj.tag.\n'
+                   'The argument {greedy} is optional, or specify it by True to scan more translation item,\n'
+                   'which also discard less invalid lines. Default as True.'])
     table.add_row(['delete or d', 'delete {proj_idx}', 'Delete the specified project {proj_idx}.'])
     table.add_row(['clear or c', 'clear', f'Clear all projects in {default_config.project_path}.'])
-    table.add_row(
-        ['translate or t', 'translate {proj_idx} {tran_api} or\ntranslate {proj_idx} {tran_api} {num_workers} or\n'
-                           'translate {proj_idx} {tran_api} {num_workers} {lang}',
-         'Translate all untranslated texts using the translation API {tran_api} for the project {proj_idx}.\n'
-         'The argument {lang} is optional, or specify it to use this language {lang}.\n'
-         'The argument {num_workers=1} is optional, or specify it to set the number of browsers to launch.  Default as 1.\n'
-         'Available translation APIs are caiyu, google, baidu, and youdao.'])
-    table.add_row(
-        ['dltranslate or dlt', 'dltranslate {proj_idx} {model_name} or\ndltranslate {proj_idx} {model_name} {lang}',
-         'Translate all untranslated texts using the AI translation model {model_name} for the project {proj_idx}.\n'
-         'The argument {lang} is optional, or specify it to use this language {lang}.\n'
-         'Available translation models are m2m100, mbart50, and nllb200.'])
+    table.add_row(['translate or t', 'translate {proj_idx} {tran_api} or\ntranslate {proj_idx} {tran_api} {num_workers} or\n'
+                    'translate {proj_idx} {tran_api} {num_workers} {lang}',
+                     'Translate all untranslated texts using the translation API {tran_api} for the project {proj_idx}.\n'
+                     'The argument {lang} is optional, or specify it to use this language {lang}.\n'
+                     'The argument {num_workers=1} is optional, or specify it to set the number of browsers to launch.  Default as 1.\n'
+                     'Available translation APIs are caiyu, google, baidu, and youdao.'])
+    table.add_row( ['dltranslate or dlt', 'dltranslate {proj_idx} {model_name} or\ndltranslate {proj_idx} {model_name} {lang}',
+                     'Translate all untranslated texts using the AI translation model {model_name} for the project {proj_idx}.\n'
+                     'The argument {lang} is optional, or specify it to use this language {lang}.\n'
+                     'Available translation models are m2m100, mbart50, and nllb200.'])
     table.add_row(['merge or m', 'merge {sproj_idx} {tproj_idx} or\nmerge {sproj_idx} {tproj_idx} {lang}',
                    'Merge translated texts from a project {sproj_idx} to the target project {tproj_idx}.\n'
-                   'The argument {lang} is optional, or specify it to use this language {lang}.'
-                   ])
+                   'The argument {lang} is optional, or specify it to use this language {lang}.'])
     table.add_row(['apply or a', 'apply {proj_idx} or\n apply {proj_idx} {lang} or\n'
                                  'apply {proj_idx} {lang} {greedy=True} or\n'
                                  'apply {proj_idx} {lang} {greedy=True} {skip_unmatch=True}',
@@ -69,8 +70,7 @@ def help_cmd():
                    f' All rpy files will be save in {default_config.project_path}\n'
                    'The argument {lang} is optional, or specify it to use this language {lang}.\n'
                    'The argument {greedy} is optional, or specify it by True to scan more translation item. Default as True.\n'
-                   'The argument {skip_unmatch} is optional, \nor specify it by True to skip applying translated text to a new line where new_str!=old_str. Default as True.\n'
-                   ''])
+                   'The argument {skip_unmatch} is optional, \nor specify it by True to skip applying translated text to a new line where new_str!=old_str. Default as True.'])
     table.add_row(['revert or r', 'revert {proj_idx} or\n revert {proj_idx} {lang} or\n'
                                  'revert {proj_idx} {lang} {greedy=True}',
                    'Revert all translated texts back to untranslated ones of project {proj_idx} to rpy files. \nThis is an reverse operation of apply.\n'

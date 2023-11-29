@@ -1,7 +1,7 @@
 from typing import Any
 
 from cmd.io import new_cmd, old_cmd, savehtml_cmd, loadhtml_cmd, saveexcel_cmd, loadexcel_cmd, dumptoexcel_cmd, \
-    updatefromexcel_cmd
+    updatefromexcel_cmd, reold_cmd
 from cmd.manage import delete_cmd, list_cmd, clear_cmd
 from cmd.project import merge_cmd, apply_cmd, acceptuntrans_cmd, revert_cmd, remove_empty_translation_cmd
 from cmd.trans import translate_cmd, dltranslate_cmd
@@ -11,6 +11,8 @@ _REGISTERED_CMDS = {
     'n': new_cmd,
     'old': old_cmd,
     'o': old_cmd,
+    'reold': reold_cmd,
+    'ro': reold_cmd,
     'translate': translate_cmd,
     't': translate_cmd,
     'dltranslate': dltranslate_cmd,

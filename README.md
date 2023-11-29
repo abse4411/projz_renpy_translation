@@ -50,37 +50,38 @@ If you like this project, you can help us translate this page. That would be gre
 * V0.3.8a(功能改进):
 
   * 修复配置读取编码问题
-  * 现在您可以在config.ini设置RenPy keywords, 帮助程序扫描更多的文本，见[configini配置说明](#configini配置说明)-KEYWORDS
-  * 现在您可以在config.ini配置translate和dltranslate命令去除{}标签，见[configini配置说明](#configini配置说明)-STRIP_TAGS
-  * 文档补充
+  * 添加`reold`命令，现在您可以一个重新从一个已有翻译项目重新运行`old`命令，见[reold或ro](#reold或ro)。
+  * 现在您可以在config.ini设置RenPy keywords, 帮助程序扫描更多的文本，见[configini配置说明](#configini配置说明)-KEYWORDS。
+  * 现在您可以在config.ini配置translate和dltranslate命令去除{}标签，见[configini配置说明](#configini配置说明)-STRIP_TAGS。
+  * 文档补充。
 
 * V0.3.8: 
   
-  * 添加了新命令`removeempty`，它可以帮助您把项目中空字符串的已翻译文本转换到未翻译的文本中(new_str='' while old_str!='')，以便重新翻译。
-  * 在配置文件中[config.ini](config.ini)增加了新的配置项：`REMOVE_MARKS`，设置为True时，`apply`命令产生的文本不会有带有特殊标记（'@$'或'@@'）
+  * 添加了新命令`removeempty`，它可以帮助您把项目中空字符串的已翻译文本转换到未翻译的文本中(new_str='' while old_str!='')，以便重新翻译，见[update或up](#update或up)。
+  * 在配置文件中[config.ini](config.ini)增加了新的配置项：`REMOVE_MARKS`，设置为True时，`apply`命令产生的文本不会有带有特殊标记（'@$'或'@@'）。
   * 修复`apply`命令的已知问题，添加一个新的参数`skip_unmatch`，设置为True时，apply命令在生成rpy文件时会跳过那些new_str!=old_str的文本。
 
 * V0.3.7: 
   
-  * 添加了新命令`revert`，其功能与`apply`命令相反，即把翻译的文本变成原始未翻译的文本
+  * 添加了新命令`revert`，其功能与`apply`命令相反，即把翻译的文本变成原始未翻译的文本, 见[revert或r](#revert或r)。
   * 改进了`dump`命令输出，现在您可以输出项目所有翻译和未翻译的文本到excel文件，且按文件分别输出到不同的sheet中，同一个sheet文本按行号排序。
-  * 添加了新命令`update`，它可以配合`dump`命令使用，因此您可以通过修改`dump`命令导出excel文件来更正一个项目中翻译或者未翻译的文本。这类似`saveexcel`和`loadexcel`命令
+  * 添加了新命令`update`，它可以配合`dump`命令使用，因此您可以通过修改`dump`命令导出excel文件来更正一个项目中翻译或者未翻译的文本。这类似`saveexcel`和`loadexcel`命令，见[update或up](#update或up)。
 
-* V0.3.6: 修复了使用web翻译多线程的问题，部分命令功能改进
+* V0.3.6: 修复了使用web翻译多线程的问题，部分命令功能改进。
 
-* V0.3.5: 基于开源项目[dl-translate](https://github.com/xhluca/dl-translate)，我们集成AI模型进行翻译，实现离线翻译的功能。 对应的新命令为`dltranslate`，见[使用dltranslate命令进行ai翻译](#使用dltranslate命令进行ai翻译)
+* V0.3.5: 基于开源项目[dl-translate](https://github.com/xhluca/dl-translate)，我们集成AI模型进行翻译，实现离线翻译的功能。 对应的新命令为`dltranslate`，见[使用dltranslate命令进行ai翻译](#使用dltranslate命令进行ai翻译)。
 
-* V0.3.4: 我们把程序和运行环境打包成exe，现在您不需要python环境就可以运行程序。仅支持64位的Windows 10, 11系统
+* V0.3.4: 我们把程序和运行环境打包成exe，现在您不需要python环境就可以运行程序。仅支持64位的Windows 10, 11系统。
 
-* V0.3.3: 修复`apply`命令替换空文本的问题；翻译文本识别改进；新命令`accept`:针对那些不需要翻译文本，现在您可以把未翻译文本合并到翻译的文本中
+* V0.3.3: 修复`apply`命令替换空文本的问题；翻译文本识别改进；新命令`accept`:针对那些不需要翻译文本，现在您可以把未翻译文本合并到翻译的文本中。
 
-* V0.3.2: 修复翻译文本识别问题，现在能识别更多的翻译文本；新命令`dump`:现在您可以把一个项目所有翻译文本导出为excel，见[使用saveexcel和loadexcel快速翻译](#使用saveexcel和loadexcel快速翻译)
+* V0.3.2: 修复翻译文本识别问题，现在能识别更多的翻译文本；新命令`dump`:现在您可以把一个项目所有翻译文本导出为excel，见[dump或du](#dump或du)。
 
-* V0.3.1: 添加excel文件的导入导出功能（`saveexcel`和`loadexcel`命令），功能与`savehtml`和`loadhtml`命令类似
+* V0.3.1: 添加excel文件的导入导出功能（`saveexcel`和`loadexcel`命令），功能与`savehtml`和`loadhtml`命令类似。
 
-* V0.3.0: 改进翻译索引，减少对翻译文本的丢弃
+* V0.3.0: 改进翻译索引，减少对翻译文本的丢弃。
 
-* V0.2.0: 使用`savehtml`和`loadhtml`快速翻译，见[使用savehtml和loadhtml快速翻译](#使用savehtml和loadhtml快速翻译浏览器自带网页翻译)
+* V0.2.0: 使用`savehtml`和`loadhtml`快速翻译，见[使用savehtml和loadhtml快速翻译](#使用savehtml和loadhtml快速翻译浏览器自带网页翻译)。
 
 ***
 
@@ -454,6 +455,24 @@ n {tl_dir} {游戏名} {版本}
 > **💡提示💡**<br />
 > 每个命令的详细说明可以使用在程序运行后输入`help`查看
 
+## 关于greedy参数
+在`new`, `old`, `reold`,` apply`命令中可以看到有个可选的参数是greedy, 这表示扫描rpy文件是否开启贪婪扫描。
+一般的，用Renpy SDK生成翻译块的标准格式如下：
+> ```txt
+> # game/ImaniEvents.rpy:11
+> translate chinese callimanimorning_88744462:
+> 
+>     # "She doesn’t pick up."
+>     "She doesn’t pick up."
+> ```
+其中，我们每一行的间隔都固定的。当greedy=False，扫描的rpy文件每个块都将进行严格的检查。
+而当greedy=True，将会放宽这种检查，因此可以扫描到以下翻译块：
+> ```txt
+> translate chinese callimanimorning_88744462:
+>     "She doesn’t pick up."
+> ```
+而这是greedy=False情况扫描不到的，一般的greedy默认True，基本可以扫描到所有翻译块。
+
 ## dump或du
 ```shell
 dump {proj_idx} {lang} {scope}
@@ -477,11 +496,22 @@ update {proj_idx} {lang} {excel_file}
 > **🚨注意🚨**<br />
 > 该命令仅关注excel文件的`Translation Index (Don't modify)`和`Translated Text`所在列，修改其他列不会影响命令的执行，因此其他列所在内容不会进行相应更新。
 
+## reold或ro
+```shell
+reold {proj_idx} {greedy=True}
+```
+- {greedy} 是可选的，默认为True，表示扫描跟多的翻译文本。
+说明：指定一个项目的索引。该命令相当于重新针对该项目运行`old`命令：
+```shell
+old proj.tl_path proj.name proj.tag
+```
+这个命令用于当游戏tl文件夹下的翻译文件更新时，重新载入翻译项目的所有翻译文本。
+
 ## revert或r
 ```shell
 revert {proj_idx}
 ```
-说明：该命令将生成新的rpy文件，使得所有已翻译文本变为原始为翻译的状态（new_str <- old_str）。生成rpy文件可以在`PROJECT_PATH/你的项目名_版本名`下找到。
+说明：该命令将生成新的rpy文件，使得所有已翻译文本变为原始未翻译的状态（new_str <- old_str）。生成rpy文件可以在`PROJECT_PATH/你的项目名_版本名`下找到。
 假设你所配置某个项目的tl目录下的某个rpy文件内容如下：
 > ```txt
 > # game/ImaniEvents.rpy:11

@@ -18,6 +18,13 @@ def old_cmd(dir: str, name: str, tag: str, greedy: bool = True):
                                     is_translated=True, strict=strict_mode)
     p.save_by_default()
 
+def reold_cmd(proj_idx: int, greedy: bool = True):
+    strict_mode = not (distutils.util.strtobool(greedy) if isinstance(greedy, str) else greedy)
+    proj = project_index.load_from_file(_list_projects_and_select([proj_idx])[0])
+    print(f'Running the command: old {proj.source_dir} {proj.project_name} {proj.project_tag} {strict_mode}')
+    new_project = project_index.init_from_dir(proj.source_dir, proj.project_name, proj.project_tag,
+                       is_translated=True, strict=strict_mode)
+    new_project.save_by_default()
 
 def new_cmd(dir: str, name: str, tag: str, greedy: bool = True):
     assert exists_dir(dir), f'{dir} is not a directory!'
