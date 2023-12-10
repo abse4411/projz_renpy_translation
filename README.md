@@ -58,6 +58,9 @@ If you like this project, you can help us translate this page. That would be gre
 ***
 
 # 📜Changelog:
+<details>
+<summary><b>点击展开</b></summary>
+
 * V0.3.8a(功能改进):
 
   * 修复配置读取编码问题
@@ -93,6 +96,8 @@ If you like this project, you can help us translate this page. That would be gre
 * V0.3.0: 改进翻译索引，减少对翻译文本的丢弃。
 
 * V0.2.0: 使用`savehtml`和`loadhtml`快速翻译，见[使用savehtml和loadhtml快速翻译](#使用savehtml和loadhtml快速翻译浏览器自带网页翻译)。
+
+</details>
 
 ***
 
