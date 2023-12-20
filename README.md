@@ -3,7 +3,7 @@
   <br />
 
 [![](https://img.shields.io/badge/projz_renpy_translation-0.3.8-brightgreen.svg)](https://github.com/abse4411/projz_renpy_translation)
-[![](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/abse4411/projz_renpy_translation/blob/devp/LICENSE)
+[![](https://img.shields.io/badge/license-GPLv3-blue)](https://github.com/abse4411/projz_renpy_translation/blob/devp/LICENSE)
 
 [📘文档（Chinese only）](#) |
 [🛠安装](#运行环境准备) |
@@ -20,6 +20,8 @@
 - 实现游戏注入，可以为RenPy游戏提供语言和字体管理菜单，支持实时生效
 - 更简洁，规范的代码，支持实现自定义的翻译接口
 - 仍然开源
+
+链接：[projz_renpy-translator](https://github.com/abse4411/projz_renpy-translator)
 
 后期计划：
 - GUI支持（待规划中）
