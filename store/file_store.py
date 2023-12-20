@@ -1,6 +1,7 @@
 import hashlib
 import logging
 import os
+import re
 from typing import List, Tuple
 
 from pandas import ExcelWriter
@@ -19,18 +20,12 @@ HTML_TEMPLATE = '''
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-    <table>
-        <tbody>
-            <tr>
-                <th>Raw Text</th>
-            </tr>
 {filler}
-        </tbody>
-    </table>
 </body>
 </html>
 '''
-TR_TEMPLATE = '<!--{id}S#2##E3#{text}--><tr><td>B4@# {text}</td></tr>\n'
+TR_TEMPLATE = '<!--{id}S#2##E3#{text}--><div>{text}</div><!--PROJZ-->\n'
+HTML_TAG = re.compile(r'<[^>]+>', re.S)
 MAGIC_NUMBER = 78945621384
 
 
@@ -68,15 +63,11 @@ def load_from_html(file_name: str, tids_and_untranslated_texts: List[Tuple[str, 
         for l in f:
             i += 1
             l = l.strip()
-            if l.startswith('<!--') and l.endswith('</td></tr>'):
+            if l.startswith('<!--') and l.endswith('<!--PROJZ-->'):
                 tli, tri = l.find('<!--'), l.find('S#2#')
-                nli, nri = l.find('>B4@#'), l.rfind('</td></tr>')
-                oli, ori = l.find('#E3#'), l.find('--><tr><td')
-                if not (0<=tli<tri and tri<oli<ori and ori<nli<nri):
-                    logging.info(f'[Line {i}] Skipping unmatch line:{l}')
-                    continue
+                oli, ori = l.find('#E3#'), l.find('-->')
                 encrypted_tid = l[tli + 4:tri].strip().upper()
-                new_str = l[nli + 5:nri].strip()
+                new_str = HTML_TAG.sub('', l)
                 old_str = l[oli + 4:ori].strip()
                 if encrypted_tid == '' or new_str == '' or old_str == '' or new_str == old_str:
                     logging.info(f'[Line {i}] Skipping corrupted translation for raw_text({old_str}) and translated_text({new_str})')
@@ -201,13 +192,15 @@ if __name__ == '__main__':
     print('======================================================================')
     save_path = os.path.join(default_config.project_path, 'html', f'{p.full_name}.html')
     # save_to_html(save_path, p.untranslated_lines(my_lang))
-    # exit(0)
+    # # exit(0)
     print(f'untranslation_size:{p.untranslation_size(my_lang)}')
     res = load_from_html(save_path, p.untranslated_lines(my_lang))
     p.update(res, my_lang)
-    print(f'untranslation_size:{p.untranslation_size(my_lang)}=========>')
-    for s,t in p._raw_data.untranslated_lines[my_lang].items():
-        print(s,f'({t.old_str})' ,'->' ,t.new_str, flush=True)
-    print(f'translation_size:{p.translation_size(my_lang)}*********>')
-    for s,t in p._raw_data.translated_lines[my_lang].items():
-        print(s,f'({t.old_str})' ,'->' ,t.new_str, flush=True)
+    print(f'untranslation_size:{p.untranslation_size(my_lang)}')
+    # p.update(res, my_lang)
+    # print(f'untranslation_size:{p.untranslation_size(my_lang)}=========>')
+    # for s,t in p._raw_data.untranslated_lines[my_lang].items():
+    #     print(s,f'({t.old_str})' ,'->' ,t.new_str, flush=True)
+    # print(f'translation_size:{p.translation_size(my_lang)}*********>')
+    # for s,t in p._raw_data.translated_lines[my_lang].items():
+    #     print(s,f'({t.old_str})' ,'->' ,t.new_str, flush=True)

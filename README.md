@@ -62,7 +62,7 @@ If you like this project, you can help us translate this page. That would be gre
 <summary><b>点击展开</b></summary>
 
 * V0.3.8a(功能改进):
-
+  * 改进html保存格式，现在您可以使用Chrome网页翻译功能
   * 修复配置读取编码问题
   * 添加`reold`命令，现在您可以一个重新从一个已有翻译项目重新运行`old`命令，见[reold或ro](#reold或ro)。
   * 现在您可以在config.ini设置RenPy keywords, 帮助程序扫描更多的文本，见[configini配置说明](#configini配置说明)-KEYWORDS。
