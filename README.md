@@ -21,10 +21,9 @@
 - 更简洁，规范的代码，支持实现自定义的翻译接口
 - 仍然开源
 
-链接：[projz_renpy-translator](https://github.com/abse4411/projz_renpy-translator)
+## ✨新版本现在已经基本完成（Web翻译和AI翻译暂不支持），我们支持直接生成rpy翻译文件到游戏中，并实现I18n插件注入。 欢迎体验：[projz_renpy-translator](https://github.com/abse4411/projz_renpy-translator)
+## 🚨注意新版本不支持0.4.0之前的存档。后续开发完成后将直接更新到这个项目中。
 
-后期计划：
-- GUI支持（待规划中）
 
 # 🍕RenPy翻译工具
 - 本工具需要具有一定动手能力🔧，如果了解Renpy翻译流程更佳。
