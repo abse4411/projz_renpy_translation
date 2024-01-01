@@ -59,7 +59,7 @@ new D:\games\renpy_game_demo -n my_game
 > **🚨注意🚨**<br />
 > 在运行该命令前，请确保游戏中所有rpa文件被解压(使用[rpatool](https://github.com/Shizmob/rpatool)或
 [UnRPA](https://github.com/Lattyware/unrpa))，rpyc转为rpy文件(
-> 可选的，使用[unrpyc](https://github.com/CensoredUsername/unrpyc)工具)。
+> 必须的，不然有些大部分rpy文件无法扫描，使用[unrpyc](https://github.com/CensoredUsername/unrpyc)工具)。
 > 或者使用这个集成unrpa和unrypc的工具：[UnRen](https://github.com/VepsrP/UnRen-Gideon-mod-)。
 
 确保以上事项，后输入`ls`命令查看我们创建的TranslationIndex：
