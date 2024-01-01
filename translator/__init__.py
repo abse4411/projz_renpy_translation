@@ -13,8 +13,16 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
+import logging
+import translator.base
 
-from .file import *
-from .os_info import *
-from .string import *
-from .misc import my_input, yes, quick_prettytable
+try:
+    import translator.web
+except Exception as e:
+    print(f'error: {e}')
+    logging.exception(e)
+try:
+    import translator.ai
+except Exception as e:
+    print(f'error: {e}')
+    logging.exception(e)

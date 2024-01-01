@@ -14,7 +14,21 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from .file import *
-from .os_info import *
-from .string import *
-from .misc import my_input, yes, quick_prettytable
+import platform
+import sys
+
+
+def is_x64():
+    return platform.machine().endswith('64')
+
+
+def is_windows():
+    return sys.platform.startswith('win')
+
+
+def is_linux():
+    return sys.platform.startswith('linux')
+
+
+def is_mac():
+    return sys.platform.startswith('darwin')

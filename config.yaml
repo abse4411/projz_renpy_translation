@@ -1,0 +1,58 @@
+projz:
+  project_path: './projz' # path for saving generating files, such as xls, html, json, etc.
+  tmp_path: './projz/tmp' # path to save tmp file when launching a task
+  translator:
+    # It has a higher priority than index.write_cache_size when running translation cmd
+    write_cache_size: 50 # The number of lines translated by the translator to cache before writing to disc
+    web:
+      test: 1
+      chrome_driver_path: 'D:\Users\Surface Book2\Downloads\chromedriver_win32\chromedriver.exe'
+    ai:
+      # available models: 'm2m100', 'mbart50', 'nllb200'
+      model_path: 'D:\BaiduNetdiskDownload\New36\save_models'
+  log:
+    enable: False # enable logging
+    console: True # log to console
+    level: 'ERROR' # log level: 'CRITICAL','FATAL','ERROR','WARN', 'WARNING', 'INFO', 'DEBUG', 'NOTSET'
+    path: './projz/logs' # path for logging
+  index:
+    write_cache_size: 500 # large number of write operations will improves speed of read/write translations by reducing disk I/O.
+  renpy:
+    # enable developer console, https://www.renpy.org/doc/html/developer_tools.html#shift-o-console
+    developer_console: True
+    # these configs used for i18n injection
+    i18n_menu:
+      # you should not use a shortcut key which exists in the default RenPy keymap: https://www.renpy.org/doc/html/keymap.html
+      # ctrl_K_i means Ctrl + i
+      shortcut_key: 'ctrl_K_i'
+    # the final languages listed in the i18n menu is determined by dirs in your_game/game/tl except "None"
+    lang_map:
+      - tl_name: 'schinese'
+        font: 'resources/fonts/SourceHanSansLite.ttf'
+        title: '简体中文'
+      - tl_name: 'japenese'
+        font: 'resources/fonts/SourceHanSansLite.ttf'
+        title: '日本語'
+      - tl_name: 'korean'
+        font: 'resources/fonts/SourceHanSansLite.ttf'
+        title: '한국어'
+      - tl_name: 'english'
+        font: 'resources/fonts/DejaVuSans.ttf'
+        title: 'English'
+      - tl_name: 'french'
+        font: 'resources/fonts/DejaVuSans.ttf'
+        title: 'Français'
+      - tl_name: 'russian'
+        font: 'resources/fonts/DejaVuSans.ttf'
+        title: 'Русский'
+      - tl_name: 'spanish'
+        font: 'resources/fonts/DejaVuSans.ttf'
+        title: 'Español'
+      - tl_name: 'ukrainian'
+        font: 'resources/fonts/DejaVuSans.ttf'
+        title: 'Українська'
+    # fonts listed in the i18n menu. we also add fonts configured in lang_map to the i18n menu
+    # you can find download links in resources/fonts/readme.txt
+    fonts:
+      - 'resources/fonts/SourceHanSansLite.ttf'
+      - 'resources/fonts/DejaVuSans.ttf'

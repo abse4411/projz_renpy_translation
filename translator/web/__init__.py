@@ -14,7 +14,5 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from .file import *
-from .os_info import *
-from .string import *
-from .misc import my_input, yes, quick_prettytable
+from .base import BaseWebTranslator, WebConcurrentTranslator
+import translator.web.impl

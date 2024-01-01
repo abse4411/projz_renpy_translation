@@ -13,8 +13,13 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
+from typing import List
 
-from .file import *
-from .os_info import *
-from .string import *
-from .misc import my_input, yes, quick_prettytable
+
+class Translator:
+
+    def translate(self, text: str):
+        return NotImplementedError()
+
+    def translate_batch(self, texts: List[str]):
+        return [self.translate(t) for t in texts]

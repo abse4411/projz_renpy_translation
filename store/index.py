@@ -1,409 +1,730 @@
-import logging
+# projz_renpy_translation, a translator for RenPy games
+# Copyright (C) 2023  github.com/abse4411
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+import glob
 import os.path
+import random
+import uuid
 from collections import defaultdict
-from functools import cmp_to_key
-from typing import List, Tuple
-import pickle
+from typing import Tuple, List
 
-import pandas as pd
-from pandas import ExcelWriter
+import regex
 
-from config.config import default_config
-from store.fetch import update_translated_lines_new, update_untranslated_lines_new, preparse_rpy_file, \
-    safely_remove_prefix
-from store.item import project_item_new, i18n_translation_dict, translation_item
-from util.file import walk_and_select, mkdir, file_dir, exists_file
-from util.misc import replacer, text_type, TEXT_TYPE
+from config import default_config
+from injection import Project, get_translations, generate_translations, count_translations
+from store.database import TranslationIndexDao, TranslationDao
+from store.database.base import db_context
+from util import exists_dir, strip_or_none, assert_not_blank, strip_linebreakers, exists_file, to_translatable_text, \
+    to_string_text
 
 
-class project_index:
-    def __init__(self, raw_data: project_item_new):
-        self._raw_data = raw_data
+def encode_sumid(index: int, n_len: int):
+    s1 = hex(index)[2:]
+    s2 = hex(n_len)[2:]
+    s3 = hex(index + n_len - len(s2))[-len(s2):]
+    s1 = '0' * (len(s2) - len(s1)) + s1
+    return s1 + s2 + s3
 
-    def untranslation_size(self, lang:str=None):
-        self.check_lang(lang, False)
-        return self._raw_data.untranslated_lines.len(lang)
 
-    def translation_size(self, lang:str=None):
-        self.check_lang(lang, True)
-        return self._raw_data.translated_lines.len(lang)
+def decode_sumid(id_str: str):
+    if id_str:
+        id_str = id_str.strip()
+        if id_str == '' or len(id_str) % 3 != 0:
+            return None, None
+    s_len = len(id_str) // 3
+    try:
+        index = int(id_str[:s_len], 16)
+        n_len = int(id_str[s_len:-s_len], 16)
+        s3 = id_str[-s_len:]
+        if hex(index + n_len - s_len)[-s_len:] == s3:
+            return index, n_len
+    except:
+        pass
+    return None, None
 
-    @property
-    def source_dir(self):
-        return self._raw_data.source_dir
 
-    @property
-    def num_rpys(self):
-        return len(self._raw_data.rpy_files)
+def _get_task_result(res):
+    return res['items'], res['message']
 
-    @property
-    def rpys(self):
-        return self._raw_data.rpy_files.copy()
 
-    @staticmethod
-    def rpy_statistics(ryp_file):
-        trans_dict, untrans_dict, invalid_dict = defaultdict(list), defaultdict(list), defaultdict(list)
-        assert exists_file(ryp_file), 'File not found: {ryp_file}'
-        new_i18n_dict, invalid_list = preparse_rpy_file(ryp_file, verbose=False)
-        for lang, new_dict in new_i18n_dict.items():
-            for tid, item in new_dict.items():
-                if item.old_str != item.new_str:
-                    trans_dict[lang].append(item)
-                else:
-                    untrans_dict[lang].append(item)
-        for d in invalid_list:
-            invalid_dict[d.lang].append(d)
-        return trans_dict, untrans_dict, invalid_dict
+class TranslationIndex:
+    DIALOGUE_ID_PREFIX = 'D'
+    STRING_ID_PREFIX = 'S'
+    TID_PATTERN = regex.compile(r'^([DS])(\d+)_(\d+)$')
 
-    def untranslated_lines(self, lang:str):
-        self.check_lang(lang, False)
-        tid_texts = []
-        for tid, item in self._raw_data.untranslated_lines[lang].items():
-            tid_texts.append((tid, item.old_str))
-        return tid_texts
-
-    def translated_lines(self, lang:str):
-        self.check_lang(lang, True)
-        tid_texts = []
-        for tid, item in self._raw_data.translated_lines[lang].items():
-            tid_texts.append((tid, item.new_str))
-        return tid_texts
+    def __init__(self, project: Project, nickname: str, tag: str, stats: dict = None, db_file: str = None):
+        self._doc_id = None
+        self._project = project
+        self._nickname = nickname
+        self._tag = tag
+        self._stats = stats if stats is not None else {'dialogue': dict(), 'string': dict()}
+        self._db_file = os.path.join(default_config.project_path,
+                                     f'projz_{self._nickname}_{self._tag}.db') if db_file is None else db_file
 
     @property
-    def untranslated_langs(self):
-        return list(self._raw_data.untranslated_lines.langs())
+    def doc_id(self):
+        return self._doc_id
 
     @property
-    def translated_langs(self):
-        return list(self._raw_data.translated_lines.langs())
+    def project(self):
+        return self._project
 
     @property
-    def full_name(self):
-        return f'{self.project_name}_{self.project_tag}'
+    def nickname(self):
+        return self._nickname
 
     @property
-    def first_untranslated_lang(self):
-        langs = self.untranslated_langs
-        if len(langs) == 0: return None
-        return langs[0]
+    def tag(self):
+        return self._tag
 
     @property
-    def first_translated_lang(self):
-        langs = self.translated_langs
-        if len(langs) == 0: return None
-        return langs[0]
+    def project_path(self):
+        return self._project.project_path
 
     @property
     def project_name(self):
-        return self._raw_data.name
+        return self._project.game_info.get('game_name', None)
 
     @property
-    def project_tag(self):
-        return self._raw_data.tag
+    def project_version(self):
+        return self._project.game_info.get('game_version', None)
 
     @property
-    def file_name(self):
-        return f'{self.full_name}.pt'
+    def project_renpy_version(self):
+        return self._project.game_info.get('renpy_version', None)
 
-    def update(self, tids_and_translated_texts: List[Tuple[str, str]], lang:str, skip_untrans_while_notin=True):
-        self.check_lang(lang, False)
-        self._raw_data.translated_lines.safe_add_key(lang)
-        translated_lines = self._raw_data.translated_lines[lang]
-        untranslated_lines = self._raw_data.untranslated_lines[lang]
-        for tid, text in tids_and_translated_texts:
-            checked = False
-            if tid not in untranslated_lines:
-                if skip_untrans_while_notin:
-                    logging.warning(
-                        f'Non-existent untranslated text (identifier={tid}) in untranslated_lines, this translation won\'t be added')
-                    continue
-            else:
-                checked=True
-            if tid in translated_lines:
-                logging.warning(
-                    f'Existent translated text for ({translated_lines[tid].old_str}) in translated_lines:{translated_lines[tid]}, \nit will be replaced by the new translation: {text}')
-                tline = translated_lines[tid]
-                tline.new_str = text
-                if tid in untranslated_lines: untranslated_lines.pop(tid)
-            elif checked:
-                utline = untranslated_lines.pop(tid)
-                utline.new_str = text
-                translated_lines[tid] = utline
-            else:
-                logging.warning(
-                    f'Discard the translated text ({text}) with unknown identifier: {tid}')
+    @property
+    def game_info(self):
+        return self._project.game_info.copy()
 
-    def translate(self, tid:str, lang:str):
-        if (lang, tid) in self._raw_data.translated_lines:
-            return self._raw_data.translated_lines[(lang, tid)].new_str
-        return None
+    @property
+    def injection_state(self):
+        return self._project.injection_state.copy()
 
-    def untranslate(self, tid:str, lang:str):
-        if (lang, tid) in self._raw_data.translated_lines:
-            return self._raw_data.translated_lines[(lang, tid)].old_str
-        if (lang, tid) in self._raw_data.untranslated_lines:
-            return self._raw_data.untranslated_lines[(lang, tid)].old_str
-        return None
+    @property
+    def translation_state(self):
+        return self._stats.copy()
 
-    @classmethod
-    def init_from_dir(cls, source_dir: str, name: str, tag: str, is_translated=True, strict=False):
-        ryp_files = walk_and_select(source_dir, lambda x: x.endswith('.rpy'))
-        lines = i18n_translation_dict()
-        for rpy_file in ryp_files:
-            if is_translated:
-                update_translated_lines_new(rpy_file, lines, strict=strict)
-            else:
-                update_untranslated_lines_new(rpy_file, lines, strict=strict)
-        translated_lines = None
-        untranslated_lines = None
-        if is_translated:
-            translated_lines = lines
-            logging.info(f'{lines.len()} translated line(s) are stored.')
-        else:
-            untranslated_lines = lines
-            logging.info(f'{lines.len()} untranslated line(s) are found.')
-        raw_data = project_item_new(source_dir, name, tag, ryp_files,
-                                translated_lines=translated_lines,
-                                untranslated_lines=untranslated_lines)
-        return cls(raw_data)
+    @staticmethod
+    def _encode_tid(prefix: str, block_idx: int, doc_id: str):
+        return f'{prefix}{block_idx}_{doc_id}'
 
-    def accept_untranslation(self, selected_lang:str=None):
-        acce_cnt = 0
-        selected_lang = self.select_or_check_lang(selected_lang, False)
-        for lang, new_dict in self._raw_data.untranslated_lines.items():
-            if selected_lang is not None and lang != selected_lang:
-                continue
-            for tid in list(new_dict.keys()):
-                acce_cnt+=1
-                new_line = new_dict.pop(tid)
-                new_line.new_str = new_line.old_str
-                if (lang, tid) in self._raw_data.translated_lines:
-                    old_line = self._raw_data.translated_lines[(lang, tid)]
-                    logging.warning(
-                        f'{new_line.file}[L{new_line.line}]: Existent translation for ({new_line.old_str}) in translated_lines:{old_line}, it will be replaced by the new translation:{new_line.new_str}')
-                self._raw_data.translated_lines[(lang, tid)] = new_line
-        logging.info(
-            f'{acce_cnt} untranslated line(s) are used as translated one(s)')
+    @staticmethod
+    def _decode_tid(tid: str):
+        if tid is not None:
+            match = TranslationIndex.TID_PATTERN.match(tid)
+            if match:
+                p, block_idx, doc_id = match.groups()
+                return p, int(block_idx), int(doc_id)
+        return None, None, None
 
-    def merge_from(self, proj, selected_lang:str=None):
-        merge_cnt = 0
-        unmerge_cnt = 0
-        selected_lang = self.select_or_check_lang(selected_lang, False)
-        for lang, new_dict in self._raw_data.untranslated_lines.items():
-            if selected_lang is not None and lang != selected_lang:
-                continue
-            for tid in list(new_dict.keys()):
-                trans_txt = proj.translate(tid, lang)
-                if trans_txt is None:
-                    unmerge_cnt += 1
+    @staticmethod
+    def is_valid_tid(tid: str):
+        res = TranslationIndex._decode_tid(tid)
+        return res[0] is not None
+
+    @staticmethod
+    def _is_say_block(data):
+        return 'Say' in data.get('type', '')
+
+    @staticmethod
+    def _get_table_name(lang: str):
+        return TranslationIndex.DIALOGUE_ID_PREFIX + lang, TranslationIndex.STRING_ID_PREFIX + lang
+
+    def _open_db(self):
+        return TranslationDao(self._db_file)
+
+    @db_context
+    def update_translation_stats(self, lang: str = None, say_only=True):
+        dialogue_stats = dict()
+        strings_stats = dict()
+
+        def count_dialogue(ddata):
+            trans_cnt, untrans_cnt = 0, 0
+            for v in ddata:
+                for i, b in enumerate(v['block']):
+                    if not self._is_say_block(b) and say_only:
+                        continue
+                    if b['new_code'] is not None:
+                        trans_cnt += 1
+                    else:
+                        untrans_cnt += 1
+            return trans_cnt, untrans_cnt
+
+        def count_string(sdata):
+            trans_cnt, untrans_cnt = 0, 0
+            for v in sdata:
+                for i, b in enumerate(v['block']):
+                    if b['new_code'] is not None:
+                        trans_cnt += 1
+                    else:
+                        untrans_cnt += 1
+            return trans_cnt, untrans_cnt
+
+        with self._open_db() as dao:
+            lang = strip_or_none(lang)
+            if lang is not None:
+                if self.exists_lang(lang):
+                    dialogue_stats = self._stats['dialogue']
+                    strings_stats = self._stats['string']
+                    langs = self._get_table_name(lang)
                 else:
-                    merge_cnt += 1
-                    untline = new_dict.pop(tid)
-                    untline.new_str = trans_txt
-                    if (lang, tid) in self._raw_data.translated_lines:
-                        logging.warning(
-                            f'{untline.file}[L{untline.line}]: Existent translation for ({untline.old_str}) in translated_lines:{self._raw_data.translated_lines[(lang, tid)]}, it will be replaced by the new translation:{trans_txt}')
-                    self._raw_data.translated_lines[(lang, tid)] = untline
-        logging.info(
-            f'{merge_cnt} translated line(s) are used during merging, and there has {unmerge_cnt} untranslated line(s)')
+                    print(f'The language {lang} is not found!')
+                    return
+            else:
+                langs = dao.list_langs()
+            for lang in langs:
+                if lang.startswith(self.DIALOGUE_ID_PREFIX):
+                    dialogue_stats[lang[len(self.DIALOGUE_ID_PREFIX):]] = count_dialogue(dao.list_by_lang(lang))
+                elif lang.startswith(self.STRING_ID_PREFIX):
+                    strings_stats[lang[len(self.STRING_ID_PREFIX):]] = count_string(dao.list_by_lang(lang))
+                else:
+                    # who saves the undefined lang?
+                    pass
+        new_stats = {
+            'dialogue': dialogue_stats,
+            'string': strings_stats,
+        }
+        self._update({'stats': new_stats})
 
-    def perparse_with_linenumber(self, rpy_file, selected_lang:str=None, skip_unmatch=False, strict=False):
-        new_i18n_dict = preparse_rpy_file(rpy_file, strict=strict)[0]
-        linenumber_map = dict()
-        for lang, new_dict in new_i18n_dict.items():
-            if selected_lang is not None and lang != selected_lang:
-                continue
-            for tid, item in new_dict.items():
-                line_no = item.line
-                if skip_unmatch and item.old_str != item.new_str:
-                    logging.warning(f'{item.file}[L{item.line}]: The item is skipped for old_str({item.old_str})!=new_str({item.new_str}):  \n\t{item}')
-                    continue
-                assert line_no not in linenumber_map, f'Duplicate translation line number:{line_no}.\n' \
-                                                                f'\tDetailed info:\n' \
-                                                                f'\told:{linenumber_map[line_no]}\n' \
-                                                                f'\tnew:{item}'
-                linenumber_map[line_no] = item
-        return linenumber_map
+    def exists_lang(self, lang):
+        lang = strip_or_none(lang)
+        if lang is not None:
+            with self._open_db() as dao:
+                langs = dao.list_langs()
+                dlang, slang = self._get_table_name(lang)
+                if dlang in langs or slang in langs:
+                    return True
+        return False
 
-    def check_lang(self, lang:str, is_translated_langs:bool):
-        assert lang in (self.translated_langs if is_translated_langs else self.untranslated_langs),\
-            f'The selected lang {lang} is not found! Available language(s) are {self.translated_langs if is_translated_langs else self.untranslated_langs}.'
-
-    def select_or_check_lang(self, lang:str, is_translated_langs:bool, assert_existing=True):
+    def drop_translations(self, lang: str):
+        lang = strip_or_none(lang)
         if lang is None:
-            lang = self.first_translated_lang if is_translated_langs else self.first_untranslated_lang
-            if assert_existing:
-                assert lang is not None, f'Available {"translated" if is_translated_langs else "untranslated"} language(s) not Found!'
-            logging.info(
-                f'Selecting the default language {lang} for the current operation. If you want change to another language, please specify the argument {{lang}}.')
-        else:
-            self.check_lang(lang, is_translated_langs)
-        return lang
-
-    def remove_empty_translation(self, lang:str=None):
-        lang = self.select_or_check_lang(lang, True)
-        if self.translation_size(lang) == 0:
-            logging.info(f'None of translated items in {lang}.')
             return
-        self._raw_data.untranslated_lines.safe_add_key(lang)
-        trans_dict = self._raw_data.translated_lines[lang]
-        untran_dict = self._raw_data.untranslated_lines[lang]
-        found_cnt = 0
-        for tid in list(trans_dict.keys()):
-            item = trans_dict[tid]
-            tmp_str = str(item.new_str)
-            if tmp_str.startswith('@@') or tmp_str.startswith('@$'):
-                tmp_str = tmp_str[2:]
-            if item.old_str.strip() != '' and tmp_str.strip() == '':
-                trans_dict.pop(tid)
-                if tid in untran_dict:
-                    logging.warning(f'Found existing item ({untran_dict[tid]}) in untranslated items , current item is {item}. It will be skipped!')
-                else:
-                    item.new_str = None
-                    untran_dict[tid] = item
-                found_cnt += 1
-        logging.info(f'{found_cnt} translated item(s) with empty translated text are moved to untranslated lines.')
+        dlang, slang = self._get_table_name(lang)
+        with self._open_db() as dao:
+            dao.delete_by_lang(dlang)
+            dao.delete_by_lang(slang)
+            # update translation stats
+            if lang in self._stats['dialogue']:
+                self._stats['dialogue'].pop(lang)
+            if lang in self._stats['string']:
+                self._stats['string'].pop(lang)
+            self._update({'stats': self._stats})
 
-    def apply_by_default(self, lang:str=None, strict=False, skip_unmatch=True):
-        lang = self.select_or_check_lang(lang, True)
-        self.apply(default_config.project_path, lang, strict=strict, skip_unmatch=skip_unmatch)
+    def _list_translations(self, lang: str):
+        lang = strip_or_none(lang)
+        if lang is None:
+            return [], []
+        with self._open_db() as dao:
+            langs = dao.list_langs()
+            dlang, slang = self._get_table_name(lang)
+            if dlang not in langs and slang not in langs:
+                return [], []
+            dialogue_data = dao.list_by_lang(dlang)
+            string_data = dao.list_by_lang(slang)
+        return dialogue_data, string_data
 
-    def apply(self, save_dir:str, lang:str=None, strict=False, skip_unmatch=True):
-        lang = self.select_or_check_lang(lang, True)
-        save_dir = os.path.join(save_dir, self.full_name)
-        mkdir(save_dir)
-        rpy_files = walk_and_select(self.source_dir, lambda x: x.endswith('.rpy'))
-        if lang in self.untranslated_langs and self.untranslation_size(lang) > 0:
-            logging.warning(f'There still exists untranslated texts (qty:{self.untranslation_size(lang)}) in language {lang}.')
-        apply_cnt = 0
-        unapply_cnt = 0
-        abs_source_dir = os.path.abspath(self.source_dir)
-        remove_marks = default_config.remove_marks
-        for rpy_file in rpy_files:
-            rpy_file = os.path.abspath(rpy_file)
-            preparsed_data = self.perparse_with_linenumber(rpy_file, selected_lang=lang, skip_unmatch=skip_unmatch, strict=strict)
-            base_dir = os.path.join(save_dir, file_dir(rpy_file[len(abs_source_dir):]).strip(os.sep))
-            mkdir(base_dir)
-            r = replacer(rpy_file, save_dir=base_dir)
-            r.start(force=True)
-            apply_cnt_i = 0
-            unapply_cnt_i = 0
-            text = r.next()
-            line_no = 1
-            while text is not None:
-                ori_text, ttype, _ = text_type(text)
-                if ttype == TEXT_TYPE.NEW:
-                    if line_no in preparsed_data:
-                        parsed_item = preparsed_data[line_no]
-                        trans_txt = self.translate(parsed_item.identifier, lang)
-                        if trans_txt is None:
-                            unapply_cnt_i += 1
-                        else:
-                            quote_text = f'"{ori_text}"'
-                            sidx = text.rfind(quote_text)
-                            if sidx != -1:
-                                apply_cnt_i += 1
-                                if remove_marks:
-                                    trans_txt = safely_remove_prefix(trans_txt)
-                                text = text[:sidx+1] + trans_txt + text[sidx+len(quote_text)-1:]
-                            else:
-                                unapply_cnt_i += 1
+    def get_translated_lines(self, lang: str, say_only=True):
+        res = []
+        lang = strip_or_none(lang)
+        if lang is None:
+            return res
+        dialogue_data, string_data = self._list_translations(lang)
+        if len(dialogue_data) == 0 and len(string_data) == 0:
+            print(f'No translated lines of language {lang}')
+            return res
+        for v in dialogue_data:
+            for i, b in enumerate(v['block']):
+                if b['new_code'] is not None:
+                    if self._is_say_block(b):
+                        res.append([self._encode_tid(self.DIALOGUE_ID_PREFIX, i, v.doc_id),
+                                    to_translatable_text(b['new_code'])])
                     else:
-                        unapply_cnt_i += 1
-                r.update(text)
-                text = r.next()
-                line_no += 1
-            logging.info(
-                f'{rpy_file} is translated with {apply_cnt_i} translated line(s) and {unapply_cnt_i} untranslated line(s) in language {lang}.')
-            apply_cnt += apply_cnt_i
-            unapply_cnt += unapply_cnt_i
-        logging.info(
-            f'{len(rpy_files)} rpy file(s) are translated with {apply_cnt} translated line(s) and {unapply_cnt} untranslated line(s) in language {lang}.')
-        logging.info(f'You can find output rpy files in {save_dir}.')
+                        if not say_only:
+                            res.append([self._encode_tid(self.DIALOGUE_ID_PREFIX, i, v.doc_id),
+                                        to_translatable_text(b['new_code'])])
+        for v in string_data:
+            for i, b in enumerate(v['block']):
+                if b['new_code'] is not None:
+                    res.append([self._encode_tid(self.STRING_ID_PREFIX, i, v.doc_id),
+                                to_translatable_text(b['new_code'])])
+        return res
 
+    @db_context
+    def rename_lang(self, lang: str, target_name: str):
+        lang = assert_not_blank(lang, 'lang')
+        new_lang = assert_not_blank(target_name, 'target_name')
+        if not self.exists_lang(lang):
+            print(f'The language {lang} is not found!')
+            return
+        if self.exists_lang(new_lang):
+            print(f'The language {lang} with the same name already exists!')
+            return
+        dialogue_data, string_data = self._list_translations(lang)
+        for v in dialogue_data:
+            v['language'] = new_lang
+        for v in string_data:
+            v['language'] = new_lang
+        dlang, slang = self._get_table_name(lang)
+        tdlang, tslang = self._get_table_name(target_name)
+        with self._open_db() as dao:
+            dao.delete_by_lang(tdlang)
+            dao.delete_by_lang(tslang)
+            dao.add_batch(tdlang, dialogue_data)
+            dao.add_batch(tslang, string_data)
+            dao.delete_by_lang(dlang)
+            dao.delete_by_lang(slang)
+            # update translation stats
+            if lang in self._stats['dialogue']:
+                old_stats = self._stats['dialogue'].pop(lang)
+                self._stats['dialogue'][target_name] = old_stats
+            if lang in self._stats['string']:
+                old_stats = self._stats['string'].pop(lang)
+                self._stats['string'][target_name] = old_stats
+            self._update({'stats': self._stats})
 
-    def revert_by_default(self, lang:str=None, strict=False):
-        lang = self.select_or_check_lang(lang, True)
-        self.revert(default_config.project_path, lang, strict=strict)
-
-    def revert(self, save_dir:str, lang:str=None, strict=False):
-        lang = self.select_or_check_lang(lang, True)
-        save_dir = os.path.join(save_dir, self.full_name)
-        mkdir(save_dir)
-        rpy_files = walk_and_select(self.source_dir, lambda x: x.endswith('.rpy'))
-        apply_cnt = 0
-        unapply_cnt = 0
-        abs_source_dir = os.path.abspath(self.source_dir)
-        for rpy_file in rpy_files:
-            rpy_file = os.path.abspath(rpy_file)
-            preparsed_data = self.perparse_with_linenumber(rpy_file, selected_lang=lang, skip_unmatch=False, strict=strict)
-            base_dir = os.path.join(save_dir, file_dir(rpy_file[len(abs_source_dir):]).strip(os.sep))
-            mkdir(base_dir)
-            r = replacer(rpy_file, save_dir=base_dir)
-            r.start(force=True)
-            apply_cnt_i = 0
-            unapply_cnt_i = 0
-            text = r.next()
-            line_no = 1
-            while text is not None:
-                ori_text, ttype, _ = text_type(text)
-                if ttype == TEXT_TYPE.NEW:
-                    raw_text = None
-                    if line_no in preparsed_data:
-                        parsed_item = preparsed_data[line_no]
-                        raw_text = parsed_item.old_str
-                        if raw_text is None:
-                            raw_text = self.untranslate(parsed_item.identifier, lang)
-                    if raw_text is None:
-                        unapply_cnt_i += 1
+    def get_untranslated_lines(self, lang: str, say_only=True):
+        res = []
+        lang = strip_or_none(lang)
+        if lang is None:
+            return res
+        dialogue_data, string_data = self._list_translations(lang)
+        if len(dialogue_data) == 0 and len(string_data) == 0:
+            print(f'No untranslated lines of language {lang}')
+            return res
+        for v in dialogue_data:
+            for i, b in enumerate(v['block']):
+                if b['new_code'] is None:
+                    if self._is_say_block(b):
+                        res.append([self._encode_tid(self.DIALOGUE_ID_PREFIX, i, v.doc_id),
+                                    to_translatable_text(b['what'])])
                     else:
-                        quote_text = f'"{ori_text}"'
-                        sidx = text.rfind(quote_text)
-                        if sidx != -1:
-                            apply_cnt_i += 1
-                            text = text[:sidx + 1] + raw_text + text[sidx + len(quote_text) - 1:]
-                        else:
-                            unapply_cnt_i += 1
-                r.update(text)
-                text = r.next()
-                line_no += 1
-            logging.info(
-                f'{rpy_file} is untranslated with {apply_cnt_i} line(s) and {unapply_cnt_i} ignored line(s) in language {lang}.')
-            apply_cnt += apply_cnt_i
-            unapply_cnt += unapply_cnt_i
-        logging.info(
-            f'{len(rpy_files)} rpy file(s) are untranslated with {apply_cnt} line(s) and {unapply_cnt} ignored line(s) in language {lang}.')
-        logging.info(f'You can find output rpy files in {save_dir}.')
+                        if not say_only:
+                            res.append([self._encode_tid(self.DIALOGUE_ID_PREFIX, i, v.doc_id),
+                                        to_translatable_text(b['code'])])
+        for v in string_data:
+            for i, b in enumerate(v['block']):
+                if b['new_code'] is None:
+                    res.append([self._encode_tid(self.STRING_ID_PREFIX, i, v.doc_id),
+                                to_translatable_text(b['what'])])
+        return res
+
+    @db_context
+    def merge_translations_from(self, target_index: 'TranslationIndex', lang: str, say_only=True):
+        assert target_index is not None, f'target_index must not be None'
+        assert target_index != self, 'Cannot merge from self'
+        lang = assert_not_blank(lang, 'lang')
+        if not self.exists_lang(lang):
+            print(f'No translations of language {lang} in target TranslationIndex, please import it first')
+            return
+        if not target_index.exists_lang(lang):
+            print(f'No translations of language {lang} in source TranslationIndex, please import it first')
+            return
+        dialogue_data, string_data = self._list_translations(lang)
+
+        # get all untranslations first, mapped by identifier
+        id_dblock_map = dict()
+        id_sblock_map = dict()
+        ddocid_map = dict()
+        sdocid_map = dict()
+        for v in dialogue_data:
+            ddocid_map[v.doc_id] = v['block']
+            for i, b in enumerate(v['block']):
+                if b['new_code'] is not None:
+                    continue
+                if not self._is_say_block(b) and say_only:
+                    continue
+                id_dblock_map[(v['identifier'], i)] = (b, v.doc_id)
+        for v in string_data:
+            sdocid_map[v.doc_id] = v['block']
+            for i, b in enumerate(v['block']):
+                if b['new_code'] is not None:
+                    continue
+                id_sblock_map[(v['identifier'], i)] = (b, v.doc_id)
+
+        if len(id_dblock_map) == 0 and len(id_sblock_map) == 0:
+            print(f'No translations of language {lang} to be merged')
+            return
+        # record updated doc_id
+        updated_ddocids = set()
+        updated_sdocids = set()
+        use_cnt = 0
+        find_cnt = 0
+
+        def _update_dialogue(identifier, block_i, new_code, block_type):
+            nonlocal use_cnt
+            block, doc_id = id_dblock_map.get((identifier, block_i), (None, None))
+            if block and block_type == block['type']:
+                block['new_code'] = new_code
+                updated_ddocids.add(doc_id)
+                use_cnt += 1
+
+        def _update_string(identifier, block_i, new_code):
+            nonlocal use_cnt
+            block, doc_id = id_sblock_map.get((identifier, block_i), (None, None))
+            if block:
+                block['new_code'] = new_code
+                updated_sdocids.add(doc_id)
+                use_cnt += 1
+
+        # for each translation in source index
+        source_dialogue_data, source_string_data = target_index._list_translations(lang)
+        for v in source_dialogue_data:
+            for i, b in enumerate(v['block']):
+                if b['new_code'] is not None:
+                    find_cnt += 1
+                    if self._is_say_block(b):
+                        _update_dialogue(v['identifier'], i, b['new_code'], b['type'])
+                    else:
+                        # for non-Say statement, must match its type
+                        if not say_only:
+                            _update_dialogue(v['identifier'], i, b['new_code'], b['type'])
+        for v in source_string_data:
+            for i, b in enumerate(v['block']):
+                if b['new_code'] is not None:
+                    find_cnt += 1
+                    _update_string(v['identifier'], i, b['new_code'])
+
+        # write updated translations to db
+        dlang, slang = self._get_table_name(lang)
+        with self._open_db() as dao:
+            for did in updated_ddocids:
+                dao.update_block(dlang, did, ddocid_map[did])
+            for sid in updated_sdocids:
+                dao.update_block(slang, sid, sdocid_map[sid])
+            # update statistics when updating translation
+            self.update_translation_stats(lang, say_only=say_only)
+        print(f'{lang}: {len(updated_ddocids)} updated dialogue translations, '
+              f'{len(updated_sdocids)} updated string translations. '
+              f'[use:{use_cnt}, discord:{find_cnt - use_cnt}, total:{find_cnt}]')
+
+    @db_context
+    def update_translations(self, lang: str, translated_lines: List[Tuple[str, str]],
+                            untranslated_only=True, discord_blank=True, say_only: bool = True):
+        '''
+        update translation of the specified language
+
+        :param lang: language
+        :param translated_lines: List[(tid, translated_line)]
+        :param untranslated_only: If False, update all translated and untranslated lines.
+                                  Otherwise, untranslated ones only
+        :param discord_blank: discord blank or empty texts
+        :param say_only: only update Say statement
+        :return:
+        '''
+        if not translated_lines:
+            print('No data to update')
+            return
+        lang = assert_not_blank(lang, 'lang')
+        if not self.exists_lang(lang):
+            print(f'No translations of language {lang}, please import it first')
+            return
+        dialogue_data, string_data = self._list_translations(lang)
+
+        # get all untranslations first, mapped by tid
+        tid_dblock_map = dict()
+        tid_sblock_map = dict()
+        ddocid_map = dict()
+        sdocid_map = dict()
+        for v in dialogue_data:
+            ddocid_map[v.doc_id] = v['block']
+            for i, b in enumerate(v['block']):
+                if b['new_code'] is not None and untranslated_only:
+                    continue
+                if not self._is_say_block(b) and say_only:
+                    continue
+                tid_dblock_map[self._encode_tid(self.DIALOGUE_ID_PREFIX, i, v.doc_id)] = b
+        for v in string_data:
+            sdocid_map[v.doc_id] = v['block']
+            for i, b in enumerate(v['block']):
+                if b['new_code'] is not None and untranslated_only:
+                    continue
+                tid_sblock_map[self._encode_tid(self.STRING_ID_PREFIX, i, v.doc_id)] = b
+
+        if len(tid_dblock_map) == 0 and len(tid_sblock_map) == 0:
+            print(f'No translations of language {lang} to be updated')
+            return
+
+        # record updated doc_id
+        updated_ddocids = set()
+        updated_sdocids = set()
+        updating_cnt = 0
+        for tid, new_code in translated_lines:
+            if tid is None or new_code is None:
+                continue
+            p, _, doc_id = self._decode_tid(tid)
+            if p:
+                block = None
+                updated_docids = None
+                # doc_id = None
+                if p == self.DIALOGUE_ID_PREFIX:
+                    block = tid_dblock_map.get(tid, None)
+                    updated_docids = updated_ddocids
+                elif p == self.STRING_ID_PREFIX:
+                    block = tid_sblock_map.get(tid, None)
+                    updated_docids = updated_sdocids
+                if block:
+                    if discord_blank and new_code.strip() == '':
+                        continue
+                    block['new_code'] = to_string_text(new_code)
+                    updating_cnt += 1
+                    updated_docids.add(doc_id)
+
+        # write updated translation to db
+        dlang, slang = self._get_table_name(lang)
+        with self._open_db() as dao:
+            for did in updated_ddocids:
+                dao.update_block(dlang, did, ddocid_map[did])
+            for sid in updated_sdocids:
+                dao.update_block(slang, sid, sdocid_map[sid])
+            # update statistics when updating translation
+            if updated_ddocids or updated_sdocids:
+                self.update_translation_stats(lang, say_only=say_only)
+        print(f'{lang}: {len(updated_ddocids)} updated dialogue translations, '
+              f'{len(updated_sdocids)} updated string translations. '
+              f'[use:{updating_cnt}, discord:{len(translated_lines) - updating_cnt}, total:{len(translated_lines)}]')
+
+    @db_context
+    def import_translations(self, lang: str, translated_only: bool = True, say_only: bool = True):
+        lang = assert_not_blank(lang, 'lang')
+        if translated_only:
+            # check if there exists the 'game/tl/{language}'
+            tl_dir = os.path.join(self._project.tl_dir, lang)
+            if not exists_dir(os.path.join(self._project.tl_dir, lang)):
+                print(f'No translations of language {lang} in {tl_dir}')
+                return
+        data, msg = _get_task_result(get_translations(self._project, None, lang,
+                                                      translated_only=translated_only, say_only=say_only))
+        dialogue_data = data['dialogues']
+        string_data = data['strings']
+        with self._open_db() as dao:
+            self.drop_translations(lang)
+            dlang, slang = self._get_table_name(lang)
+            dao.add_batch(dlang, dialogue_data)
+            dao.add_batch(slang, string_data)
+            # update statistics when updating translation
+            self.update_translation_stats(lang, say_only=say_only)
+        print(msg)
+
+    @db_context
+    def export_translations(self, lang: str, translated_only: bool = True, say_only: bool = True):
+        lang = assert_not_blank(lang, 'lang')
+        if not self.exists_lang(lang):
+            print(f'No {lang} translations to export')
+            return
+        dialogue_data, string_data = self._list_translations(lang)
+        new_dialogue_data, new_string_data = [], []
+        for v in dialogue_data:
+            new_block = []
+            for i, b in enumerate(v['block']):
+                if b['new_code'] is not None:
+                    if self._is_say_block(b):
+                        new_block.append(b)
+                    else:
+                        if not say_only:
+                            new_block.append(b)
+            if new_block:
+                new_v = v.copy()
+                new_v['block'] = new_block
+                new_dialogue_data.append(new_v)
+        for v in string_data:
+            for i, b in enumerate(v['block']):
+                if b['new_code'] is not None:
+                    new_string_data.append(v)
+        if len(new_dialogue_data) == 0 and len(new_string_data) == 0:
+            print(f'No {lang} translations in this TranslationIndex to export')
+            return
+        print(f'{lang}: {len(new_dialogue_data)} dialogue and {len(new_string_data)} string translations '
+              f'are ready to export')
+        affected_files, msg = _get_task_result(generate_translations(self._project, {
+            'dialogues': new_dialogue_data,
+            'strings': new_string_data,
+        }, lang, translated_only=translated_only, say_only=say_only))
+        if affected_files:
+            print('We have written translations to these following files:')
+            for f in affected_files:
+                print('\t', f)
+        print(msg)
+
+    def count_translations(self, lang: str, show_detail: bool = False, say_only: bool = True):
+        lang = assert_not_blank(lang, 'lang')
+        data, msg = _get_task_result(count_translations(self._project, None, lang, say_only=say_only))
+        dialogue_data = data['dialogues']
+        string_data = data['strings']
+        dialogue_cnt_map = defaultdict(int)
+        string_cnt_map = defaultdict(int)
+
+        if show_detail:
+            print('Missing dialogues<<<<<<<<<<<<')
+        for d in dialogue_data:
+            if show_detail:
+                print(f'{d["filename"]}:{d["linenumber"]}')
+            for b in d['block']:
+                if show_detail:
+                    print('\t', b['what'] if self._is_say_block(b) else b['code'])
+                dialogue_cnt_map[d["filename"]] += 1
+        if show_detail:
+            print('Missing strings<<<<<<<<<<<<')
+        for d in string_data:
+            if show_detail:
+                print(f'{d["filename"]}:{d["linenumber"]}')
+            for b in d['block']:
+                if show_detail:
+                    print('\t', b['what'])
+                string_cnt_map[d["filename"]] += 1
+
+        if len(dialogue_cnt_map) > 0:
+            print('Miss dialogue translations in:')
+            for f, c in dialogue_cnt_map.items():
+                print('\t', f'{f}: {c}')
+        if len(dialogue_cnt_map) > 0:
+            print('Miss string translations in:')
+            for f, c in string_cnt_map.items():
+                print('\t', f'{f}: {c}')
+        print(msg)
+
+    def to_dict(self):
+        return {
+            'project': {
+                'project_path': self._project.project_path,
+                'executable_path': self._project.executable_path,
+                'project_name': self._project.project_name,
+                'game_info': self._project.game_info,
+                'injection_state': self._project.__getattribute__('_injection_state'),
+            },
+            'nickname': self._nickname,
+            'tag': self._tag,
+            'stats': self._stats,
+            'db_file': self._db_file,
+        }
 
     @classmethod
-    def load_from_file(cls, file: str):
-        with open(file, 'rb') as f:
-            raw_data = pickle.load(f)
-            return cls(raw_data)
+    def from_dict(cls, data: dict):
+        pdata = data['project']
+        project = Project(project_path=pdata['project_path'], executable_path=pdata['executable_path'],
+                          project_name=pdata['project_name'], game_info=pdata['game_info'],
+                          injection_state=pdata['injection_state'])
+        new_inst = cls(
+            project=project,
+            nickname=data['nickname'],
+            tag=data['tag'],
+            stats=data.get('stats', None),
+            db_file=data['db_file']
+        )
+        if hasattr(data, 'doc_id'):
+            new_inst._doc_id = data.__getattribute__('doc_id')
+        return new_inst
 
-    def save_by_default(self):
-        self.save(os.path.join(default_config.project_path, self.file_name))
+    @staticmethod
+    def check_existing_with(nickname: str, tag: str, check_dbfiles: bool = True, exclude_docid: int = None):
+        nickname = assert_not_blank(nickname)
+        tag = strip_or_none(tag)
 
-    def save(self, file: str):
-        with open(file, 'wb') as f:
-            pickle.dump(self._raw_data, f)
+        # check among current db files to make sure not to overwrite a existing one
+        if check_dbfiles:
+            current_name = f'projz_{nickname}_{tag}.db'
+            db_files = sorted(glob.glob(os.path.join(default_config.project_path, '*.db')))
+            for f in db_files:
+                assert os.path.basename(f) != current_name, (
+                    f'A file named "{current_name}" in {default_config.project_path} found. '
+                    f'Please reassign another value for nickname({nickname}) or tag({tag})')
+        # then check in the db
+        with TranslationIndexDao() as dao:
+            assert not dao.contains({'nickname': nickname, 'tag': tag}, exclude_docid), (
+                f'A TranslationIndex with same nickname({nickname}) and tag({tag}) found. '
+                f'Please reassign another value for nickname or tag')
+        return nickname, tag
 
-    def raw_untranslated_items(self, lang:str):
-        self.check_lang(lang, False)
-        return list(self._raw_data.untranslated_lines[lang].values())
+    @classmethod
+    def from_dir(cls, project_path: str, nickname: str = None, tag: str = None):
+        nickname = strip_or_none(nickname)
+        if not nickname:
+            nickname = ''.join(random.sample(uuid.uuid1().hex, 8))
+            print(f'The blank nickname is set to "{nickname}"')
+        nickname, tag = cls.check_existing_with(nickname, tag)
+        project = Project.from_dir(project_path)
+        return cls(
+            project=project,
+            nickname=nickname,
+            tag=tag
+        )
 
-    def raw_translated_items(self, lang:str):
-        self.check_lang(lang, True)
-        return list(self._raw_data.translated_lines[lang].values())
+    @db_context
+    def save(self):
+        # if it exists in db, update it
+        if self._doc_id is not None:
+            self._update(self.to_dict())
+        else:
+            # we don't want duplicate name and tag
+            nickname, tag = self.check_existing_with(self.nickname, self.tag)
+            self._nickname = nickname
+            self._tag = tag
+            # Otherwise, save it to db
+            with TranslationIndexDao() as dao:
+                doc_id = dao.add(self.to_dict())
+                self._doc_id = doc_id
 
+    @db_context
+    def _update(self, data: dict):
+        assert self._doc_id is not None, 'Please save the TranslationIndex first'
+        if data is None or len(data) == 0:
+            return
+        nickname = data.get('nickname', None)
+        tag = data.get('tag', None)
+        if nickname or tag:
+            if nickname is None:
+                nickname = self._nickname
+            if tag is None:
+                tag = self._tag
+            # we don't want duplicate name and tag
+            nickname, tag = self.check_existing_with(nickname, tag, False, self.doc_id)
+            data['nickname'] = nickname
+            data['tag'] = tag
+        with TranslationIndexDao() as dao:
+            dao.update(data, self._doc_id)
+            self._nickname = nickname
+            self._tag = tag
 
-if __name__ == '__main__':
-    import log.logger
-    # p = project_index.init_from_dir(r'D:\projz\translated\tmp', 'test', 'V0.0.1', is_translated=False)
-    # p.save(os.path.join(default_config.project_path, f'{p.full_name}.pt'))
-    # p.apply(r'./proz')
-    new_p =project_index.load_from_file(os.path.join(default_config.project_path, f'test_test.pt'))
-    sources = ['']
-    targets = []
-    print(new_p._raw_data.untranslated_lines)
-    # new_p.apply(r'./proz')
+    @classmethod
+    def from_docid_or_nickname(cls, doc_id: int = None, nickname: str = None):
+        if doc_id is None and nickname is None:
+            return None
+        with TranslationIndexDao() as dao:
+            p = dao.select_first(doc_id, nickname)
+            if p:
+                return TranslationIndex.from_dict(p)
+        return None
+
+    @staticmethod
+    def list_indexes():
+        with TranslationIndexDao() as dao:
+            res = dao.list()
+        return [(i[0], TranslationIndex.from_dict(i[1])) for i in res]
+
+    @staticmethod
+    def remove_index(doc_id: int = None, nickname: str = None):
+        if doc_id is None and nickname is None:
+            return True
+        with TranslationIndexDao() as dao:
+            p = dao.select_first(doc_id, nickname)
+            if p is not None:
+                dao.delete(p.doc_id, nickname=None)
+                print(f'TranslationIndex({p["nickname"]}:{p["tag"]}) is deleted.')
+                db_file = p.get('db_file', None)
+                if db_file and exists_file(db_file):
+                    os.remove(db_file)
+                    print(f'{db_file} is deleted.')
+        return True
