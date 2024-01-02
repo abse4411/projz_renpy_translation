@@ -112,6 +112,18 @@ class RenameLanguageCmd(BaseIndexConfirmationCmd):
         index.rename_lang(self.args.lang, self.args.target)
 
 
+class ClearUntranslationIndexCmd(BaseIndexConfirmationCmd):
+    def __init__(self):
+        super().__init__('mark', 'Mark all untranslated lines to as translated ones.')
+        self._parser.add_argument("-l", "--lang", required=True, type=str, metavar='language',
+                                  help="The language to mark.")
+
+    def invoke(self):
+        if self.args.yes or yes(f'Are your sure to make all untranslated lines as translated ones?'):
+            index = self.get_translation_index()
+            index.clear_untranslated_lines(self.args.lang, say_only=True)
+
+
 class UpdateTranslationStatsCmd(BaseIndexConfirmationCmd):
     def __init__(self):
         super().__init__('upstats', 'Update translation stats of the specified TranslationIndex.')

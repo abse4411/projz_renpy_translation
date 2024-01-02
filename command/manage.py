@@ -127,6 +127,7 @@ register(DeleteTranslationIndexCmd())
 register(ClearAllTranslationIndexCmd())
 register(DropTranslationCmd())
 register(RenameLanguageCmd())
+register(ClearUntranslationIndexCmd())
 register(UpdateTranslationStatsCmd())
 register(MergeTranslationCmd(), short_name='m')
 

@@ -323,6 +323,54 @@ class TranslationIndex:
         return res
 
     @db_context
+    def clear_untranslated_lines(self, lang: str, say_only=True):
+        lang = strip_or_none(lang)
+        if lang is None:
+            return
+        dialogue_data, string_data = self._list_translations(lang)
+        if len(dialogue_data) == 0 and len(string_data) == 0:
+            print(f'No untranslated lines of language {lang}')
+            return
+
+        # get all untranslations first, mapped by tid
+        ddocid_map = dict()
+        sdocid_map = dict()
+        updated_ddocids = set()
+        updated_sdocids = set()
+        for v in dialogue_data:
+            ddocid_map[v.doc_id] = v['block']
+            for i, b in enumerate(v['block']):
+                if b['new_code'] is not None:
+                    continue
+                if not self._is_say_block(b) and say_only:
+                    continue
+                if self._is_say_block(b):
+                    b['new_code'] = b['what']
+                else:
+                    b['new_code'] = b['code']
+                updated_ddocids.add(v.doc_id)
+        for v in string_data:
+            sdocid_map[v.doc_id] = v['block']
+            for i, b in enumerate(v['block']):
+                if b['new_code'] is not None:
+                    continue
+                b['new_code'] = b['what']
+                updated_sdocids.add(v.doc_id)
+
+        if len(updated_ddocids) == 0 and len(updated_sdocids) == 0:
+            print(f'No untranslated lines of language {lang} to be updated')
+            return
+
+        # write updated translations to db
+        dlang, slang = self._get_table_name(lang)
+        self._update_batch(dlang, updated_ddocids, ddocid_map)
+        self._update_batch(slang, updated_sdocids, sdocid_map)
+        # update statistics when updating translation
+        self.update_translation_stats(lang, say_only=say_only)
+        print(f'{lang}: {len(updated_ddocids)} updated dialogue translations, '
+              f'{len(updated_sdocids)} updated string translations.')
+
+    @db_context
     def merge_translations_from(self, target_index: 'TranslationIndex', lang: str, say_only=True):
         assert target_index is not None, f'target_index must not be None'
         assert target_index != self, 'Cannot merge from self'
