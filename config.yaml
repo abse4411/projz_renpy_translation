@@ -3,7 +3,7 @@ projz:
   tmp_path: './projz/tmp' # path to save tmp file when launching a task
   translator:
     # It has a higher priority than index.write_cache_size when running translation cmd
-    write_cache_size: 50 # The number of lines translated by the translator to cache before writing to disc
+    write_cache_size: 200 # The number of lines translated by the translator to cache before writing to disc
     web:
       test: 1
       chrome_driver_path: 'D:\Users\Surface Book2\Downloads\chromedriver_win32\chromedriver.exe'
@@ -16,7 +16,7 @@ projz:
     level: 'ERROR' # log level: 'CRITICAL','FATAL','ERROR','WARN', 'WARNING', 'INFO', 'DEBUG', 'NOTSET'
     path: './projz/logs' # path for logging
   index:
-    write_cache_size: 500 # large number of write operations will improves speed of read/write translations by reducing disk I/O.
+    write_cache_size: 2000 # large number of write operations will improves speed of read/write translations by reducing disk I/O.
   renpy:
     # enable developer console, https://www.renpy.org/doc/html/developer_tools.html#shift-o-console
     developer_console: True
