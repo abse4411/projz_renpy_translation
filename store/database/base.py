@@ -20,6 +20,7 @@ from tinydb import TinyDB, JSONStorage
 from tinydb.middlewares import CachingMiddleware
 
 from config import default_config
+from store.database.table import ProjzTable
 
 _DB_POOL = dict()
 _CONTEXT_CNT = 0
@@ -131,6 +132,10 @@ def db_context(func):
             _exit_context()
 
     return wrapper
+
+
+# use our table impl. to support update_multiple_by_id
+TinyDB.table_class = ProjzTable
 
 
 class BaseDao:

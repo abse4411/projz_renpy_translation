@@ -56,15 +56,13 @@ class TranslationIndexDao(BaseDao):
         return self.db.insert(indexe_dict)
 
     def update(self, data: dict, doc_id: int):
-        res = self.db.update(data, doc_ids=[doc_id])
-        return res[0] if res else None
+        return self.db.update(data, doc_ids=[doc_id])
 
     def delete(self, doc_id: int, nickname: str):
         one = self.select_first(doc_id, nickname)
         if one:
-            res = self.db.remove(doc_ids=[one.doc_id])
-            return_first(res)
-        return None
+            return self.db.remove(doc_ids=[one.doc_id])
+        return []
 
     def delete_all(self):
         self.db.truncate()
@@ -86,8 +84,13 @@ class TranslationDao(BaseDao):
         return self.db.drop_table(table_name)
 
     def update_block(self, table_name: str, doc_id: int, blocks: List[dict]):
-        res = self.db.table(table_name).update({'block': blocks}, doc_ids=[doc_id])
-        return_first(res)
+        return self.db.table(table_name).update({'block': blocks}, doc_ids=[doc_id])
+
+    def update_blocks(self, table_name: str, doc_ids: List[int], blocks: List[List[dict]]):
+        update_cols = []
+        for block, doc_id in zip(blocks, doc_ids):
+            update_cols.append([{'block': block}, doc_id])
+        return self.db.table(table_name).update_multiple_by_id(update_cols)
 
     def list_langs(self):
         return self.db.tables()

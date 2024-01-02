@@ -271,7 +271,7 @@ class TranslationIndex:
             print(f'The language {lang} is not found!')
             return
         if self.exists_lang(new_lang):
-            print(f'The language {lang} with the same name already exists!')
+            print(f'The language {target_name} already exists!')
             return
         dialogue_data, string_data = self._list_translations(lang)
         for v in dialogue_data:
@@ -400,13 +400,10 @@ class TranslationIndex:
 
         # write updated translations to db
         dlang, slang = self._get_table_name(lang)
-        with self._open_db() as dao:
-            for did in updated_ddocids:
-                dao.update_block(dlang, did, ddocid_map[did])
-            for sid in updated_sdocids:
-                dao.update_block(slang, sid, sdocid_map[sid])
-            # update statistics when updating translation
-            self.update_translation_stats(lang, say_only=say_only)
+        self._update_batch(dlang, updated_ddocids, ddocid_map)
+        self._update_batch(slang, updated_sdocids, sdocid_map)
+        # update statistics when updating translation
+        self.update_translation_stats(lang, say_only=say_only)
         print(f'{lang}: {len(updated_ddocids)} updated dialogue translations, '
               f'{len(updated_sdocids)} updated string translations. '
               f'[use:{use_cnt}, discord:{find_cnt - use_cnt}, total:{find_cnt}]')
@@ -485,17 +482,22 @@ class TranslationIndex:
 
         # write updated translation to db
         dlang, slang = self._get_table_name(lang)
-        with self._open_db() as dao:
-            for did in updated_ddocids:
-                dao.update_block(dlang, did, ddocid_map[did])
-            for sid in updated_sdocids:
-                dao.update_block(slang, sid, sdocid_map[sid])
-            # update statistics when updating translation
-            if updated_ddocids or updated_sdocids:
-                self.update_translation_stats(lang, say_only=say_only)
+        self._update_batch(dlang, updated_ddocids, ddocid_map)
+        self._update_batch(slang, updated_sdocids, sdocid_map)
+        # update statistics when updating translation
+        if updated_ddocids or updated_sdocids:
+            self.update_translation_stats(lang, say_only=say_only)
         print(f'{lang}: {len(updated_ddocids)} updated dialogue translations, '
               f'{len(updated_sdocids)} updated string translations. '
               f'[use:{updating_cnt}, discord:{len(translated_lines) - updating_cnt}, total:{len(translated_lines)}]')
+
+    def _update_batch(self, table_name, updated_docids, docid_map):
+        ids, blocks = [], []
+        for did in updated_docids:
+            ids.append(did)
+            blocks.append(docid_map[did])
+        with self._open_db() as dao:
+            dao.update_blocks(table_name, ids, blocks)
 
     @db_context
     def import_translations(self, lang: str, translated_only: bool = True, say_only: bool = True):
