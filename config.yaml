@@ -16,6 +16,8 @@ projz:
     level: 'ERROR' # log level: 'CRITICAL','FATAL','ERROR','WARN', 'WARNING', 'INFO', 'DEBUG', 'NOTSET'
     path: './projz/logs' # path for logging
   index:
+    # strip tags before exporting untranslated text
+    strip_tag: False # This will reduce parsing errors when loading scripts
     write_cache_size: 2000 # large number of write operations will improves speed of read/write translations by reducing disk I/O.
   renpy:
     # enable developer console, https://www.renpy.org/doc/html/developer_tools.html#shift-o-console

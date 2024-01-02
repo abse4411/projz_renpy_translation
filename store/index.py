@@ -28,6 +28,7 @@ from store.database import TranslationIndexDao, TranslationDao
 from store.database.base import db_context
 from util import exists_dir, strip_or_none, assert_not_blank, strip_linebreakers, exists_file, to_translatable_text, \
     to_string_text
+from util.renpy import list_tags
 
 
 def encode_sumid(index: int, n_len: int):
@@ -305,21 +306,31 @@ class TranslationIndex:
         if len(dialogue_data) == 0 and len(string_data) == 0:
             print(f'No untranslated lines of language {lang}')
             return res
+
+        strip_tag = default_config['index']['strip_tag']
+
+        def _strip_fn(text):
+            if strip_tag and text:
+                tags = list_tags(text)
+                for tag, _ in tags.items():
+                    text = text.replace(tag, '')
+            return text
+
         for v in dialogue_data:
             for i, b in enumerate(v['block']):
                 if b['new_code'] is None:
                     if self._is_say_block(b):
                         res.append([self._encode_tid(self.DIALOGUE_ID_PREFIX, i, v.doc_id),
-                                    to_translatable_text(b['what'])])
+                                    _strip_fn(to_translatable_text(b['what']))])
                     else:
                         if not say_only:
                             res.append([self._encode_tid(self.DIALOGUE_ID_PREFIX, i, v.doc_id),
-                                        to_translatable_text(b['code'])])
+                                        _strip_fn(to_translatable_text(b['code']))])
         for v in string_data:
             for i, b in enumerate(v['block']):
                 if b['new_code'] is None:
                     res.append([self._encode_tid(self.STRING_ID_PREFIX, i, v.doc_id),
-                                to_translatable_text(b['what'])])
+                                _strip_fn(to_translatable_text(b['what']))])
         return res
 
     @db_context
