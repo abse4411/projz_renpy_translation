@@ -67,6 +67,7 @@ class LoadHtmlCmd(LoadFileBaseCmd):
         discord_cnt = 0
         tids_and_texts = []
         accept_blank = self.args.accept_blank
+        verbose = self.args.verbose
         for i, l in enumerate(lines):
             l = l.strip()
             if l:
@@ -80,10 +81,12 @@ class LoadHtmlCmd(LoadFileBaseCmd):
                             raw_text = tid_map.get(tid, None)
                             if raw_text is not None:
                                 if new_text == raw_text:
-                                    print(f'Discard untranslated line[Line {i}]: {raw_text}')
+                                    if verbose:
+                                        print(f'Discard untranslated line[Line {i}]: {raw_text}')
                                 else:
                                     if new_text.strip() == '' and not accept_blank:
-                                        print(f'Discard blank line[Line {i}]: {raw_text}')
+                                        if verbose:
+                                            print(f'Discard blank line[Line {i}]: {raw_text}')
                                     else:
                                         use_cnt += 1
                                         tids_and_texts.append([tid, new_text])

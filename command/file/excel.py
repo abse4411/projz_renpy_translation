@@ -65,16 +65,19 @@ class LoadExcelCmd(LoadFileBaseCmd):
         discord_cnt = 0
         tids_and_texts = []
         accept_blank = self.args.accept_blank
+        verbose = self.args.verbose
         for i, (tid, new_text) in enumerate(zip(df[TID_STR], df[RAW_TEXT_STR]), 2):
             tid, new_text = str(tid).strip(), str(new_text)
             if TranslationIndex.is_valid_tid(tid):
                 raw_text = tid_map.get(tid, None)
                 if raw_text is not None:
                     if new_text == raw_text:
-                        print(f'Discard untranslated line[Line {i}]: {raw_text}')
+                        if verbose:
+                            print(f'Discard untranslated line[Line {i}]: {raw_text}')
                     else:
                         if new_text.strip() == '' and not accept_blank:
-                            print(f'Discard blank line[Line {i}]: {new_text}')
+                            if verbose:
+                                print(f'Discard blank line[Line {i}]: {new_text}')
                         else:
                             use_cnt += 1
                             tids_and_texts.append([tid, new_text])
@@ -194,6 +197,7 @@ class UpdateExcelCmd(UpdateFromFileBaseCmd):
         discord_cnt = 0
         tids_and_texts = []
         accept_blank = self.args.accept_blank
+        verbose = self.args.verbose
         df = pd.read_excel(save_file, sheet_name=None, na_filter=False)
         for sheet in tqdm.tqdm(df.keys(), total=len(df), desc='Reading from excel...'):
             sheet_data = df[sheet]
@@ -203,10 +207,12 @@ class UpdateExcelCmd(UpdateFromFileBaseCmd):
                     raw_text = tid_map.get(tid, None)
                     if raw_text is not None:
                         if new_text == raw_text:
-                            print(f'Discard untranslated line[{sheet}, Line {i}]: {raw_text}')
+                            if verbose:
+                                print(f'Discard untranslated line[{sheet}, Line {i}]: {raw_text}')
                         else:
                             if new_text.strip() == '' and not accept_blank:
-                                print(f'Discard blank line[{sheet}, Line {i}]: {new_text}')
+                                if verbose:
+                                    print(f'Discard blank line[{sheet}, Line {i}]: {new_text}')
                             else:
                                 use_cnt += 1
                                 tids_and_texts.append([tid, new_text])

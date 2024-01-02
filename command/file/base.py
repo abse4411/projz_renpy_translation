@@ -124,6 +124,8 @@ class LoadFileBaseCmd(BaseIndexCmd):
                                        f"we will read from {save_filename}.")
         self._parser.add_argument("-ab", "--accept_blank", action='store_true',
                                   help="Accept blank translated lines from the file.")
+        self._parser.add_argument("-v", "--verbose", action='store_true',
+                                  help="Print more details.")
 
     def check_untranslated_tidmap(self, index: TranslationIndex):
         tids_and_texts = index.get_untranslated_lines(self.args.lang, say_only=True)
@@ -175,6 +177,8 @@ class UpdateFromFileBaseCmd(BaseIndexCmd):
                                        f"we will read from {save_filename}.")
         self._parser.add_argument("-ab", "--accept_blank", action='store_true',
                                   help="Accept blank translated lines from the file.")
+        self._parser.add_argument("-v", "--verbose", action='store_true',
+                                  help="Print more details.")
 
     def get_tidmap(self, index: TranslationIndex):
         tids_and_utexts = index.get_untranslated_lines(self.args.lang, say_only=True)
