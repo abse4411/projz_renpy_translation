@@ -331,7 +331,7 @@ except Exception as e:
 
 try:
     # 您可使用try-except语句导入您的翻译API，这样做可以让用户即使没有安装相应的python库也能正常运行程序。
-    # 否者，一旦用户没有相应的python库，将无法运行main.py
+    # 否则，一旦用户没有相应的python库，将无法运行main.py
     import translator.ai
 except Exception as e:
     print(f'error: {e}')
