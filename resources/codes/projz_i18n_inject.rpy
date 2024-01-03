@@ -50,10 +50,10 @@ init python:
 
 
 # Names of gui font var for saving default font
-define projz_gui_vars = ["projz_gui_text_font","projz_gui_name_text_font","projz_gui_interface_text_font","projz_gui_button_text_font","projz_gui_choice_button_text_font"]
+define projz_gui_vars = ["projz_gui_text_font","projz_gui_name_text_font","projz_gui_interface_text_font","projz_gui_button_text_font","projz_gui_choice_button_text_font","projz_gui_system_font","projz_gui_main_font"]
 # Names of gui font var for saving selected font
-define projz_sgui_vars = ["projz_sgui_text_font","projz_sgui_name_text_font","projz_sgui_interface_text_font","projz_sgui_button_text_font","projz_sgui_choice_button_text_font"]
-define projz_gui_names = ["Text Font","Name Text Font","Interface Text Font","Button Text Font","Choice Button Text Font"]
+define projz_sgui_vars = ["projz_sgui_text_font","projz_sgui_name_text_font","projz_sgui_interface_text_font","projz_sgui_button_text_font","projz_sgui_choice_button_text_font","projz_sgui_system_font","projz_sgui_main_font"]
+define projz_gui_names = ["Text Font","Name Text Font","Interface Text Font","Button Text Font","Choice Button Text Font","System Font","Main Font"]
 ################### Make font vars dynamic since Ren’Py 6.99.14 ###################
 # define gui.text_font = gui.preference(projz_gui_vars[0], gui.text_font)
 # define gui.name_text_font = gui.preference(projz_gui_vars[1], gui.name_text_font)
@@ -73,6 +73,16 @@ if projz_get(projz_gui_vars[3], None) is None:
     $ projz_set(projz_gui_vars[3], gui.button_text_font)
 if projz_get(projz_gui_vars[4], None) is None:
     $ projz_set(projz_gui_vars[4], gui.choice_button_text_font)
+if hasattr(gui, "system_font"):
+    $ projz_set(projz_gui_vars[5], gui.system_font)
+else:
+    define gui.system_font = None
+    $ projz_set(projz_gui_vars[5], None)
+if hasattr(gui, "main_font"):
+    $ projz_set(projz_gui_vars[6], gui.main_font)
+else:
+    define gui.main_font = None
+    $ projz_set(projz_gui_vars[6], None)
 
 ################### Make font vars dynamic by our implementation ###################
 define gui.text_font = projz_get(projz_sgui_vars[0], gui.text_font)
@@ -80,6 +90,8 @@ define gui.name_text_font = projz_get(projz_sgui_vars[1], gui.name_text_font)
 define gui.interface_text_font = projz_get(projz_sgui_vars[2], gui.interface_text_font)
 define gui.button_text_font = projz_get(projz_sgui_vars[3], gui.button_text_font)
 define gui.choice_button_text_font = projz_get(projz_sgui_vars[4], gui.choice_button_text_font)
+define gui.system_font = projz_get(projz_sgui_vars[5], gui.system_font)
+define gui.main_font = projz_get(projz_sgui_vars[6], gui.main_font)
 ####################################################################################
 
 # define projz_languages = {"korean": ("한국어", "SourceHanSansLite.ttf"), "japanese": ("日本語","SourceHanSansLite.ttf"), "french":("Русский","DejaVuSans.ttf"), "chinese": ("简体中文","SourceHanSansLite.ttf")}
@@ -231,6 +243,8 @@ screen projz_i18n_settings():
             text _("interface_text_font: [gui.interface_text_font]")
             text _("button_text_font: [gui.button_text_font]")
             text _("choice_button_text_font: [gui.choice_button_text_font]")
+            text _("system_font: [gui.system_font]")
+            text _("main_font: [gui.main_font]")
             text _("language: [_preferences.language]")
             null height 10
             label _("Note that")
