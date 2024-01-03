@@ -123,7 +123,7 @@ def _print_injection_types():
 
 class InjectionCmd(BaseIndexCmd):
     def __init__(self):
-        super().__init__('inject', 'Launch the RenPy game associated with the TranslationIndex.')
+        super().__init__('inject', 'Inject our code or i18n plugins into the game.')
         self._parser.add_argument("-t", "--type", default=Project.BASE_INJECTION, type=str, metavar='injection_type',
                                   choices=list(INJECTION_TYPES.keys()),
                                   help="The injection type to inject into the game.")
