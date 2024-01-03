@@ -13,6 +13,30 @@
 
 </div>
 
+# 开始之前
+
+注意，本工具并不是傻瓜式翻译工具，本工具主要用于管理多个RenPy游戏的翻译项目和机器翻译文本，主要功能如下：
+- 无需RenPy SDK即可导入和导出翻译
+- 以项目为单位管理RenPy游戏各种语言翻译文本
+- 使用免费翻译资源翻译文本
+- 翻译文本中潜在错误检查，例如变量，样式标签，转义字符等
+- 提供I18n插件注入，为游戏提供语言和字体修改界面
+
+本工具要求您熟悉一定RenPy翻译流程，通过合理利用此工具可以实现快速翻译，并节省大量资源和时间。
+
+对于带有voice语句翻译也是支持的，不过程序默认行为只提取文本语句。
+```python
+# game/script_21_1320.rpy:8
+translate chinese scene_01_5f0ee2360:
+
+    # voice "path/to/file"
+    # a "text"
+    voice "path/to/file"
+    a "translated text"
+```
+对于上述翻译rpy，只会提取到`a "translated text"`。
+如果想要提取`voice "path/to/file"`请在issue提出，这里将给出一份指导。
+
 # ✨新版本V0.4.0
 
 该版本可以支持以下功能：
@@ -256,7 +280,7 @@ from config.base import ProjzConfig
 # 翻译API调用流程，以DlTranslator为例：
 # 1.用户输入:translate 1 -l chinese -t ai --name mbart50
 # 2.创建DlTranslator实例，并调用register_args方法（注意DlTranslator必须使用无参数的构造函数）
-# 3.如果用输入参数含有'-h'或'--help'，则打印DlTranslator的命令帮助，然后跳转到7.结束。
+# 3.如果用户输入的参数含有'-h'或'--help'，则打印DlTranslator的命令帮助，然后跳转到7.结束。
 # 4.调用do_init方法(在这里开始翻译API的初始化应该在这里开始，这里可以使用转换好的args和config)
 # 5.调用invoke方法(基类CachedTranslatorTemplate或者TranslatorTemplate已经实现，DlTranslator无需实现)
 # 6.根据DlTranslator实现的方法，调用translate_batch或者translate，优先调用translate_batch方法
@@ -266,7 +290,8 @@ class DlTranslator(CachedTranslatorTemplate):
     def register_args(self, parser: ArgumentParser):
       super().register_args(parser)
       # 这里注册您要接受的命令行参数
-      # 注意：这阶段请不要做任何初始化工作，因为很可能用户只是想知道该翻译API有哪些参数。
+      # 注意：在这里请不要做任何初始化工作，因为很可能用户只是想知道该翻译API有哪些参数。
+      # 初始化工作请放在do_init()方法
       parser.add_argument('-n', '--name', choices=['m2m100', 'mbart50', 'nllb200'], default='mbart50',
                           help='The name of deep learning translation  model.')
         
