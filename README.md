@@ -244,10 +244,80 @@ new -h
 > **🍻最后🍻**<br />
 > 我们欢迎你集成您的翻译实现到我们的项目中，或者帮助我们翻译文档页面。
 
+# 💪自定义翻译API
+如果想要实现自己的翻译API非常简单，在[translator](translator)文件夹下新建一个py文件，然后继承CachedTranslatorTemplate类：
+```python
+from argparse import ArgumentParser
+from translator.base import CachedTranslatorTemplate
+from command.translation.base import register
+from typing import List, Tuple
+from config.base import ProjzConfig
+
+# 翻译API调用流程，以DlTranslator为例：
+# 1.用户输入:translate 1 -l chinese -t ai --name mbart50
+# 2.创建DlTranslator实例，并调用register_args方法（注意DlTranslator必须使用无参数的构造函数）
+# 3.如果用输入参数含有'-h'或'--help'，则打印DlTranslator的命令帮助，然后跳转到7.结束。
+# 4.调用do_init方法(在这里开始翻译API的初始化应该在这里开始，这里可以使用转换好的args和config)
+# 5.调用invoke方法(基类CachedTranslatorTemplate或者TranslatorTemplate已经实现，DlTranslator无需实现)
+# 6.根据DlTranslator实现的方法，调用translate_batch或者translate，优先调用translate_batch方法
+# 7.结束
+
+class DlTranslator(CachedTranslatorTemplate):
+    def register_args(self, parser: ArgumentParser):
+      super().register_args(parser)
+      # 这里注册您要接受的命令行参数
+      # 注意：这阶段请不要做任何初始化工作，因为很可能用户只是想知道该翻译API有哪些参数。
+      parser.add_argument('-n', '--name', choices=['m2m100', 'mbart50', 'nllb200'], default='mbart50',
+                          help='The name of deep learning translation  model.')
+        
+    def do_init(self, args, config: ProjzConfig):
+        super().do_init(args, config)
+        # 当用户决定使用这个翻译API时会调用这个方法
+        # 请在这里做初始化工作，您现在可以使用已经转换好的args和config
+        self._model_name = args.name
+        self._model_path = config['translator']['ai']['model_path']
+        self._load_model()
+
+    def translate(self, text: str):
+        # 您的API翻译方法，接受一个字符串返回一个翻译的字符串
+        return self.mt.translate(text, self._source, self._source, batch_size=1, verbose=True)
+
+    def translate_batch(self, texts: List[str]):
+        # 如果您的API支持批量翻译，您可以实现该方法。注意返回翻译结果的list长度应该和传入texts的长度一致。
+        # 如果没有实现该方法，则会循环调用translate方法。
+        return self.mt.translate(texts, self._source, self._source, batch_size=self._batch_size, verbose=True)
+
+# 将您的翻译API注册到translate命令
+# 用户可以这样使用：translate 1 -l chinese -t ai --name mbart50
+# 其中-t ai为register指定您的翻译API名称
+# 注意：DlTranslator应该使用无参数的构造函数，一旦实现无参数的构造函数请记得调用基类构造函数
+register('ai', DlTranslator)
+```
+最后在[translator/__init __.py](translator/__init__.py)导入您的翻译API：
+```python
+import logging
+import translator.base
+
+try:
+    import translator.web
+except Exception as e:
+    print(f'error: {e}')
+    logging.exception(e)
+
+try:
+    # 您可使用try-except语句导入您的翻译API，这样做可以让用户即使没有安装相应的python库也能正常运行程序。
+    # 否者，一旦用户没有相应的python库，将无法运行main.py
+    import translator.ai
+except Exception as e:
+    print(f'error: {e}')
+    logging.exception(e)
+```
+具体示例可以参考[translator/ai/impl.py](translator/ai/impl.py)中`DlTranslator`类的实现。
+
 # 🗒Todo List:
 
 1. [ ] 添加英语文档
-2. [ ] 其他翻译命令
+2. [ ] GUI支持
 3. [ ] 翻译时检查
 
 # 🔗Acknowledgement
