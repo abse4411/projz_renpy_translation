@@ -5,11 +5,11 @@
 [![](https://img.shields.io/badge/projz_renpy_translation-0.4.0-brightgreen.svg)](https://github.com/abse4411/projz_renpy_translation)
 [![](https://img.shields.io/badge/license-GPLv3-blue)](https://github.com/abse4411/projz_renpy_translation/blob/devp/LICENSE)
 
-[📘文档（Chinese only）](#) |
-[🛠安装](#运行环境准备) |
+[📘文档（Chinese only）](#快速开始) |
+[🛠安装](README_old.md#运行环境准备) |
 [💡建议](https://github.com/abse4411/projz_renpy_translation/issues)
 
-简体中文 | [English (N/A)](#帮助我们翻译help-us-translate-the-documentation)
+简体中文 | [English (N/A)](README_old.md#帮助我们翻译help-us-translate-the-documentation)
 
 </div>
 
@@ -116,9 +116,9 @@ Note that: Translation Stats list translated/untranslated lines of dialogue and 
 
 为方便这里使用`savehtml`和`loadhtml`命令进行快速翻译。
 Web翻译和AI翻译可用，请查看[帮助](#命令帮助)
-，或者参考以前版本的说明：[Web翻译](https://github.com/abse4411/projz_renpy_translation?tab=readme-ov-file#4%E4%BD%BF%E7%94%A8%E7%BF%BB%E8%AF%91%E5%BC%95%E6%93%8E%E7%BF%BB%E8%AF%91%E5%89%A9%E4%BD%99%E7%9A%84%E6%96%87%E6%9C%AC), [AI翻译](https://github.com/abse4411/projz_renpy_translation?tab=readme-ov-file#%E4%BD%BF%E7%94%A8dltranslate%E5%91%BD%E4%BB%A4%E8%BF%9B%E8%A1%8Cai%E7%BF%BB%E8%AF%91)。
+，或者参考以前版本的说明：[Web翻译](README_old.md#4使用翻译引擎翻译剩余的文本), [AI翻译](README_old.md#使用dltranslate命令进行ai翻译)。
 `saveexcel`, `loadexcel`
-命令查看：[使用saveexcel和loadexcel⚡快速⚡翻译](https://github.com/abse4411/projz_renpy_translation?tab=readme-ov-file#%E4%BD%BF%E7%94%A8saveexcel%E5%92%8Cloadexcel%E5%BF%AB%E9%80%9F%E7%BF%BB%E8%AF%91)
+命令查看：[使用saveexcel和loadexcel⚡快速⚡翻译](README_old.md#使用saveexcel和loadexcel快速翻译)
 
 现在我们用`savehtml`和`loadhtml`命令来翻译：
 
@@ -134,7 +134,7 @@ sh 1 -l schinese
 
 然后使用Chrome或者Microsoft
 Edge打开它，右键菜单翻译为指定语言后，Ctrl+S保存该html文件并覆盖原始的`my_game_None_schinese.html`。
-这个详细步骤参考[使用savehtml和loadhtml⚡快速⚡翻译（浏览器自带网页翻译）](https://github.com/abse4411/projz_renpy_translation?tab=readme-ov-file#%E4%BD%BF%E7%94%A8savehtml%E5%92%8Cloadhtml%E5%BF%AB%E9%80%9F%E7%BF%BB%E8%AF%91%E6%B5%8F%E8%A7%88%E5%99%A8%E8%87%AA%E5%B8%A6%E7%BD%91%E9%A1%B5%E7%BF%BB%E8%AF%91)
+这个详细步骤参考[使用savehtml和loadhtml⚡快速⚡翻译（浏览器自带网页翻译）](README_old.md#使用savehtml和loadhtml快速翻译浏览器自带网页翻译)
 
 然后使用`loadhtml`命令导入翻译：
 
