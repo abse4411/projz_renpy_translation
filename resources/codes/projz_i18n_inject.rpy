@@ -28,10 +28,10 @@
 ###########################################################
 # Note: Run after define statements of font in gui.rpy
 init offset = 999
-# Enable developer console
-init python:
-    if {projz_enable_console_content}:
-        renpy.config.developer = True
+# # Enable developer console
+# init python:
+#     if {projz_enable_console_content}:
+#         renpy.config.developer = True
 
 # location of fotns
 define projz_font_dir = "projz_fonts/"
@@ -47,6 +47,12 @@ init python:
     def projz_set(name, value):
         setattr(persistent, name, value)
         return value
+
+    if projz_get("projz_config_developer", None) is not None:
+        renpy.config.developer = projz_get("projz_config_developer", {projz_enable_console_content})
+    else:
+        projz_set("projz_config_developer", {projz_enable_console_content})
+        renpy.config.developer = {projz_enable_console_content}
 
 
 # Names of gui font var for saving default font
@@ -168,6 +174,24 @@ init python:
                     return False
             return True
 
+    class ProjzConfigAction(Action, DictEquality):
+        def __init__(self, name, value, rebuild=True):
+            self.name = name
+            self.value = value
+            self.rebuild = rebuild
+
+        def __call__(self):
+            projz_set("projz_config_"+self.name, self.value)
+            setattr(renpy.config, self.name, self.value)
+
+            if self.rebuild:
+                gui.rebuild()
+
+        def get_selected(self):
+            if hasattr(renpy.config, self.name) and getattr(renpy.config, self.name) == self.value:
+                return True
+            return False
+
     def projz_set_font(font):
         for name in projz_sgui_vars:
             projz_set(name, font)
@@ -180,6 +204,7 @@ init python:
     config.keymap['projz_show_i18n_settings'] = ['{projz_shortcut_key}']
 
 screen projz_i18n_settings():
+    default show_more = False
     tag menu
     use game_menu(_("I18n settings"), scroll="viewport"):
         vbox:
@@ -191,6 +216,13 @@ screen projz_i18n_settings():
                     textbutton "Default" action [Function(projz_set_font, None), Language(None)]
                     for k,v in projz_languages.items():
                         textbutton v[0] text_font projz_font_dir+v[1] action [Function(projz_set_font, projz_font_dir+v[1]), Language(k)]
+                vbox:
+                    style_prefix "radio"
+                    label _("Developer Mode")
+                    textbutton "auto" action [ProjzConfigAction("developer", "auto")]
+                    textbutton "True" action [ProjzConfigAction("developer", True)]
+                    textbutton "False" action [ProjzConfigAction("developer", False)]
+                    text _("Restart Required")
                 ################### Make font vars dynamic by our implementation ###################
                 vbox:
                     style_prefix "radio"
@@ -200,16 +232,21 @@ screen projz_i18n_settings():
                         textbutton f:
                             text_font projz_font_dir+f
                             action ProjzAllFontAction(projz_font_dir+f)
-
-                for sf,n in zip(projz_sgui_vars, projz_gui_names):
-                    vbox:
-                        style_prefix "radio"
-                        label _(n)
-                        textbutton "Default" action ProjzDefaultFontAction(sf)
-                        for f in projz_fonts:
-                            textbutton f:
-                                text_font projz_font_dir+f
-                                action ProjzFontAction(sf, projz_font_dir+f)
+                vbox:
+                    style_prefix "radio"
+                    label _("Other Font Settings")
+                    textbutton _("Expand") action SetScreenVariable("show_more", True)
+                    textbutton _("Collapse") action SetScreenVariable("show_more", False)
+                showif show_more == True:
+                    for sf,n in zip(projz_sgui_vars, projz_gui_names):
+                        vbox:
+                            style_prefix "radio"
+                            label _(n)
+                            textbutton "Default" action ProjzDefaultFontAction(sf)
+                            for f in projz_fonts:
+                                textbutton f:
+                                    text_font projz_font_dir+f
+                                    action ProjzFontAction(sf, projz_font_dir+f)
                 ####################################################################################
 
                 ################### Make font vars dynamic since Ren’Py 6.99.14 ###################
@@ -236,8 +273,8 @@ screen projz_i18n_settings():
                         textbutton _("Reset") action Preference("font line spacing", 1.0)
             null height 10
             label "Watch"
-            text _("font_size: [_preferences.font_size:.1]")
-            text _("font_line_spacing: [_preferences.font_line_spacing:.1]")
+            text _("language: [_preferences.language]")
+            text _("developer_mode: [config.developer]")
             text _("text_font: [gui.text_font]")
             text _("name_text_font: [gui.name_text_font]")
             text _("interface_text_font: [gui.interface_text_font]")
@@ -245,7 +282,8 @@ screen projz_i18n_settings():
             text _("choice_button_text_font: [gui.choice_button_text_font]")
             text _("system_font: [gui.system_font]")
             text _("main_font: [gui.main_font]")
-            text _("language: [_preferences.language]")
+            text _("font_size: [_preferences.font_size:.1]")
+            text _("font_line_spacing: [_preferences.font_line_spacing:.1]")
             null height 10
             label _("Note that")
             text _("If there exists the font configuration in /game/tl/language/style.rpy, it will disable our font setting because of its higher priority. For more infomation, please see {a=https://www.renpy.org/doc/html/translation.html#style-translations}this{/a}.")
