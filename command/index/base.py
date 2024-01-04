@@ -17,7 +17,7 @@ from collections import defaultdict
 
 from prettytable import PrettyTable, prettytable
 
-from command import BaseConfirmationCmd, BaseIndexConfirmationCmd
+from command import BaseConfirmationCmd, BaseIndexConfirmationCmd, BaseLangIndexConfirmationCmd, BaseLangIndexCmd
 from command.base import BaseCmd, BaseIndexCmd
 from store import TranslationIndex
 from store.database.base import db_context
@@ -85,11 +85,9 @@ class DeleteTranslationIndexCmd(BaseIndexConfirmationCmd):
             TranslationIndex.remove_index(self._index, self._nick_name)
 
 
-class DropTranslationCmd(BaseIndexConfirmationCmd):
+class DropTranslationCmd(BaseLangIndexConfirmationCmd):
     def __init__(self):
         super().__init__('drop', 'Drop translations of the given language.')
-        self._parser.add_argument("-l", "--lang", required=True, type=str, metavar='language',
-                                  help="The language to drop.")
 
     @db_context
     def invoke(self):
@@ -98,11 +96,9 @@ class DropTranslationCmd(BaseIndexConfirmationCmd):
             index.drop_translations(self.args.lang)
 
 
-class RenameLanguageCmd(BaseIndexConfirmationCmd):
+class RenameLanguageCmd(BaseLangIndexCmd):
     def __init__(self):
         super().__init__('rename', 'Rename a name of language translations.')
-        self._parser.add_argument("-l", "--lang", required=True, type=str, metavar='language',
-                                  help="The language to rename.")
         self._parser.add_argument("-t", "--target", required=True, type=str, metavar='new_name',
                                   help="The new name.")
 
@@ -112,11 +108,9 @@ class RenameLanguageCmd(BaseIndexConfirmationCmd):
         index.rename_lang(self.args.lang, self.args.target)
 
 
-class ClearUntranslationIndexCmd(BaseIndexConfirmationCmd):
+class ClearUntranslationIndexCmd(BaseLangIndexConfirmationCmd):
     def __init__(self):
         super().__init__('mark', 'Mark all untranslated lines to as translated ones.')
-        self._parser.add_argument("-l", "--lang", required=True, type=str, metavar='language',
-                                  help="The language to mark.")
 
     def invoke(self):
         if self.args.yes or yes(f'Are your sure to make all untranslated lines as translated ones?'):
@@ -124,22 +118,21 @@ class ClearUntranslationIndexCmd(BaseIndexConfirmationCmd):
             index.clear_untranslated_lines(self.args.lang, say_only=True)
 
 
-class UpdateTranslationStatsCmd(BaseIndexConfirmationCmd):
+class UpdateTranslationStatsCmd(BaseIndexCmd):
     def __init__(self):
         super().__init__('upstats', 'Update translation stats of the specified TranslationIndex.')
-
+        self._parser.add_argument("-l", "--lang", default=None, type=str, metavar='language',
+                                  help="The language to update. Update all languages when not passing this arg.")
     @db_context
     def invoke(self):
         index = self.get_translation_index()
         index.update_translation_stats(say_only=True)
 
 
-class MergeTranslationCmd(BaseIndexConfirmationCmd):
+class MergeTranslationCmd(BaseLangIndexConfirmationCmd):
     def __init__(self):
         super().__init__('merge', 'Merge translated texts of the given language '
                                   'from another TranslationIndex.')
-        self._parser.add_argument("-l", "--lang", required=True, type=str, metavar='language',
-                                  help="The language to merge.")
         self._parser.add_argument("-s", "--source", required=True, type=str, metavar='another_index',
                                   help="The index or nickname of another TranslationIndex.")
 

@@ -21,7 +21,7 @@ import pandas as pd
 from pandas import ExcelWriter
 import tqdm
 
-from command import BaseIndexCmd
+from command import BaseIndexCmd, BaseLangIndexCmd
 from command.file.base import SaveFileBaseCmd, LoadFileBaseCmd, DumpToFileBaseCmd, ALL_FIELDS, UpdateFromFileBaseCmd
 from store import TranslationIndex
 from store.database.base import db_context
@@ -144,7 +144,7 @@ class DumpExcelCmd(DumpToFileBaseCmd):
             print(f'{cnt} translations are dump to {save_file}.')
 
 
-class DumpErrorExcelCmd(BaseIndexCmd):
+class DumpErrorExcelCmd(BaseLangIndexCmd):
     def __init__(self):
         description = f'Inspect each translated line to find missing vars or tags,\n' \
                       f'then save these error lines to a excel file. You can use the\n' \
@@ -152,8 +152,6 @@ class DumpErrorExcelCmd(BaseIndexCmd):
         super().__init__('inspect', description)
         self.file_type = 'excel'
         self.file_ext = 'xlsx'
-        self._parser.add_argument("-l", "--lang", required=True, type=str, metavar='language',
-                                  help="The language to inspect.")
         save_filename = os.path.join(self.config.project_path, self.file_type, f'nickname_tag.{self.file_ext}')
         self._parser.add_argument("-f", "--file", required=False, type=str, metavar=f'{self.file_type}_file',
                                   help=f"The filename to save the generated {self.file_type} file."

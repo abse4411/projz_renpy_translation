@@ -62,6 +62,13 @@ class BaseIndexCmd(BaseCmd):
         return res
 
 
+class BaseLangIndexCmd(BaseIndexCmd):
+    def __init__(self, name: str, description: str):
+        super().__init__(name, description)
+        self._parser.add_argument("-l", "--lang", required=True, type=str, metavar='language',
+                                  help="The language to use.")
+
+
 class BaseConfirmationCmd(BaseCmd):
     def __init__(self, name: str, description: str):
         super().__init__(name, description)
@@ -69,6 +76,12 @@ class BaseConfirmationCmd(BaseCmd):
 
 
 class BaseIndexConfirmationCmd(BaseIndexCmd):
+    def __init__(self, name: str, description: str):
+        super().__init__(name, description)
+        self._parser.add_argument("-y", "--yes", action='store_true', help="Assume yes to all queries.")
+
+
+class BaseLangIndexConfirmationCmd(BaseLangIndexCmd):
     def __init__(self, name: str, description: str):
         super().__init__(name, description)
         self._parser.add_argument("-y", "--yes", action='store_true', help="Assume yes to all queries.")

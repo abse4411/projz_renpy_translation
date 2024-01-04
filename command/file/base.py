@@ -16,21 +16,19 @@
 import os
 from typing import Dict
 
-from command import BaseIndexCmd
+from command import BaseIndexCmd, BaseLangIndexCmd
 from store import TranslationIndex
 from store.database.base import db_context
 from store.group import ALL, TRANS, UNTRANS, group_translations_by, ALL_FIELDS, GROUPBY_FIELDS, SORTBY_FIELDS
 from util import exists_file, mkdir
 
 
-class SaveFileBaseCmd(BaseIndexCmd):
+class SaveFileBaseCmd(BaseLangIndexCmd):
     def __init__(self, name: str, file_type: str, file_ext: str):
         description = f'Save untranslated lines of the give language to a {file_type} file.'
         super().__init__(name, description)
         self.file_type = file_type
         self.file_ext = file_ext
-        self._parser.add_argument("-l", "--lang", required=True, type=str, metavar='language',
-                                  help="The language to save.")
         save_filename = os.path.join(self.config.project_path, file_type, f'nickname_tag.{file_ext}')
         self._parser.add_argument("-f", "--file", required=False, type=str, metavar=f'{file_type}_file',
                                   help=f"The filename to save the generated {file_type} file."
@@ -67,14 +65,12 @@ class SaveFileBaseCmd(BaseIndexCmd):
         return save_file, index, res
 
 
-class DumpToFileBaseCmd(BaseIndexCmd):
+class DumpToFileBaseCmd(BaseLangIndexCmd):
     def __init__(self, name: str, file_type: str, file_ext: str):
         description = f'Dump translations of the give language to a {file_type} file.'
         super().__init__(name, description)
         self.file_type = file_type
         self.file_ext = file_ext
-        self._parser.add_argument("-l", "--lang", required=True, type=str, metavar='language',
-                                  help="The language to save.")
         save_filename = os.path.join(self.config.project_path, file_type, f'nickname_tag.{file_ext}')
         self._parser.add_argument("-f", "--file", required=False, type=str, metavar=f'{file_type}_file',
                                   help=f"The filename to save the generated {file_type} file."
@@ -110,14 +106,12 @@ class DumpToFileBaseCmd(BaseIndexCmd):
         return save_file, index, group_map
 
 
-class LoadFileBaseCmd(BaseIndexCmd):
+class LoadFileBaseCmd(BaseLangIndexCmd):
     def __init__(self, name: str, file_type: str, file_ext: str):
         description = f'Load translated lines of the give language from a {file_type} file.'
         super().__init__(name, description)
         self.file_type = file_type
         self.file_ext = file_ext
-        self._parser.add_argument("-l", "--lang", required=True, type=str, metavar='language',
-                                  help="The language to load.")
         save_filename = os.path.join(self.config.project_path, file_type, f'nickname_tag.{file_ext}')
         self._parser.add_argument("-f", "--file", required=False, type=str, metavar=f'{file_type}_file',
                                   help="The filename to load translated {file_type} file. if not presented, "
@@ -163,14 +157,12 @@ class LoadFileBaseCmd(BaseIndexCmd):
                 print('No translated lines to update.')
 
 
-class UpdateFromFileBaseCmd(BaseIndexCmd):
+class UpdateFromFileBaseCmd(BaseLangIndexCmd):
     def __init__(self, name: str, file_type: str, file_ext: str):
         description = f'Update translations of the give language from a {file_type} file.'
         super().__init__(name, description)
         self.file_type = file_type
         self.file_ext = file_ext
-        self._parser.add_argument("-l", "--lang", required=True, type=str, metavar='language',
-                                  help="The language to load.")
         save_filename = os.path.join(self.config.project_path, file_type, f'nickname_tag.{file_ext}')
         self._parser.add_argument("-f", "--file", required=False, type=str, metavar=f'{file_type}_file',
                                   help="The filename to load translated {file_type} file. if not presented, "

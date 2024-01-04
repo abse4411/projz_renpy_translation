@@ -15,7 +15,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import copy
 
-from command import BaseIndexCmd
+from command import BaseIndexCmd, BaseLangIndexCmd
 from config import default_config
 from store import TranslationIndex
 
@@ -32,15 +32,13 @@ def unregister(name):
         return _TRANSLATOR.pop(name)
 
 
-class TranslateCmd(BaseIndexCmd):
+class TranslateCmd(BaseLangIndexCmd):
     def __init__(self):
         self.reinit()
 
     def reinit(self):
         super().__init__('translate', 'Translate untranslated lines of the give language using'
                                       'the specified translator')
-        self._parser.add_argument("-l", "--lang", required=True, type=str, metavar='language',
-                                  help="The language to generate.")
         self._parser.add_argument("-t", "--translator", type=str, choices=list(_TRANSLATOR.keys()),
                                   help="The translator to use.")
         self._parser.add_argument("-ab", "--accept_blank", action='store_true',

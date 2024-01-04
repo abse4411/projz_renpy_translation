@@ -18,7 +18,7 @@ import os.path
 import prettytable
 from prettytable import PrettyTable
 
-from command import BaseCmd
+from command import BaseCmd, BaseLangIndexCmd
 from command.base import BaseIndexCmd
 from injection import Project
 from injection.cmd import lang_project
@@ -43,12 +43,10 @@ class NewTranslationIndexCmd(BaseCmd):
         index.save()
 
 
-class ImportTranslationCmd(BaseIndexCmd):
+class ImportTranslationCmd(BaseLangIndexCmd):
     def __init__(self):
         super().__init__('import', 'Import translations of the given language into this '
                                    'TranslationIndex. (Base injection required)')
-        self._parser.add_argument("-l", "--lang", required=True, type=str, metavar='language',
-                                  help="The language to import.")
         self._parser.add_argument("-to", "--translated_only", action='store_true',
                                   help="Only import translated texts. The translated texts means translations "
                                        "listed in ryp files in you_game/game/tl/{lang} dir.")
@@ -57,12 +55,10 @@ class ImportTranslationCmd(BaseIndexCmd):
         self.get_translation_index().import_translations(self.args.lang, self.args.translated_only, say_only=True)
 
 
-class GenerateTranslationCmd(BaseIndexCmd):
+class GenerateTranslationCmd(BaseLangIndexCmd):
     def __init__(self):
         super().__init__('generate', 'Generate translations of the given language from this '
                                      'TranslationIndex. (Base injection required)')
-        self._parser.add_argument("-l", "--lang", required=True, type=str, metavar='language',
-                                  help="The language to generate.")
         self._parser.add_argument("-a", "--all", action='store_true',
                                   help="Generate all translated and translated texts. "
                                        "If this arg is not specified, only translated text are used to generate.")
@@ -81,12 +77,10 @@ class GenerateTranslationCmd(BaseIndexCmd):
         index.export_translations(self.args.lang, not self.args.all, say_only=True)
 
 
-class CountTranslationCmd(BaseIndexCmd):
+class CountTranslationCmd(BaseLangIndexCmd):
     def __init__(self):
         super().__init__('count', 'Print a count of missing translations of the given language.'
                                   ' (Base injection required)')
-        self._parser.add_argument("-l", "--lang", required=True, type=str, metavar='language',
-                                  help="The language to count.")
         self._parser.add_argument("-v", "--verbose", action='store_true',
                                   help="Print each missed translation.")
 
