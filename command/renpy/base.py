@@ -87,11 +87,11 @@ class CountTranslationCmd(BaseIndexCmd):
                                   ' (Base injection required)')
         self._parser.add_argument("-l", "--lang", required=True, type=str, metavar='language',
                                   help="The language to count.")
-        self._parser.add_argument("-p", "--print", action='store_true',
+        self._parser.add_argument("-v", "--verbose", action='store_true',
                                   help="Print each missed translation.")
 
     def invoke(self):
-        self.get_translation_index().count_translations(self.args.lang, show_detail=self.args.print, say_only=True)
+        self.get_translation_index().count_translations(self.args.lang, show_detail=self.args.verbose, say_only=True)
 
 
 class LaunchProjectCmd(BaseIndexCmd):
