@@ -190,7 +190,8 @@ def count_missing(language, filter, min_priority, max_priority, common_only, say
                         who=who,
                         code=code,
                     ))
-                missing_items.append(ast)
+                if ast.get('block', False):
+                    missing_items.append(ast)
 
     missing_strings = 0
 
@@ -308,7 +309,8 @@ def get_translation(filename, language, filter, translated_only, say_only):
                     who=who,
                     code=code,
                 ))
-        item_list.append(ast)
+        if ast.get('block', False):
+            item_list.append(ast)
     return item_list
 
 
