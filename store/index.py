@@ -607,7 +607,8 @@ class TranslationIndex:
                     new_string_data.append(v)
         if len(new_dialogue_data) == 0 and len(new_string_data) == 0:
             print(f'No {lang} translations in this TranslationIndex to export')
-            return
+            if translated_only:
+                return
         print(f'{lang}: {len(new_dialogue_data)} dialogue and {len(new_string_data)} string translations '
               f'are ready to export')
         affected_files, msg = _get_task_result(generate_translations(self._project, {
