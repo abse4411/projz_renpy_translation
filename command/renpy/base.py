@@ -20,12 +20,14 @@ from prettytable import PrettyTable
 
 from command import BaseCmd, BaseLangIndexCmd
 from command.base import BaseIndexCmd
+from config import default_config
 from injection import Project
 from injection.cmd import lang_project
 from injection.default import RENPY_GAME_DIR, RENPY_TL_DIR
 from store import TranslationIndex
 from util import walk_and_select
 
+_say_only = default_config.say_only
 
 class NewTranslationIndexCmd(BaseCmd):
     def __init__(self):
@@ -52,7 +54,7 @@ class ImportTranslationCmd(BaseLangIndexCmd):
                                        "listed in ryp files in you_game/game/tl/{lang} dir.")
 
     def invoke(self):
-        self.get_translation_index().import_translations(self.args.lang, self.args.translated_only, say_only=True)
+        self.get_translation_index().import_translations(self.args.lang, self.args.translated_only, say_only=_say_only)
 
 
 class GenerateTranslationCmd(BaseLangIndexCmd):
@@ -74,7 +76,7 @@ class GenerateTranslationCmd(BaseLangIndexCmd):
             for r in rpy_files:
                 print(f'Deleting {r}')
                 os.remove(r)
-        index.export_translations(self.args.lang, not self.args.all, say_only=True)
+        index.export_translations(self.args.lang, not self.args.all, say_only=_say_only)
 
 
 class CountTranslationCmd(BaseLangIndexCmd):
@@ -85,7 +87,8 @@ class CountTranslationCmd(BaseLangIndexCmd):
                                   help="Print each missed translation.")
 
     def invoke(self):
-        self.get_translation_index().count_translations(self.args.lang, show_detail=self.args.verbose, say_only=True)
+        self.get_translation_index().count_translations(self.args.lang, show_detail=self.args.verbose,
+                                                        say_only=_say_only)
 
 
 class LaunchProjectCmd(BaseIndexCmd):

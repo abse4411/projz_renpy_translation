@@ -19,6 +19,7 @@ projz:
     # strip tags before exporting untranslated text
     strip_tag: False # This will reduce parsing errors when loading scripts
     write_cache_size: 2000 # large number of write operations will improves speed of read/write translations by reducing disk I/O.
+    say_only: True # only import or export saystatements for dialogues
   renpy:
     # enable developer console, https://www.renpy.org/doc/html/developer_tools.html#shift-o-console
     developer_console: True

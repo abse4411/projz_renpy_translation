@@ -35,7 +35,7 @@ translate chinese scene_01_5f0ee2360:
     a "translated text"
 ```
 对于上述翻译rpy，只会提取到`a "translated text"`。
-如果想要提取`voice "path/to/file"`请在issue提出，这里将给出一份指导。
+如果想要提取`voice "path/to/file"`请设置[config.yaml](config.yaml)中的index.say_only为False
 
 # ✨新版本V0.4.0
 

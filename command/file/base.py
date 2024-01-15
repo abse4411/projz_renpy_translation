@@ -17,10 +17,13 @@ import os
 from typing import Dict
 
 from command import BaseIndexCmd, BaseLangIndexCmd
+from config import default_config
 from store import TranslationIndex
 from store.database.base import db_context
 from store.group import ALL, TRANS, UNTRANS, group_translations_by, ALL_FIELDS, GROUPBY_FIELDS, SORTBY_FIELDS
 from util import exists_file, mkdir
+
+_say_only = default_config.say_only
 
 
 class SaveFileBaseCmd(BaseLangIndexCmd):
@@ -51,7 +54,7 @@ class SaveFileBaseCmd(BaseLangIndexCmd):
     @db_context
     def check_untranslated_lines(self):
         save_file, index = self.check_savefile_and_index()
-        tids_and_texts = index.get_untranslated_lines(self.args.lang, say_only=True)
+        tids_and_texts = index.get_untranslated_lines(self.args.lang, say_only=_say_only)
         res = []
         if tids_and_texts:
             accept_blank = self.args.accept_blank
@@ -100,7 +103,7 @@ class DumpToFileBaseCmd(BaseLangIndexCmd):
     def get_dump_data(self):
         save_file, index = self.check_savefile_and_index()
         group_map = group_translations_by(self.args.group_by, self.args.sort_key, self.args.scope,
-                                          index, self.args.lang, reverse=self.args.reverse, say_only=True)
+                                          index, self.args.lang, reverse=self.args.reverse, say_only=_say_only)
         if len(group_map) == 0:
             print('No translations to dump.')
         return save_file, index, group_map
@@ -122,7 +125,7 @@ class LoadFileBaseCmd(BaseLangIndexCmd):
                                   help="Print more details.")
 
     def check_untranslated_tidmap(self, index: TranslationIndex):
-        tids_and_texts = index.get_untranslated_lines(self.args.lang, say_only=True)
+        tids_and_texts = index.get_untranslated_lines(self.args.lang, say_only=_say_only)
         tid_map = {tid: text for tid, text in tids_and_texts}
         if not tid_map:
             print('No untranslated lines to update.')
@@ -151,7 +154,7 @@ class LoadFileBaseCmd(BaseLangIndexCmd):
         if tid_map:
             tids_and_texts = self.get_translated_texts(tid_map, save_file)
             if tids_and_texts:
-                index.update_translations(self.args.lang, tids_and_texts,
+                index.update_translations(self.args.lang, tids_and_texts, say_only=_say_only,
                                           untranslated_only=True, discord_blank=not self.args.accept_blank)
             else:
                 print('No translated lines to update.')
@@ -173,8 +176,8 @@ class UpdateFromFileBaseCmd(BaseLangIndexCmd):
                                   help="Print more details.")
 
     def get_tidmap(self, index: TranslationIndex):
-        tids_and_utexts = index.get_untranslated_lines(self.args.lang, say_only=True)
-        tids_and_ttexts = index.get_translated_lines(self.args.lang, say_only=True)
+        tids_and_utexts = index.get_untranslated_lines(self.args.lang, say_only=_say_only, source_code=True)
+        tids_and_ttexts = index.get_translated_lines(self.args.lang, say_only=_say_only, source_code=True)
         tid_map = {tid: text for tid, text in tids_and_ttexts + tids_and_utexts}
         if not tid_map:
             print('No untranslated lines to update.')
@@ -202,7 +205,7 @@ class UpdateFromFileBaseCmd(BaseLangIndexCmd):
         tid_map = self.get_tidmap(index)
         tids_and_texts = self.get_translations(tid_map, save_file)
         if tids_and_texts:
-            index.update_translations(self.args.lang, tids_and_texts,
+            index.update_translations(self.args.lang, tids_and_texts, say_only=_say_only,
                                       untranslated_only=False, discord_blank=not self.args.accept_blank)
         else:
             print('No translations to update.')

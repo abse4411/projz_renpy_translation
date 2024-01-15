@@ -22,7 +22,7 @@ from util.renpy import list_vars, list_tags, list_escape_chars
 PRESENT_FIELDS = ['tid', 'new_text', 'raw_text', 'message', 'filename', 'linenumber', 'identifier']
 
 
-def detect_missing_vars_and_tags(index: TranslationIndex, lang: str):
+def detect_missing_vars_and_tags(index: TranslationIndex, lang: str, say_only=True):
     error_translations = []
     if lang is None:
         return error_translations
@@ -54,18 +54,23 @@ def detect_missing_vars_and_tags(index: TranslationIndex, lang: str):
         for i, b in enumerate(v['block']):
             if TranslationIndex._is_say_block(b):
                 old_str, new_str = to_translatable_text(b['what']), to_translatable_text(b['new_code'])
-                if old_str is not None and new_str is not None:
-                    message = _detect(old_str, new_str)
-                    if message != '':
-                        error_translations.append({
-                            'tid': TranslationIndex._encode_tid(index.DIALOGUE_ID_PREFIX, i, v.doc_id),
-                            'message': message,
-                            'raw_text': old_str,
-                            'new_text': new_str,
-                            'identifier': v['identifier'],
-                            'filename': v['filename'],
-                            'linenumber': v['linenumber'],
-                        })
+            else:
+                if not say_only:
+                    old_str, new_str = b['code'], b['new_code']
+                else:
+                    continue
+            if old_str is not None and new_str is not None:
+                message = _detect(old_str, new_str)
+                if message != '':
+                    error_translations.append({
+                        'tid': TranslationIndex._encode_tid(index.DIALOGUE_ID_PREFIX, i, v.doc_id),
+                        'message': message,
+                        'raw_text': old_str,
+                        'new_text': new_str,
+                        'identifier': v['identifier'],
+                        'filename': v['filename'],
+                        'linenumber': v['linenumber'],
+                    })
     for v in string_data:
         for i, b in enumerate(v['block']):
             old_str, new_str = to_translatable_text(b['what']), to_translatable_text(b['new_code'])

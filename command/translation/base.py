@@ -21,6 +21,7 @@ from store import TranslationIndex
 
 _TRANSLATOR = dict()
 
+_say_only = default_config.say_only
 
 def register(name: str, translator):
     assert name not in _TRANSLATOR, f'The {name} translator has already registered!'
@@ -47,7 +48,7 @@ class TranslateCmd(BaseLangIndexCmd):
 
     def get_untranslated_lines(self):
         index = self.get_translation_index()
-        tids_and_texts = index.get_untranslated_lines(self.args.lang, say_only=True)
+        tids_and_texts = index.get_untranslated_lines(self.args.lang, say_only=_say_only)
         if not tids_and_texts:
             print('No untranslated lines to update.')
         else:
@@ -117,6 +118,6 @@ class TranslateCmd(BaseLangIndexCmd):
                                         continue
                     print(f'Find {use_cnt} translated lines, and discord {len(tlist) - use_cnt} lines')
                     index.update_translations(self.args.lang, new_tlist,
-                                              untranslated_only=True, discord_blank=accept_blank, say_only=True)
+                                              untranslated_only=True, discord_blank=accept_blank, say_only=_say_only)
 
             self._translator.invoke(tids_and_texts, _update)

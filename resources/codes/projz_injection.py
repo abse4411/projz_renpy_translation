@@ -110,6 +110,7 @@ def block_of(
         who=None,
         code=None,
         new_code=None,
+        parsed=None,
 ):
     return {
         'type': type,
@@ -117,6 +118,7 @@ def block_of(
         'who': who,
         'code': code,
         'new_code': new_code,
+        'parsed': parsed if parsed is not None else [],
     }
 
 
@@ -132,11 +134,34 @@ def is_say_statement(t):
         return True
     return False
 
+def is_user_statement(t):
+    if isinstance(t, renpy.ast.UserStatement):
+        return True
+    return False
+
+def is_get_translatable_statement(t):
+    if isinstance(t, renpy.ast.Say) or isinstance(t, renpy.ast.UserStatement):
+        return True
+    return False
+
+def get_parsed(t):
+    arr = t.parsed
+    res = []
+    def _inner_walk(root):
+        for i in root:
+            if i is None:
+                continue
+            if isinstance(i, tuple):
+                _inner_walk(i)
+            else:
+                res.append(i)
+    _inner_walk(arr)
+    return res
 
 def get_dialogues_info(t, filter):
     if is_say_statement(t):
-        return t.what, t.who, t.get_code(filter), type(t).__name__
-    return None, None, t.get_code(filter), type(t).__name__
+        return t.what, t.who, t.get_code(filter), type(t).__name__, None
+    return None, None, t.get_code(filter), type(t).__name__, get_parsed(t)
 
 def get_string_info(s, filter):
     old = s.text
@@ -181,14 +206,17 @@ def count_missing(language, filter, min_priority, max_priority, common_only, say
                     linenumber=t.linenumber,
                 )
                 for i, n in enumerate(t.block):
+                    if not is_get_translatable_statement(n):
+                        continue
                     if say_only and not is_say_statement(n):
                         continue
-                    what, who, code, type = get_dialogues_info(n, filter)
+                    what, who, code, type, p = get_dialogues_info(n, filter)
                     ast['block'].append(block_of(
                         type=type,
                         what=what,
                         who=who,
                         code=code,
+                        parsed=p
                     ))
                 if ast.get('block', False):
                     missing_items.append(ast)
@@ -281,9 +309,11 @@ def get_translation(filename, language, filter, translated_only, say_only):
             else:
                 block = t.block
             for i, n in enumerate(block):
+                if not is_get_translatable_statement(n):
+                    continue
                 if say_only and not is_say_statement(n):
                     continue
-                what, who, code, type = get_dialogues_info(n, filter)
+                what, who, code, type, p = get_dialogues_info(n, filter)
                 if is_say_statement(n):
                     new_code = what
                 else:
@@ -292,7 +322,8 @@ def get_translation(filename, language, filter, translated_only, say_only):
                     type=type,
                     code=code,
                     who=who,
-                    new_code=new_code
+                    new_code=new_code,
+                    parsed=p
                 ))
         else:
             if TranslateSay_ref is not None and isinstance(t, TranslateSay_ref):
@@ -300,14 +331,17 @@ def get_translation(filename, language, filter, translated_only, say_only):
             else:
                 block = t.block
             for i, n in enumerate(block):
+                if not is_get_translatable_statement(n):
+                    continue
                 if say_only and not is_say_statement(n):
                     continue
-                what, who, code, type = get_dialogues_info(n, filter)
+                what, who, code, type, p = get_dialogues_info(n, filter)
                 ast['block'].append(block_of(
                     type=type,
                     what=what,
                     who=who,
                     code=code,
+                    parsed=p,
                 ))
         if ast.get('block', False):
             item_list.append(ast)

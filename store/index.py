@@ -141,6 +141,27 @@ class TranslationIndex:
         return 'Say' in data.get('type', '')
 
     @staticmethod
+    def _is_user_block(data):
+        return 'UserStatement' in data.get('type', '')
+
+    @staticmethod
+    def _get_userblock_text(block):
+        arr = block['parsed']
+        for i, text in enumerate(arr):
+            if len(text) > 1 and ((text[0] == '"' and text[-1] == '"') or
+                                  (text[0] == '\'' and text[-1] == '\'')):
+                return i, text[1:-1]
+        return -1, None
+
+    @staticmethod
+    def _to_userblock_text(block, new_text):
+        idx, res = TranslationIndex._get_userblock_text(block)
+        arr = block['parsed']
+        if res is not None:
+            return block['code'].replace(arr[idx], f'"{new_text}"', 1)
+        return None
+
+    @staticmethod
     def _get_table_name(lang: str):
         return TranslationIndex.DIALOGUE_ID_PREFIX + lang, TranslationIndex.STRING_ID_PREFIX + lang
 
@@ -238,7 +259,7 @@ class TranslationIndex:
             string_data = dao.list_by_lang(slang)
         return dialogue_data, string_data
 
-    def get_translated_lines(self, lang: str, say_only=True):
+    def get_translated_lines(self, lang: str, say_only=True, source_code=False):
         res = []
         lang = strip_or_none(lang)
         if lang is None:
@@ -255,8 +276,12 @@ class TranslationIndex:
                                     to_translatable_text(b['new_code'])])
                     else:
                         if not say_only:
+                            if source_code:
+                                old_text = b['code']
+                            else:
+                                _, old_text = self._get_userblock_text(b)
                             res.append([self._encode_tid(self.DIALOGUE_ID_PREFIX, i, v.doc_id),
-                                        to_translatable_text(b['new_code'])])
+                                        to_translatable_text(old_text)])
         for v in string_data:
             for i, b in enumerate(v['block']):
                 if b['new_code'] is not None:
@@ -297,7 +322,7 @@ class TranslationIndex:
                 self._stats['string'][target_name] = old_stats
             self._update({'stats': self._stats})
 
-    def get_untranslated_lines(self, lang: str, say_only=True):
+    def get_untranslated_lines(self, lang: str, say_only=True, source_code=False):
         res = []
         lang = strip_or_none(lang)
         if lang is None:
@@ -324,8 +349,14 @@ class TranslationIndex:
                                     _strip_fn(to_translatable_text(b['what']))])
                     else:
                         if not say_only:
+                            if source_code:
+                                old_text = b['code']
+                            else:
+                                _, old_text = self._get_userblock_text(b)
+                            if old_text is None:
+                                continue
                             res.append([self._encode_tid(self.DIALOGUE_ID_PREFIX, i, v.doc_id),
-                                        _strip_fn(to_translatable_text(b['code']))])
+                                        _strip_fn(to_translatable_text(old_text))])
         for v in string_data:
             for i, b in enumerate(v['block']):
                 if b['new_code'] is None:
@@ -535,7 +566,11 @@ class TranslationIndex:
                 if block:
                     if discord_blank and new_code.strip() == '':
                         continue
-                    block['new_code'] = to_string_text(new_code)
+                    if self._is_user_block(block):
+                        new_code = self._to_userblock_text(block, to_string_text(new_code))
+                        block['new_code'] = new_code
+                    else:
+                        block['new_code'] = to_string_text(new_code)
                     updating_cnt += 1
                     updated_docids.add(doc_id)
 

@@ -19,10 +19,12 @@ from prettytable import PrettyTable, prettytable
 
 from command import BaseConfirmationCmd, BaseIndexConfirmationCmd, BaseLangIndexConfirmationCmd, BaseLangIndexCmd
 from command.base import BaseCmd, BaseIndexCmd
+from config import default_config
 from store import TranslationIndex
 from store.database.base import db_context
 from util import yes, quick_prettytable
 
+_say_only = default_config.say_only
 
 class ListTranslationIndexCmd(BaseCmd):
     def __init__(self):
@@ -115,7 +117,7 @@ class ClearUntranslationIndexCmd(BaseLangIndexConfirmationCmd):
     def invoke(self):
         if self.args.yes or yes(f'Are your sure to make all untranslated lines as translated ones?'):
             index = self.get_translation_index()
-            index.clear_untranslated_lines(self.args.lang, say_only=True)
+            index.clear_untranslated_lines(self.args.lang, say_only=_say_only)
 
 
 class UpdateTranslationStatsCmd(BaseIndexCmd):
@@ -126,7 +128,7 @@ class UpdateTranslationStatsCmd(BaseIndexCmd):
     @db_context
     def invoke(self):
         index = self.get_translation_index()
-        index.update_translation_stats(say_only=True)
+        index.update_translation_stats(say_only=_say_only)
 
 
 class MergeTranslationCmd(BaseLangIndexConfirmationCmd):
@@ -145,4 +147,4 @@ class MergeTranslationCmd(BaseLangIndexConfirmationCmd):
         if self.args.yes or yes(
                 f'Are you sure to merge translations of language {self.args.lang} from {source.nickname}:{source.tag} '
                 f'into {target.nickname}:{target.tag}?'):
-            target.merge_translations_from(source, self.args.lang, say_only=True)
+            target.merge_translations_from(source, self.args.lang, say_only=_say_only)

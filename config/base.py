@@ -33,6 +33,7 @@ class ProjzConfig:
     WRITE_CACHE_SIZE = 500
     REMOVE_MARKS = False
     REMOVE_TAGS = False
+    SAY_ONLY = True
     NUM_WORKERS = 2
 
     def __init__(self, config_file):
@@ -108,6 +109,12 @@ class ProjzConfig:
         if self.cfg:
             return self['remove_tags']
         return self.REMOVE_TAGS
+
+    @property
+    def say_only(self):
+        if self.cfg:
+            return self['index']['say_only']
+        return self.say_only
 
 
 default_config = ProjzConfig(CONFIG_FILE)
