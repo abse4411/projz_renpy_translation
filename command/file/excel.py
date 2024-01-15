@@ -140,13 +140,22 @@ class DumpExcelCmd(DumpToFileBaseCmd):
                 sorted_data = new_sorted_data
             global _COLS
             with ExcelWriter(save_file) as writer:
-                for file, data in tqdm.tqdm(sorted_data.items(), total=len(sorted_data), desc='Write to excel...'):
-                    df = pd.DataFrame(gather_by_keys(data, _COLS))
-                    cnt += len(df)
+                if self.args.single:
+                    new_data = []
+                    for file, data in tqdm.tqdm(sorted_data.items(), total=len(sorted_data),
+                                                desc='Collecting data...'):
+                        new_data += data
+                        cnt += len(data)
+                    df = pd.DataFrame(gather_by_keys(new_data, _COLS))
                     df = df.reindex(columns=_COLS)
-                    if self.args.single:
-                        df.to_excel(writer, index=False)
-                    else:
+                    print('Writing to excel...')
+                    df.to_excel(writer, index=False)
+                else:
+                    for file, data in tqdm.tqdm(sorted_data.items(), total=len(sorted_data),
+                                                desc='Writing to excel...'):
+                        df = pd.DataFrame(gather_by_keys(data, _COLS))
+                        df = df.reindex(columns=_COLS)
+                        cnt += len(df)
                         df.to_excel(writer, sheet_name=file.strip(), index=False)
             print(f'{cnt} translations are dump to {save_file}.')
 
