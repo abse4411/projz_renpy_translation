@@ -26,6 +26,7 @@ from util import yes, quick_prettytable
 
 _say_only = default_config.say_only
 
+
 class ListTranslationIndexCmd(BaseCmd):
     def __init__(self):
         super().__init__('ls', 'List existing TranslationIndexes.')
@@ -125,10 +126,11 @@ class UpdateTranslationStatsCmd(BaseIndexCmd):
         super().__init__('upstats', 'Update translation stats of the specified TranslationIndex.')
         self._parser.add_argument("-l", "--lang", default=None, type=str, metavar='language',
                                   help="The language to update. Update all languages when not passing this arg.")
+
     @db_context
     def invoke(self):
         index = self.get_translation_index()
-        index.update_translation_stats(say_only=_say_only)
+        index.update_translation_stats(self.args.lang, say_only=_say_only)
 
 
 class MergeTranslationCmd(BaseLangIndexConfirmationCmd):
