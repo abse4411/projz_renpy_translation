@@ -97,7 +97,7 @@ def gather_by_keys(items: List[dict], keys: List[str]):
     return key_dict
 
 
-_COLS = ['tid', 'new_text', 'old_text', 'linenumber', 'identifier']
+_COLS = ['tid', 'new_text', 'old_text', 'linenumber', 'identifier', 'filename']
 
 
 def longest_common_prefix(strs: List[str]):
@@ -114,6 +114,8 @@ class DumpExcelCmd(DumpToFileBaseCmd):
 
     def __init__(self):
         super().__init__('dumpexcel', 'excel', 'xlsx')
+        self._parser.add_argument("--single", action='store_true',
+                                  help="Dump all data in a single sheet.")
 
     def invoke(self):
         save_file, index, sorted_data = self.get_dump_data()
@@ -136,13 +138,16 @@ class DumpExcelCmd(DumpToFileBaseCmd):
                                   .replace(':', '_'))
                     new_sorted_data[short_name] = sorted_data[f]
                 sorted_data = new_sorted_data
-
+            global _COLS
             with ExcelWriter(save_file) as writer:
                 for file, data in tqdm.tqdm(sorted_data.items(), total=len(sorted_data), desc='Write to excel...'):
                     df = pd.DataFrame(gather_by_keys(data, _COLS))
                     cnt += len(df)
                     df = df.reindex(columns=_COLS)
-                    df.to_excel(writer, sheet_name=file.strip(), index=False)
+                    if self.args.single:
+                        df.to_excel(writer, index=False)
+                    else:
+                        df.to_excel(writer, sheet_name=file.strip(), index=False)
             print(f'{cnt} translations are dump to {save_file}.')
 
 
