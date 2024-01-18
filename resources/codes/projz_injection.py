@@ -186,6 +186,9 @@ def count_missing(language, filter, min_priority, max_priority, common_only, say
     """
     Prints a count of missing translations for `language`.
     """
+    str_lang = language
+    if language == "None":
+        language = None
 
     translator = renpy.game.script.translator
 
@@ -201,7 +204,7 @@ def count_missing(language, filter, min_priority, max_priority, common_only, say
                 missing_translates += 1
                 ast = ast_of(
                     identifier=t.identifier.replace('.', '_'),
-                    language=language,
+                    language=str_lang,
                     filename=t.filename,
                     linenumber=t.linenumber,
                 )
@@ -242,7 +245,7 @@ def count_missing(language, filter, min_priority, max_priority, common_only, say
         old, new, type = get_string_info(s, filter)
         missing_strings_items.append(ast_of(
             identifier=old,
-            language=language,
+            language=str_lang,
             block=[block_of(
                 type=type,
                 what=new,
@@ -252,7 +255,7 @@ def count_missing(language, filter, min_priority, max_priority, common_only, say
         ))
 
     message = "{}: {} missing dialogue translations, {} missing string translations.".format(
-        language,
+        str_lang,
         missing_translates,
         missing_strings
     )
@@ -279,6 +282,7 @@ def get_translation(filename, language, filter, translated_only, say_only):
     if common:
         return []
 
+    str_lang = language
     if language == "None":
         language = None
 
@@ -300,7 +304,7 @@ def get_translation(filename, language, filter, translated_only, say_only):
                     continue
         ast = ast_of(
             identifier=identifier,
-            language=language,
+            language=str_lang,
             filename=t.filename,
             linenumber=t.linenumber,
         )
@@ -434,6 +438,7 @@ def generate_translation(projz_translator, filename, language, filter, translate
 
     tl_filename = os.path.join(renpy.config.gamedir, renpy.config.tl_directory, language, fn)
 
+    str_lang = language
     if language == "None":
         language = None
 
@@ -451,13 +456,13 @@ def generate_translation(projz_translator, filename, language, filter, translate
         if (t.identifier, language) in translator.language_translates:
             continue
         identifier = t.identifier.replace('.', '_')
-        if (t.identifier, language) not in projz_translator:
+        if (t.identifier, str_lang) not in projz_translator:
             if hasattr(t, "alternate"):
                 # skip translated texts in rpy files
                 if (t.alternate, language) in translator.language_translates:
                     continue
                 identifier = t.alternate
-                if (identifier, language) not in projz_translator:
+                if (identifier, str_lang) not in projz_translator:
                     missing_count += 1
                     if translated_only:
                         continue
@@ -479,8 +484,8 @@ def generate_translation(projz_translator, filename, language, filter, translate
         for n in block:
             f.write(u"    # " + n.get_code() + "\n")
 
-        if not say_only and (identifier, language) in projz_translator:
-            for i, n in enumerate(projz_translator[(identifier, language)]['block']):
+        if not say_only and (identifier, str_lang) in projz_translator:
+            for i, n in enumerate(projz_translator[(identifier, str_lang)]['block']):
                 if 'Say' not in n['type']:
                     new_code = n.get('new_code', n.get('code', None))
                     if new_code is not None:
@@ -496,7 +501,7 @@ def generate_translation(projz_translator, filename, language, filter, translate
         else:
             for i, n in enumerate(block):
                 if is_say_statement(n):
-                    new_text = get_say_text(projz_translator.get((identifier, language), None))
+                    new_text = get_say_text(projz_translator.get((identifier, str_lang), None))
                     if new_text is not None:
                         n.what = new_text
 
@@ -521,11 +526,9 @@ def generate_string_translation(projz_translator, language, filter, min_priority
     """
     global proj_args
     if language == "None":
-        nullable_language = None
         stl = renpy.game.script.translator.strings[None]  # @UndefinedVariable
     else:
         stl = renpy.game.script.translator.strings[language]  # @UndefinedVariable
-        nullable_language = language
 
     # If this function changes, count_missing may also need to
     # change.
@@ -549,7 +552,7 @@ def generate_string_translation(projz_translator, language, filter, min_priority
         if s.text in stl.translations:
             continue
         # Unseen.
-        if (s.text, nullable_language) not in projz_translator:
+        if (s.text, language) not in projz_translator:
             missing_count += 1
             if translated_only:
                 continue
@@ -569,7 +572,7 @@ def generate_string_translation(projz_translator, language, filter, min_priority
 
         for s in sl:
             old, new, _ = get_string_info(s, filter)
-            new_text = get_string_text(projz_translator.get((old, nullable_language), None))
+            new_text = get_string_text(projz_translator.get((old, language), None))
             if new_text is not None:
                 usage_count += 1
             else:
