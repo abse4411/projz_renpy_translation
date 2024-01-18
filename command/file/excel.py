@@ -168,7 +168,8 @@ class DumpErrorExcelCmd(BaseLangIndexCmd):
         super().__init__('inspect', description)
         self.file_type = 'excel'
         self.file_ext = 'xlsx'
-        save_filename = os.path.join(self.config.project_path, self.file_type, f'nickname_tag.{self.file_ext}')
+        save_filename = os.path.join(self.config.project_path, self.file_type,
+                                     f'nickname_tag_lang_dump.{self.file_ext}')
         self._parser.add_argument("-f", "--file", required=False, type=str, metavar=f'{self.file_type}_file',
                                   help=f"The filename to save the generated {self.file_type} file."
                                        f" if not presented, it will save to {save_filename}.")
@@ -176,13 +177,13 @@ class DumpErrorExcelCmd(BaseLangIndexCmd):
     def check_savefile_and_index(self):
         save_file = self.args.file
         if save_file:
-            assert exists_file(save_file), f'{self.args.file} not found.'
             index = self.get_translation_index()
         else:
             save_dir = os.path.join(self.config.project_path, self.file_type)
             mkdir(save_dir)
             index = self.get_translation_index()
             save_file = os.path.join(save_dir, f'{index.nickname}_{index.tag}_{self.args.lang}_dump.{self.file_ext}')
+            save_file = os.path.abspath(save_file)
         return save_file, index
 
     @db_context

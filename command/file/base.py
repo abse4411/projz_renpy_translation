@@ -32,7 +32,7 @@ class SaveFileBaseCmd(BaseLangIndexCmd):
         super().__init__(name, description)
         self.file_type = file_type
         self.file_ext = file_ext
-        save_filename = os.path.join(self.config.project_path, file_type, f'nickname_tag.{file_ext}')
+        save_filename = os.path.join(self.config.project_path, file_type, f'nickname_tag_lang.{file_ext}')
         self._parser.add_argument("-f", "--file", required=False, type=str, metavar=f'{file_type}_file',
                                   help=f"The filename to save the generated {file_type} file."
                                        f" if not presented, it will save to {save_filename}.")
@@ -42,13 +42,13 @@ class SaveFileBaseCmd(BaseLangIndexCmd):
     def check_savefile_and_index(self):
         save_file = self.args.file
         if save_file:
-            assert exists_file(save_file), f'{self.args.file} not found.'
             index = self.get_translation_index()
         else:
             save_dir = os.path.join(self.config.project_path, self.file_type)
             mkdir(save_dir)
             index = self.get_translation_index()
             save_file = os.path.join(save_dir, f'{index.nickname}_{index.tag}_{self.args.lang}.{self.file_ext}')
+            save_file = os.path.abspath(save_file)
         return save_file, index
 
     @db_context
@@ -74,7 +74,7 @@ class DumpToFileBaseCmd(BaseLangIndexCmd):
         super().__init__(name, description)
         self.file_type = file_type
         self.file_ext = file_ext
-        save_filename = os.path.join(self.config.project_path, file_type, f'nickname_tag.{file_ext}')
+        save_filename = os.path.join(self.config.project_path, file_type, f'nickname_tag_lang_dump.{file_ext}')
         self._parser.add_argument("-f", "--file", required=False, type=str, metavar=f'{file_type}_file',
                                   help=f"The filename to save the generated {file_type} file."
                                        f" if not presented, it will save to {save_filename}.")
@@ -90,13 +90,13 @@ class DumpToFileBaseCmd(BaseLangIndexCmd):
     def check_savefile_and_index(self):
         save_file = self.args.file
         if save_file:
-            assert exists_file(save_file), f'{self.args.file} not found.'
             index = self.get_translation_index()
         else:
             save_dir = os.path.join(self.config.project_path, self.file_type)
             mkdir(save_dir)
             index = self.get_translation_index()
             save_file = os.path.join(save_dir, f'{index.nickname}_{index.tag}_{self.args.lang}_dump.{self.file_ext}')
+            save_file = os.path.abspath(save_file)
         return save_file, index
 
     @db_context
@@ -115,7 +115,7 @@ class LoadFileBaseCmd(BaseLangIndexCmd):
         super().__init__(name, description)
         self.file_type = file_type
         self.file_ext = file_ext
-        save_filename = os.path.join(self.config.project_path, file_type, f'nickname_tag.{file_ext}')
+        save_filename = os.path.join(self.config.project_path, file_type, f'nickname_tag_lang.{file_ext}')
         self._parser.add_argument("-f", "--file", required=False, type=str, metavar=f'{file_type}_file',
                                   help="The filename to load translated {file_type} file. if not presented, "
                                        f"we will read from {save_filename}.")
@@ -134,13 +134,13 @@ class LoadFileBaseCmd(BaseLangIndexCmd):
     def get_savefile_and_index(self):
         save_file = self.args.file
         if save_file:
-            assert exists_file(save_file), f'{self.args.file} not found.'
+            assert exists_file(save_file), f'{save_file} not found.'
             index = self.get_translation_index()
         else:
             save_dir = os.path.join(self.config.project_path, self.file_type)
             index = self.get_translation_index()
             save_file = os.path.join(save_dir, f'{index.nickname}_{index.tag}_{self.args.lang}.{self.file_ext}')
-            assert exists_file(save_file), f'{self.args.file} not found.'
+            assert exists_file(save_file), f'{save_file} not found.'
             print(f'Load {self.file_type} file from {save_file}')
         return save_file, index
 
@@ -166,7 +166,7 @@ class UpdateFromFileBaseCmd(BaseLangIndexCmd):
         super().__init__(name, description)
         self.file_type = file_type
         self.file_ext = file_ext
-        save_filename = os.path.join(self.config.project_path, file_type, f'nickname_tag.{file_ext}')
+        save_filename = os.path.join(self.config.project_path, file_type, f'nickname_tag_lang_dump.{file_ext}')
         self._parser.add_argument("-f", "--file", required=False, type=str, metavar=f'{file_type}_file',
                                   help="The filename to load translated {file_type} file. if not presented, "
                                        f"we will read from {save_filename}.")
@@ -186,13 +186,13 @@ class UpdateFromFileBaseCmd(BaseLangIndexCmd):
     def get_savefile_and_index(self):
         save_file = self.args.file
         if save_file:
-            assert exists_file(save_file), f'{self.args.file} not found.'
+            assert exists_file(save_file), f'{save_file} not found.'
             index = self.get_translation_index()
         else:
             save_dir = os.path.join(self.config.project_path, self.file_type)
             index = self.get_translation_index()
             save_file = os.path.join(save_dir, f'{index.nickname}_{index.tag}_{self.args.lang}_dump.{self.file_ext}')
-            assert exists_file(save_file), f'{self.args.file} not found.'
+            assert exists_file(save_file), f'{save_file} not found.'
             print(f'Load {self.file_type} file from {save_file}')
         return save_file, index
 
