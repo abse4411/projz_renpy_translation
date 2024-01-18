@@ -65,13 +65,18 @@ translate chinese scene_01_5f0ee2360:
 
 ## 1.启动(注意我们使用Python3.8的环境)
 
+安装python3.8后，使用pip安装依赖：
+```bash
+pip install -r requirements.txt
+```
+安装完后，启动主程序：
 ```bash
 python main.py
 ```
 
 ## 2.创建TranslationIndex
 
-启动后，控制台输入：
+启动主程序后，控制台输入：
 
 ```bash
 new D:\games\renpy_game_demo -n my_game
