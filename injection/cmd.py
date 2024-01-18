@@ -22,54 +22,27 @@ from injection import Project
 """
 
 
-def _add_count_arg(args: List[str]):
-    args.append('--count')
-
-
-def _add_generate_arg(args: List[str]):
-    args.append('--generate')
-
-
-def _add_sayonly_arg(args: List[str]):
-    args.append('--say-only')
-
-
-def _add_translatedonly_arg(args: List[str]):
-    args.append('--translated-only')
-
-
-def _add_language_arg(lang: str, args: List[str]):
-    args.append(f'--language {lang}')
-
-
-def _add_commononly_arg(args: List[str]):
-    args.append('--common-only')
-
-
-def _add_stringsonly_arg(args: List[str]):
-    args.append('--strings-only')
-
-
 def _get_base_args(lang: str = None, translated_only: bool = True, say_only: bool = False, strings_only: bool = False,
-                   common_only: bool = False, **kwargs):
+                   common_only: bool = False, ignore=None, **kwargs):
     args = []
     kwargs.pop('lang', None)
     kwargs.pop('translated_only', None)
     kwargs.pop('say_only', None)
     kwargs.pop('strings_only', None)
     kwargs.pop('common_only', None)
+    kwargs.pop('ignore', None)
     if lang:
-        _add_language_arg(lang, args)
+        args.append(f'--language {lang}')
     if translated_only:
-        _add_translatedonly_arg(args)
+        args.append('--translated-only')
     if say_only:
-        _add_sayonly_arg(args)
-    if translated_only:
-        _add_translatedonly_arg(args)
+        args.append('--say-only')
     if strings_only:
-        _add_stringsonly_arg(args)
+        args.append('--strings-only')
     if common_only:
-        _add_commononly_arg(args)
+        args.append('--common-only')
+    if ignore:
+        args.append(f'--ignore {" ".join(ignore)}')
     return args, kwargs
 
 
@@ -80,13 +53,13 @@ def get_translations(p: Project, payload: Any, lang: str, **kwargs):
 
 def generate_translations(p: Project, payload: Any, lang: str, **kwargs):
     args, kwargs = _get_base_args(lang, **kwargs)
-    _add_generate_arg(args)
+    args.append('--generate')
     return p.launch_task(payload, args=args, **kwargs)
 
 
 def count_translations(p: Project, payload: Any, lang: str, **kwargs):
     args, kwargs = _get_base_args(lang, **kwargs)
-    _add_count_arg(args)
+    args.append('--count')
     return p.launch_task(payload, args=args, **kwargs)
 
 

@@ -603,6 +603,7 @@ class TranslationIndex:
                 print(f'No translations of language {lang} in {tl_dir}')
                 return
         data, msg = _get_task_result(get_translations(self._project, None, lang,
+                                                      ignore=default_config['index']['ignore'],
                                                       translated_only=translated_only, say_only=say_only))
         dialogue_data = data['dialogues']
         string_data = data['strings']
@@ -649,7 +650,7 @@ class TranslationIndex:
         affected_files, msg = _get_task_result(generate_translations(self._project, {
             'dialogues': new_dialogue_data,
             'strings': new_string_data,
-        }, lang, translated_only=translated_only, say_only=say_only))
+        }, lang, translated_only=translated_only, say_only=say_only, ignore=default_config['index']['ignore']))
         if affected_files:
             print('We have written translations to these following files:')
             for f in affected_files:

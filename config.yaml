@@ -20,6 +20,8 @@ projz:
     strip_tag: False # This will reduce parsing errors when loading scripts
     write_cache_size: 2000 # large number of write operations will improves speed of read/write translations by reducing disk I/O.
     say_only: True # only import or export saystatements for dialogues
+    # Rpy files to ignore when import or generate. ['options.rpy', 'common.rpy', 'projz_i18n_inject.rpy', 'screens.rpy']
+    ignore: []
   renpy:
     # enable developer console, https://www.renpy.org/doc/html/developer_tools.html#shift-o-console
     developer_console: True

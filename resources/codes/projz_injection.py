@@ -271,6 +271,9 @@ def count_missing(language, filter, min_priority, max_priority, common_only, say
 
 def get_translation(filename, language, filter, translated_only, say_only):
     fn, common = shorten_filename(filename)
+    global proj_args
+    if fn in proj_args.ignore:
+        return []
 
     # The common directory should not have dialogue in it.
     if common:
@@ -352,6 +355,7 @@ def get_string_translation(language, filter, min_priority, max_priority, common_
     """
     get strings to a list
     """
+    global proj_args
     if language == "None":
         stl = renpy.game.script.translator.strings[None]  # @UndefinedVariable
     else:
@@ -378,6 +382,9 @@ def get_string_translation(language, filter, min_priority, max_priority, common_
 
         if language == "None" and tlfn == "common.rpy":
             tlfn = "common.rpym"
+
+        if tlfn in proj_args.ignore:
+            continue
 
         stringfiles[tlfn].append(s)
 
@@ -418,7 +425,9 @@ def get_say_text(t):
 
 def generate_translation(projz_translator, filename, language, filter, translated_only, say_only):
     fn, common = shorten_filename(filename)
-
+    global proj_args
+    if fn in proj_args.ignore:
+        return { }
     # The common directory should not have dialogue in it.
     if common:
         return { }
@@ -510,7 +519,7 @@ def generate_string_translation(projz_translator, language, filter, min_priority
     """
     Writes strings to the file.
     """
-
+    global proj_args
     if language == "None":
         nullable_language = None
         stl = renpy.game.script.translator.strings[None]  # @UndefinedVariable
@@ -534,6 +543,8 @@ def generate_string_translation(projz_translator, language, filter, min_priority
         if tlfn is None:
             continue
 
+        if tlfn in proj_args.ignore:
+            continue
         # Already seen.
         if s.text in stl.translations:
             continue
@@ -653,6 +664,7 @@ def projz_inject_command():
     ap.add_argument("--translated-only", help="Only search or write translated texts.",
                     dest="translated_only", action="store_true")
     ap.add_argument("--language", help="The language to generate translations for.", default="None")
+    ap.add_argument("--ignore", help="Ignore scan or generate for specified ryps.", nargs='*', default=[])
     ap.add_argument("--rot13", help="Apply rot13 while generating translations.", dest="rot13", action="store_true")
     ap.add_argument("--piglatin", help="Apply pig latin while generating translations.", dest="piglatin",
                     action="store_true")
