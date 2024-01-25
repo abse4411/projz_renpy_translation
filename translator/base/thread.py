@@ -22,11 +22,11 @@ from typing import List, Tuple
 
 import tqdm
 
-from config.base import ProjzConfig
+from config.base import ProjzConfig, default_config
 from .template import TranslatorTemplate
 from util import yes
 
-_MAX_WORKERS = 10
+_MAX_WORKERS = default_config['translator']['max_workers']
 
 
 class _translator_counter(TranslatorTemplate):
@@ -191,7 +191,8 @@ class ConcurrentTranslatorTemplate(TranslatorTemplate):
         global _MAX_WORKERS
         parser.add_argument('--limit', type=int, default=-1,
                             help='The max number of lines to be translated. Negative values mean no limit.')
-        parser.add_argument('-nw', '--num_workers', type=int, default=1, choices=range(1, _MAX_WORKERS),
+        parser.add_argument('-nw', '--num_workers', type=int, default=1,
+                            choices=range(1, _MAX_WORKERS+1),
                             help='The number of web translator instances to use. Larger value can improve the'
                                  'translation speed but use more resources (of CPU and Memory).')
 

@@ -3,9 +3,9 @@ projz:
   tmp_path: './projz/tmp' # path to save tmp file when launching a task
   translator:
     # It has a higher priority than index.write_cache_size when running translation cmd
-    write_cache_size: 200 # The number of lines translated by the translator to cache before writing to disc
+    write_cache_size: 200 # The number of lines translated by the translator to cache before writing to disk
+    max_workers: 10 # Max number of threads for ConcurrentTranslatorTemplate
     web:
-      test: 1
       chrome_driver_path: 'D:\Users\Surface Book2\Downloads\chromedriver_win32\chromedriver.exe'
     ai:
       # available models: 'm2m100', 'mbart50', 'nllb200'
