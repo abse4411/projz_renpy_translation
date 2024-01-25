@@ -113,7 +113,7 @@ Note that: Translation Stats list translated/untranslated lines of dialogue and 
 
 ## 3.导入一个语言的翻译
 
-启动后，控制台输入：
+接着，控制台输入：
 
 ```bash
 import my_game -l schinese
@@ -214,7 +214,7 @@ schinese: dialogue translation: using 856 and missing 84, string translation: us
 
 ## 5.注入我们的I18N插件
 
-在此之前，请手动下载字体文件到`resources/fonts`文件下，下载连接可以在`resources/fonts/readme.txt`找到，
+在此之前，请手动下载字体文件到`resources/fonts`文件下，下载链接可以在`resources/fonts/readme.txt`找到，
 下载完后`resources/fonts`如下内容(请注意字体的版权问题)：
 
 ```text
@@ -336,7 +336,7 @@ except Exception as e:
 
 try:
     # 您可使用try-except语句导入您的翻译API，这样做可以让用户即使没有安装相应的python库也能正常运行程序。
-    # 否则，一旦用户没有相应的python库，将无法运行main.py
+    # 否则，一旦用户没有安装需要的python库，将无法运行main.py
     import translator.ai
 except Exception as e:
     print(f'error: {e}')
