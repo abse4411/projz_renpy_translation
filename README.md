@@ -249,7 +249,7 @@ launch 1
 ```
 
 打开游戏后使用Ctrl+I打开该I18N插件，或者在游戏的设置界面找到名为`I18n settings`的按钮
-(按钮的注入需要将screens.rpy文件注入我们的按钮，因此需要把screens.rpyc转为screens.rpy)：
+(按钮的注入需要在screens.rpy文件中添加I18N按钮代码，因此需要把screens.rpyc转为screens.rpy)：
 ![i18n_button.png](imgs/i18n_button.png)
 ![i18n.png](imgs/i18n.png)
 ![i18n.png](imgs/i18n_1.png)
