@@ -58,10 +58,10 @@ class CachedTranslatorTemplate(TranslatorTemplate):
     def do_init(self, args, config: ProjzConfig):
         super().do_init(args, config)
         cache_size = config['translator']['write_cache_size']
-        if cache_size < 10:
+        if cache_size < 100:
             logging.warning(f'Low write_cache_size({cache_size}) means more frequent disk I/O operations,'
                             f' it may cause a high system load.')
-        self._cache_size = max(cache_size, 10)
+        self._cache_size = max(cache_size, 100)
 
     def invoke(self, tids_and_text: List[Tuple[str, str]], update_func):
         texts = [t[1] for t in tids_and_text]

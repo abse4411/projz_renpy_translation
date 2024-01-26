@@ -22,11 +22,9 @@ from typing import List, Tuple
 
 import tqdm
 
-from config.base import ProjzConfig, default_config
+from config.base import ProjzConfig
 from .template import TranslatorTemplate
 from util import yes
-
-_MAX_WORKERS = default_config['translator']['max_workers']
 
 
 class _translator_counter(TranslatorTemplate):
@@ -143,7 +141,7 @@ class TranslationTaskRunner:
         self._sem = threading.BoundedSemaphore(true_num_worker)
         self._wait_flag = self._wait_for_init
         self._stop_flag = False
-        executor = ThreadPoolExecutor(max_workers=_MAX_WORKERS)
+        executor = ThreadPoolExecutor(max_workers=self._num_workers)
         for b in batches:
             if self._wait_for_init:
                 self._sem.acquire()
@@ -188,20 +186,17 @@ class ConcurrentTranslatorTemplate(TranslatorTemplate):
 
     def register_args(self, parser: ArgumentParser):
         super().register_args(parser)
-        global _MAX_WORKERS
         parser.add_argument('--limit', type=int, default=-1,
                             help='The max number of lines to be translated. Negative values mean no limit.')
         parser.add_argument('-nw', '--num_workers', type=int, default=1,
-                            choices=range(1, _MAX_WORKERS+1),
                             help='The number of web translator instances to use. Larger value can improve the'
                                  'translation speed but use more resources (of CPU and Memory).')
 
     def do_init(self, args, config: ProjzConfig):
         super().do_init(args, config)
-        global _MAX_WORKERS
-        super().do_init(args, config)
+        max_workers = config['translator']['max_workers']
         assert args.num_workers >= 1, 'The min value of --num_workers should be greater than 0!'
-        assert args.num_workers <= _MAX_WORKERS, f'The --num_workers should be not greater that {_MAX_WORKERS}'
+        assert args.num_workers <= max_workers, f'The --num_workers should be not greater that {max_workers}'
         self._taskrunner = None
 
     def create_taskrunner(self, template_cls, count_on_batch: bool,
