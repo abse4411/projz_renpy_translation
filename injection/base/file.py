@@ -18,7 +18,7 @@ import os
 import shutil
 
 from injection.base import BaseInjector
-from util import exists_file, file_name_ext, file_dir, file_name
+from util import exists_file, file_dir, file_name, exists_dir
 
 
 class FileInjector(BaseInjector):
@@ -62,14 +62,15 @@ class PyFileInjector(BaseInjector):
                 os.remove(pyo_file)
             pycache_dir = os.path.join(file_dir(filename), '__pycache__')
             true_name = file_name(filename)
-            items = os.listdir(pycache_dir)
-            for i in items:
-                names = i.split('.')
-                if names[0] == true_name and names[-1] == 'pyc':
-                    pyc = os.path.join(pycache_dir, i)
-                    logging.info(f'Deleting pyc file: {pyc}')
-                    os.remove(pyc)
-                    break
+            if exists_dir(pycache_dir):
+                items = os.listdir(pycache_dir)
+                for i in items:
+                    names = i.split('.')
+                    if names and names[0] == true_name and names[-1] == 'pyc':
+                        pyc = os.path.join(pycache_dir, i)
+                        logging.info(f'Deleting pyc file: {pyc}')
+                        os.remove(pyc)
+                        break
         return True
 
 

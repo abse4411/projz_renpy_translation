@@ -94,15 +94,10 @@ class ProjzCmdInjection(BaseInjector):
         self.fi = PyFileInjector(source_filename=r'resources/codes/projz_injection.py', target_filename=injection_py)
 
     def __call__(self):
-        done = try_running(try_fn=lambda: self.pyi()) and try_running(try_fn=lambda: self.fi())
-        if not done:
-            # # rollback
-            # self.undo()
-            return False
-        return True
+        return self.pyi() and self.fi()
 
     def undo(self):
-        return try_running(try_fn=lambda: self.pyi.undo()) and try_running(try_fn=lambda: self.fi.undo())
+        return self.pyi.undo() and self.fi.undo()
 
 
 def _list_tl_names(project_path: str):
@@ -219,7 +214,7 @@ screen preferences():
         else:
             done = False
             for rpyi in self.rpyis:
-                res = try_running(try_fn=lambda: rpyi())
+                res = rpyi()
                 if res:
                     done = True
                     break
@@ -235,31 +230,21 @@ screen preferences():
                         .replace("{projz_lang_content}", lang_content)
                         .replace("{projz_shortcut_key}", self.shortcut_key)
                         .replace("{projz_font_content}", font_content))
-        done = False
-        try:
-            # write injection rpy
-            with default_write(self.injection_rpy) as f:
-                f.write(rpy_template)
-            done = True
-        except Exception as e:
-            logging.exception(e)
-        if done:
-            mkdir(self.font_dir)
-            # copy fonts into game/proj_fonts
-            done = try_running(try_fn=lambda: all([f() for f in self.fis]))
-            if done:
-                return True
-        # # rollback
-        # self.undo()
-        return False
+        # write injection rpy
+        with default_write(self.injection_rpy) as f:
+            f.write(rpy_template)
+        mkdir(self.font_dir)
+        # copy fonts into game/proj_fonts
+        done = all([f() for f in self.fis])
+        return done
 
     def undo(self):
         res = True
         for rpyi in self.rpyis:
-            res = res and try_running(try_fn=lambda: rpyi.undo())
+            res = res and rpyi.undo()
         if exists_dir(self.font_dir):
             for f in self.fis:
-                res = res and try_running(try_fn=lambda: f.undo())
-            res = res and try_running(try_fn=lambda: self.inpyi.undo())
+                res = res and f.undo()
+            res = res and self.inpyi.undo()
             try_running(try_fn=lambda: os.rmdir(self.font_dir), return_try=False)
         return res
