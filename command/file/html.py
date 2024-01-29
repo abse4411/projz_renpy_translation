@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import re
-from typing import Dict
+from typing import Dict, List, Tuple
 
 from command.file.base import SaveFileBaseCmd, LoadFileBaseCmd
 from store import TranslationIndex
@@ -44,16 +44,13 @@ class SaveHtmlCmd(SaveFileBaseCmd):
     def __init__(self):
         super().__init__('savehtml', 'html', 'html')
 
-    def invoke(self):
-        save_file, index, tids_and_texts = self.check_untranslated_lines()
-        if tids_and_texts:
-            div_arr = []
-            for tid, raw_text in tids_and_texts:
-                div_arr.append(DIV_TEMPLATE.format(id=tid, text=raw_text))
-            save_html = HTML_TEMPLATE.format(filler=''.join(div_arr))
-            with default_write(save_file) as f:
-                f.write(save_html)
-            print(f'{len(div_arr)} untranslated lines are saved to {save_file}.')
+    def save(self, save_file: str, index: TranslationIndex, tids_and_texts: List[Tuple[str, str]]):
+        div_arr = []
+        for tid, raw_text in tids_and_texts:
+            div_arr.append(DIV_TEMPLATE.format(id=tid, text=raw_text))
+        save_html = HTML_TEMPLATE.format(filler=''.join(div_arr))
+        with default_write(save_file) as f:
+            f.write(save_html)
 
 
 class LoadHtmlCmd(LoadFileBaseCmd):

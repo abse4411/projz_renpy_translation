@@ -15,7 +15,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import os
 from collections import defaultdict
-from typing import Dict, List
+from typing import Dict, List, Tuple, Any
 
 import pandas as pd
 from pandas import ExcelWriter
@@ -37,20 +37,17 @@ class SaveExcelCmd(SaveFileBaseCmd):
     def __init__(self):
         super().__init__('saveexcel', 'excel', 'xlsx')
 
-    def invoke(self):
-        save_file, index, tids_and_texts = self.check_untranslated_lines()
-        if tids_and_texts:
-            global COL_NAMES, TID_STR, RAW_TEXT_STR
-            excel_id_data = []
-            excel_nt_data = []
-            for tid, raw_text in tids_and_texts:
-                excel_id_data.append(tid)
-                excel_nt_data.append(raw_text)
-            df = pd.DataFrame({TID_STR: excel_id_data,
-                               RAW_TEXT_STR: excel_nt_data})
-            df = df.reindex(columns=COL_NAMES)
-            df.to_excel(save_file, index=False)
-            print(f'{len(excel_id_data)} untranslated lines are saved to {save_file}.')
+    def save(self, save_file: str, index: TranslationIndex, tids_and_texts: List[Tuple[str, str]]):
+        global COL_NAMES, TID_STR, RAW_TEXT_STR
+        excel_id_data = []
+        excel_nt_data = []
+        for tid, raw_text in tids_and_texts:
+            excel_id_data.append(tid)
+            excel_nt_data.append(raw_text)
+        df = pd.DataFrame({TID_STR: excel_id_data,
+                           RAW_TEXT_STR: excel_nt_data})
+        df = df.reindex(columns=COL_NAMES)
+        df.to_excel(save_file, index=False)
 
 
 class LoadExcelCmd(LoadFileBaseCmd):
@@ -115,47 +112,41 @@ class DumpExcelCmd(DumpToFileBaseCmd):
         self._parser.add_argument("--single", action='store_true',
                                   help="Dump all data in a single sheet.")
 
-    def invoke(self):
-        save_file, index, sorted_data = self.get_dump_data()
-        if sorted_data:
-            cnt = 0
-            # we should remove path separators of filename when using filename as sheet name
-            if self.args.group_by == 'filename':
-                ryp_files = set(list(sorted_data.keys()))
-                lcp = longest_common_prefix(list(ryp_files))
-                new_sorted_data = dict()
-                for f in sorted_data.keys():
-                    if len(lcp) >= len(f):
-                        short_name = file_name(f)
-                    else:
-                        short_name = f[len(lcp):]
-                    # replace invalid character (/, :) by the underline:
-                    short_name = (short_name
-                                  .replace('/', '_')
-                                  .replace('\\', '_')
-                                  .replace(':', '_'))
-                    new_sorted_data[short_name] = sorted_data[f]
-                sorted_data = new_sorted_data
-            global _COLS
-            with ExcelWriter(save_file) as writer:
-                if self.args.single:
-                    new_data = []
-                    for file, data in tqdm.tqdm(sorted_data.items(), total=len(sorted_data),
-                                                desc='Collecting data...'):
-                        new_data += data
-                        cnt += len(data)
-                    df = pd.DataFrame(gather_by_keys(new_data, _COLS))
-                    df = df.reindex(columns=_COLS)
-                    print('Writing to excel...')
-                    df.to_excel(writer, index=False)
+    def dump(self, save_file: str, index: TranslationIndex, sorted_data: Dict[Any, List[Dict]]):
+        # we should remove path separators of filename when using filename as sheet name
+        if self.args.group_by == 'filename':
+            ryp_files = set(list(sorted_data.keys()))
+            lcp = longest_common_prefix(list(ryp_files))
+            new_sorted_data = dict()
+            for f in sorted_data.keys():
+                if len(lcp) >= len(f):
+                    short_name = file_name(f)
                 else:
-                    for file, data in tqdm.tqdm(sorted_data.items(), total=len(sorted_data),
-                                                desc='Writing to excel...'):
-                        df = pd.DataFrame(gather_by_keys(data, _COLS))
-                        df = df.reindex(columns=_COLS)
-                        cnt += len(df)
-                        df.to_excel(writer, sheet_name=file.strip(), index=False)
-            print(f'{cnt} translations are dump to {save_file}.')
+                    short_name = f[len(lcp):]
+                # replace invalid character (/, :) by the underline:
+                short_name = (short_name
+                              .replace('/', '_')
+                              .replace('\\', '_')
+                              .replace(':', '_'))
+                new_sorted_data[short_name] = sorted_data[f]
+            sorted_data = new_sorted_data
+        global _COLS
+        with ExcelWriter(save_file) as writer:
+            if self.args.single:
+                new_data = []
+                for file, data in tqdm.tqdm(sorted_data.items(), total=len(sorted_data),
+                                            desc='Collecting data...'):
+                    new_data += data
+                df = pd.DataFrame(gather_by_keys(new_data, _COLS))
+                df = df.reindex(columns=_COLS)
+                print('Writing to excel...')
+                df.to_excel(writer, index=False)
+            else:
+                for file, data in tqdm.tqdm(sorted_data.items(), total=len(sorted_data),
+                                            desc='Writing to excel...'):
+                    df = pd.DataFrame(gather_by_keys(data, _COLS))
+                    df = df.reindex(columns=_COLS)
+                    df.to_excel(writer, sheet_name=file.strip(), index=False)
 
 
 class DumpErrorExcelCmd(BaseLangIndexCmd):

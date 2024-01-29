@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import json
-from typing import Dict
+from typing import Dict, List, Tuple
 
 from command.file.base import SaveFileBaseCmd, LoadFileBaseCmd
 from store import TranslationIndex
@@ -25,18 +25,15 @@ class SaveJsonCmd(SaveFileBaseCmd):
     def __init__(self):
         super().__init__('savejson', 'json', 'json')
 
-    def invoke(self):
-        save_file, index, tids_and_texts = self.check_untranslated_lines()
-        if tids_and_texts:
-            json_arr = []
-            for tid, raw_text in tids_and_texts:
-                json_arr.append({
-                    'tid': tid,
-                    'raw_text': raw_text,
-                })
-            with default_write(save_file) as f:
-                json.dump(json_arr, f, ensure_ascii=False, indent=2)
-            print(f'{len(json_arr)} untranslated lines are saved to {save_file}.')
+    def save(self, save_file: str, index: TranslationIndex, tids_and_texts: List[Tuple[str, str]]):
+        json_arr = []
+        for tid, raw_text in tids_and_texts:
+            json_arr.append({
+                'tid': tid,
+                'raw_text': raw_text,
+            })
+        with default_write(save_file) as f:
+            json.dump(json_arr, f, ensure_ascii=False, indent=2)
 
 
 class LoadJsonCmd(LoadFileBaseCmd):

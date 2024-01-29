@@ -259,7 +259,7 @@ class TranslationIndex:
             string_data = dao.list_by_lang(slang)
         return dialogue_data, string_data
 
-    def get_translated_lines(self, lang: str, say_only=True, source_code=False):
+    def get_translated_lines(self, lang: str, say_only=True, source_code=False, not_modify: bool = False):
         res = []
         lang = strip_or_none(lang)
         if lang is None:
@@ -268,12 +268,26 @@ class TranslationIndex:
         if len(dialogue_data) == 0 and len(string_data) == 0:
             print(f'No translated lines of language {lang}')
             return res
+
+        strip_tag = default_config['index']['strip_tag']
+
+        if not_modify:
+            def _strip_fn(text):
+                return text
+        else:
+            def _strip_fn(text):
+                if strip_tag and text:
+                    tags = list_tags(text)
+                    for tag, _ in tags.items():
+                        text = text.replace(tag, '')
+                return text
+
         for v in dialogue_data:
             for i, b in enumerate(v['block']):
                 if b['new_code'] is not None:
                     if self._is_say_block(b):
                         res.append([self._encode_tid(self.DIALOGUE_ID_PREFIX, i, v.doc_id),
-                                    to_translatable_text(b['new_code'])])
+                                    _strip_fn(to_translatable_text(b['new_code']))])
                     else:
                         if not say_only:
                             if source_code:
@@ -281,12 +295,12 @@ class TranslationIndex:
                             else:
                                 _, old_text = self._get_userblock_text(b)
                             res.append([self._encode_tid(self.DIALOGUE_ID_PREFIX, i, v.doc_id),
-                                        to_translatable_text(old_text)])
+                                        _strip_fn(to_translatable_text(old_text))])
         for v in string_data:
             for i, b in enumerate(v['block']):
                 if b['new_code'] is not None:
                     res.append([self._encode_tid(self.STRING_ID_PREFIX, i, v.doc_id),
-                                to_translatable_text(b['new_code'])])
+                                _strip_fn(to_translatable_text(b['new_code']))])
         return res
 
     @db_context
@@ -322,7 +336,7 @@ class TranslationIndex:
                 self._stats['string'][target_name] = old_stats
             self._update({'stats': self._stats})
 
-    def get_untranslated_lines(self, lang: str, say_only=True, source_code=False):
+    def get_untranslated_lines(self, lang: str, say_only=True, source_code=False, not_modify: bool = False):
         res = []
         lang = strip_or_none(lang)
         if lang is None:
@@ -334,12 +348,16 @@ class TranslationIndex:
 
         strip_tag = default_config['index']['strip_tag']
 
-        def _strip_fn(text):
-            if strip_tag and text:
-                tags = list_tags(text)
-                for tag, _ in tags.items():
-                    text = text.replace(tag, '')
-            return text
+        if not_modify:
+            def _strip_fn(text):
+                return text
+        else:
+            def _strip_fn(text):
+                if strip_tag and text:
+                    tags = list_tags(text)
+                    for tag, _ in tags.items():
+                        text = text.replace(tag, '')
+                return text
 
         for v in dialogue_data:
             for i, b in enumerate(v['block']):

@@ -54,12 +54,11 @@ def group_translations_by(field_name: str, sorted_by: str, scope: str, index: Tr
         res.update(vi)
         if res['filename'].startswith('renpy/common'):
             res['filename'] = 'common.rpy'
-        if TranslationIndex._is_say_block(b):
+        res['new_text'] = to_translatable_text(res['new_code'])
+        if TranslationIndex._is_say_block(b) or res['what'] is not None:
             res['old_text'] = to_translatable_text(res['what'])
-            res['new_text'] = to_translatable_text(res['new_code'])
         else:
-            res['old_text'] = res['code']
-            res['new_text'] = res['new_code']
+            res['old_text'] = to_translatable_text(res['code'])
         # we pop items that may confuse the user
         res.pop('new_code')
         res.pop('who')
