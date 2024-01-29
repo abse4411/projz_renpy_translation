@@ -127,7 +127,7 @@ class DumpToFileBaseCmd(FileBaseCmd):
         save_file, index, sorted_data = self.get_dump_data()
         if sorted_data:
             self.dump(save_file, index, sorted_data)
-            print(f'{len(sorted_data)} translations are dump to {save_file}.')
+            print(f'{sum([len(i) for i in sorted_data.values()])} translations are dump to {save_file}.')
 
 
 class LoadFileBaseCmd(FileBaseCmd):

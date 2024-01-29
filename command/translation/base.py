@@ -13,15 +13,13 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-import copy
 
-from command import BaseIndexCmd, BaseLangIndexCmd
+from command import BaseLangIndexCmd
 from config import default_config
 from store import TranslationIndex
 
 _TRANSLATOR = dict()
 
-_say_only = default_config.say_only
 
 def register(name: str, translator):
     assert name not in _TRANSLATOR, f'The {name} translator has already registered!'
@@ -118,6 +116,7 @@ class TranslateCmd(BaseLangIndexCmd):
                                         continue
                     print(f'Find {use_cnt} translated lines, and discord {len(tlist) - use_cnt} lines')
                     index.update_translations(self.args.lang, new_tlist,
-                                              untranslated_only=True, discord_blank=accept_blank, say_only=self.config.say_only)
+                                              untranslated_only=True, discord_blank=accept_blank,
+                                              say_only=self.config.say_only)
 
             self._translator.invoke(tids_and_texts, _update)
