@@ -20,14 +20,13 @@ from prettytable import PrettyTable
 
 from command import BaseCmd, BaseLangIndexCmd
 from command.base import BaseIndexCmd
-from config import default_config
 from injection import Project
 from injection.cmd import lang_project
 from injection.default import RENPY_GAME_DIR, RENPY_TL_DIR
 from store import TranslationIndex
+from store.database.base import db_context
 from util import walk_and_select
 
-_say_only = default_config.say_only
 
 class NewTranslationIndexCmd(BaseCmd):
     def __init__(self):
@@ -54,7 +53,8 @@ class ImportTranslationCmd(BaseLangIndexCmd):
                                        "listed in ryp files in you_game/game/tl/{lang} dir.")
 
     def invoke(self):
-        self.get_translation_index().import_translations(self.args.lang, self.args.translated_only, say_only=_say_only)
+        self.get_translation_index().import_translations(self.args.lang, self.args.translated_only,
+                                                         say_only=self.config.say_only)
 
 
 class GenerateTranslationCmd(BaseLangIndexCmd):
@@ -76,7 +76,7 @@ class GenerateTranslationCmd(BaseLangIndexCmd):
             for r in rpy_files:
                 print(f'Deleting {r}')
                 os.remove(r)
-        index.export_translations(self.args.lang, not self.args.all, say_only=_say_only)
+        index.export_translations(self.args.lang, not self.args.all, say_only=self.config.say_only)
 
 
 class CountTranslationCmd(BaseLangIndexCmd):
@@ -137,6 +137,7 @@ class InjectionCmd(BaseIndexCmd):
             text = 'foo --list'
         super().parse_args(text)
 
+    @db_context
     def invoke(self):
         if self.args.list:
             _print_injection_types()

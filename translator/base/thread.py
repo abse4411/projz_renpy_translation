@@ -78,7 +78,6 @@ class TranslationTaskRunner:
             self._lock.acquire()
             self._update_func(tids_and_text)
         except Exception as e:
-            print(f'error: {e}')
             logging.exception(e)
         finally:
             self._lock.release()
@@ -92,7 +91,6 @@ class TranslationTaskRunner:
             print(f'[{tid}] Initing the web translator.')
             translator.do_init(self._args, self._config)
         except Exception as e:
-            print(f'[{tid}] Error: {e}.')
             logging.exception(e)
             if translator is not None:
                 translator.close()
@@ -107,7 +105,6 @@ class TranslationTaskRunner:
         try:
             counter.invoke(tids_and_text, self._inner_update)
         except Exception as e:
-            print(f'[{tid}] Error: {e}.')
             logging.exception(e)
             translator.close()
 

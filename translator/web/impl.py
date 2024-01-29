@@ -62,7 +62,6 @@ class BaseChromeTranslator(BaseWebTranslator):
             if self._browser:
                 self._browser.quit()
         except Exception as e:
-            print(f'error: {e}')
             logging.exception(e)
 
     def set_input(self, rawtext):

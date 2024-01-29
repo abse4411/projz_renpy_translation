@@ -15,12 +15,13 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import logging
 import threading
+from typing import Iterable, Union, Callable, Mapping, Tuple, List
 
-from tinydb import TinyDB, JSONStorage
+from tinydb import TinyDB, JSONStorage, Storage
 from tinydb.middlewares import CachingMiddleware
+from tinydb.table import Table
 
 from config import default_config
-from store.database.table import ProjzTable
 
 _DB_POOL = dict()
 _CONTEXT_CNT = 0
@@ -134,20 +135,10 @@ def db_context(func):
     return wrapper
 
 
-# use our table impl. to support update_multiple_by_id
-TinyDB.table_class = ProjzTable
-
-
 class BaseDao:
     def __init__(self, db_file: str):
         self.db_file = db_file
         self.db = None
-        cache_size = default_config.write_cache_size
-        if cache_size < 10:
-            logging.warning(f'Low write_cache_size({cache_size}) means more frequent disk I/O operations,'
-                            f' it may cause a high system load.')
-            cache_size = max(cache_size, 50)
-        CachingMiddleware.WRITE_CACHE_SIZE = cache_size
 
     def __enter__(self):
         # Using a CachingMiddleware to improves speed by reducing disk I/O
@@ -157,3 +148,67 @@ class BaseDao:
     def __exit__(self, exc_type, exc_val, exc_tb):
         _release(self.db_file)
         return False
+
+
+class ProjzTable(Table):
+    def __init__(self, storage: Storage, name: str):
+        super().__init__(storage, name)
+
+    def update_multiple_by_id(
+            self,
+            updates: Iterable[
+                Tuple[Union[Mapping, Callable[[Mapping], None]], int]
+            ],
+    ) -> List[int]:
+        """
+        Update all matching documents to have a given set of fields.
+
+        :returns: a list containing the updated document's ID
+        """
+
+        # Define the function that will perform the update
+        def perform_update(fields, table, doc_id):
+            if callable(fields):
+                # Update documents by calling the update function provided
+                # by the user
+                fields(table[doc_id])
+            else:
+                # Update documents by setting all fields from the provided
+                # data
+                table[doc_id].update(fields)
+
+        # Perform the update operation for documents specified by a query
+
+        # Collect affected doc_ids
+        updated_ids = []
+
+        def updater(table: dict):
+            # We need to convert the keys iterator to a list because
+            # we may remove entries from the ``table`` dict during
+            # iteration and doing this without the list conversion would
+            # result in an exception (RuntimeError: dictionary changed size
+            # during iteration)
+            for fields, doc_id in updates:
+                if doc_id in table:
+                    # Add ID to list of updated documents
+                    updated_ids.append(doc_id)
+
+                    # Perform the update (see above)
+                    perform_update(fields, table, doc_id)
+
+        # Perform the update operation (see _update_table for details)
+        self._update_table(updater)
+
+        return updated_ids
+
+
+# use our table impl. to support update_multiple_by_id
+TinyDB.table_class = ProjzTable
+
+# cache_size for CachingMiddleware in tinydb
+_cache_size = default_config.write_cache_size
+if _cache_size < 100:
+    logging.warning(f'Low write_cache_size({_cache_size}) means more frequent disk I/O operations,'
+                    f' it may cause a high system load.')
+    cache_size = max(_cache_size, 100)
+CachingMiddleware.WRITE_CACHE_SIZE = _cache_size

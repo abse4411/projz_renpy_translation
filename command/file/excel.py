@@ -21,19 +21,17 @@ import pandas as pd
 from pandas import ExcelWriter
 import tqdm
 
-from command import BaseIndexCmd, BaseLangIndexCmd
-from command.file.base import SaveFileBaseCmd, LoadFileBaseCmd, DumpToFileBaseCmd, ALL_FIELDS, UpdateFromFileBaseCmd
-from config import default_config
+from command import BaseLangIndexCmd
+from command.file.base import SaveFileBaseCmd, LoadFileBaseCmd, DumpToFileBaseCmd, UpdateFromFileBaseCmd
 from store import TranslationIndex
 from store.database.base import db_context
 from store.inspect import detect_missing_vars_and_tags, PRESENT_FIELDS
-from util import file_name, exists_file, mkdir
+from util import file_name, mkdir
 
 TID_STR = 'Translation id (Don\'t modify)'
 RAW_TEXT_STR = 'Raw Text'
 COL_NAMES = [TID_STR, RAW_TEXT_STR]
 
-_say_only = default_config.say_only
 
 class SaveExcelCmd(SaveFileBaseCmd):
     def __init__(self):
@@ -189,7 +187,7 @@ class DumpErrorExcelCmd(BaseLangIndexCmd):
     @db_context
     def invoke(self):
         save_file, index = self.check_savefile_and_index()
-        error_translations = detect_missing_vars_and_tags(index, self.args.lang, say_only=_say_only)
+        error_translations = detect_missing_vars_and_tags(index, self.args.lang, say_only=self.config.say_only)
         if error_translations:
             new_cols = ['tid', 'new_text', 'raw_text', 'message', 'identifier', 'filename', 'linenumber']
             excel_data = gather_by_keys(error_translations, PRESENT_FIELDS)

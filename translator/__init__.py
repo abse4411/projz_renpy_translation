@@ -19,10 +19,8 @@ import translator.base
 try:
     import translator.web
 except Exception as e:
-    print(f'error: {e}')
     logging.exception(e)
 try:
     import translator.ai
 except Exception as e:
-    print(f'error: {e}')
     logging.exception(e)

@@ -46,22 +46,18 @@ class UndoOnFailedCallInjector(BaseInjector):
         try:
             done = self.injector(*args, **kwargs)
         except Exception as e:
-            print(f'error: {e}')
             logging.exception(e)
             done = False
         if not done:
             try:
                 self.injector.undo()
             except Exception as e:
-                print(f'error: {e}')
                 logging.exception(e)
-                pass
         return done
 
     def undo(self, *args, **kwargs):
         try:
             return self.injector.undo(*args, **kwargs)
         except Exception as e:
-            print(f'error: {e}')
             logging.exception(e)
             return False

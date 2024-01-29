@@ -13,6 +13,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
+import logging
 import os
 import time
 from argparse import ArgumentParser
@@ -100,7 +101,7 @@ class DlTranslator(CachedTranslatorTemplate):
                         self._target = ava_langs[t]
                         return True
                     except Exception as e:
-                        print(f'error: {e}')
+                        logging.exception(e)
 
     def do_init(self, args, config: ProjzConfig):
         super().do_init(args, config)

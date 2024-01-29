@@ -60,7 +60,6 @@ def main():
                 try:
                     execute_cmd(cmd_name, ' '.join(args[1:]))
                 except Exception as e:
-                    print(f'error: {e}')
                     logging.exception(e)
             else:
                 print(
@@ -68,7 +67,10 @@ def main():
     pass
 
 
-# package cmd: pyinstaller -i imgs/proz_icon.ico -F main.py --copy-metadata tqdm --copy-metadata regex --copy-metadata requests --copy-metadata packaging --copy-metadata filelock --copy-metadata numpy --copy-metadata tokenizers --copy-metadata huggingface-hub --copy-metadata safetensors --copy-metadata accelerate --copy-metadata pyyaml --copy-metadata sentencepiece
+# package cmd: pyinstaller -i imgs/proz_icon.ico -F main.py --copy-metadata tqdm --copy-metadata regex \
+# --copy-metadata requests --copy-metadata packaging --copy-metadata filelock --copy-metadata numpy \
+# --copy-metadata tokenizers --copy-metadata huggingface-hub --copy-metadata safetensors --copy-metadata accelerate \
+# --copy-metadata pyyaml --copy-metadata sentencepiece
 if __name__ == '__main__':
     import log  # enable logging
     main()
