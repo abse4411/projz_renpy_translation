@@ -294,6 +294,8 @@ class TranslationIndex:
                                 old_text = b['code']
                             else:
                                 _, old_text = self._get_userblock_text(b)
+                            if old_text is None:
+                                continue
                             res.append([self._encode_tid(self.DIALOGUE_ID_PREFIX, i, v.doc_id),
                                         _strip_fn(to_translatable_text(old_text))])
         for v in string_data:
