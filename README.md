@@ -192,6 +192,19 @@ Note that: Translation Stats list translated/untranslated lines of dialogue and 
 +-------+---------------+-----------------------------------------+------------------+-----------------------------------------------------+
 ```
 
+> **⏱支持翻译命令速度最快的是？**<br />
+> 一般来讲，翻译速度排名（从快到慢），依次是：
+> 
+> 1.saveexcel和loadexcel（半自动化）：使用Google Translate手动上传excel文件，并覆盖原始文件后导入
+> 
+> 2.savehtml和loadexcel（半自动化）：使用Microsoft Edge或Chrome的网页翻译功能（需要手动滚动网页），并覆盖原始文件后导入
+> 
+> 3.Web翻译（自动化）：translate 1 -t web -n google -lang chinese, 利用自动化工具自动输入文本到翻译网站的输入框，并自动提取翻译结果
+> 
+> 4.AI翻译（自动化）: translate 1 -t ai -n mbart50 -lang chinese, 需要消耗GPU资源
+> 
+> 各个翻译命令的翻译文本质量目前无法评估。
+
 ## 4.生成翻译rpy
 
 然后使用`generate`命令来生成翻译rpy文件到游戏：
@@ -314,7 +327,7 @@ class DlTranslator(CachedTranslatorTemplate):
 
     def translate_batch(self, texts: List[str]):
         # 如果您的API支持批量翻译，您可以实现该方法。注意返回翻译结果的list长度应该和传入texts的长度一致。
-        # 如果没有实现该方法，则会循环调用translate方法。
+        # 如果没有实现该方法，基类实现默认会循环调用translate方法。
         return self.mt.translate(texts, self._source, self._source, batch_size=self._batch_size, verbose=True)
 
 # 将您的翻译API注册到translate命令
