@@ -146,19 +146,21 @@ class TranslationIndex:
 
     @staticmethod
     def _get_userblock_text(block):
-        arr = block['parsed']
-        for i, text in enumerate(arr):
-            if len(text) > 1 and ((text[0] == '"' and text[-1] == '"') or
-                                  (text[0] == '\'' and text[-1] == '\'')):
-                return i, text[1:-1]
+        arr = block.get('parsed', None)
+        if arr:
+            for i, text in enumerate(arr):
+                if len(text) > 1 and ((text[0] == '"' and text[-1] == '"') or
+                                      (text[0] == '\'' and text[-1] == '\'')):
+                    return i, text[1:-1]
         return -1, None
 
     @staticmethod
     def _to_userblock_text(block, new_text):
         idx, res = TranslationIndex._get_userblock_text(block)
-        arr = block['parsed']
-        if res is not None:
-            return block['code'].replace(arr[idx], f'"{new_text}"', 1)
+        if res:
+            arr = block['parsed']
+            if res is not None:
+                return block['code'].replace(arr[idx], f'"{new_text}"', 1)
         return None
 
     @staticmethod
