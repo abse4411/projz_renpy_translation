@@ -34,8 +34,8 @@ PYTHON_WIN64_EXE = [
     'py3-windows-x86_64/pythonw.exe',
 ]
 PYTHON_WIN32_EXE = [
-    'windows-x86_64/python.exe',
-    'windows-x86_64/pythonw.exe',
+    'windows-i686/python.exe',
+    'windows-i686/pythonw.exe',
     'py2-windows-i686/python.exe',
     'py2-windows-i686/pythonw.exe',
     'py3-windows-i686/python.exe',
