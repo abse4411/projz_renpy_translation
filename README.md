@@ -40,9 +40,7 @@ translate chinese scene_01_5f0ee2360:
 
 现在正在开发中,🚨注意🚨该版本不兼容V0.4.0之前的数据，要使用旧版本请到[这里](https://github.com/abse4411/projz_renpy_translation/tree/9e257770e9b30011b1053da28634c41d958d0fc5)。
 
-# 📈进度
-
-## 已完成：
+# 新增功能：
 
 - [Web翻译](#使用web翻译)，仅限google: translate 1 -t web -n google -lang chinese 
 - [AI翻译](#使用AI翻译): translate 1 -t ai -n mbart50 -lang chinese 
@@ -50,9 +48,6 @@ translate chinese scene_01_5f0ee2360:
   使用`inspect`命令检查已翻译文本中缺失的变量名(如[var])或者样式化标签(如{font})或者转义字符: inspect 1 -l chinese。
   在生成的excel文件完成修复后，使用`updateexcel`命令导入修复的文本：updateexcel 1 -l chinese
 
-## 待完成
-
-- 一些其他命令
 
 # 🛫快速开始
 
