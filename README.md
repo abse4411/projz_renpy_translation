@@ -6,10 +6,10 @@
 [![](https://img.shields.io/badge/license-GPLv3-blue)](https://github.com/abse4411/projz_renpy_translation/blob/devp/LICENSE)
 
 [📘文档（Chinese only）](#快速开始) |
-[🛠安装](README_old.md#运行环境准备) |
+[🛠安装](#1启动注意我们使用python38的环境) |
 [💡建议](https://github.com/abse4411/projz_renpy_translation/issues)
 
-简体中文 | [English (N/A)](README_old.md#帮助我们翻译help-us-translate-the-documentation)
+简体中文 | [English (N/A)](#)
 
 </div>
 
@@ -20,11 +20,12 @@
 - 以项目为单位管理RenPy游戏各种语言翻译文本
 - 使用免费翻译资源翻译文本
 - 翻译文本中潜在错误检查，例如变量，样式标签，转义字符等
-- 提供I18n插件注入，为游戏提供语言和字体修改界面
+- 提供I18n插件注入，为游戏提供语言和字体修改的插件
+- 支持实现自定义的翻译接口，见[自定义翻译接口](#自定义翻译api)
 
 本工具要求您熟悉一定RenPy翻译流程，通过合理利用此工具可以实现快速翻译，并节省大量资源和时间。
 
-对于带有voice语句翻译也是支持的，不过程序默认行为只提取文本语句。
+对于带有voice语句翻译也是支持的，不过程序默认行为只提取Say语句:`a "translated text"`。
 ```python
 # game/script_21_1320.rpy:8
 translate chinese scene_01_5f0ee2360:
@@ -37,22 +38,14 @@ translate chinese scene_01_5f0ee2360:
 对于上述翻译rpy，只会提取到`a "translated text"`。
 如果想要提取`voice "path/to/file"`请设置[config.yaml](config.yaml)中的index.say_only为False
 
-# ✨新版本V0.4.0
-
-该版本可以支持以下功能：
-- 无需RenPy SDK即可生成rpy翻译文件，和原生体验类似
-- 可以检测和发现rpy文件中的错误
-- 实现游戏注入，可以为RenPy游戏提供语言和字体管理菜单，支持实时生效
-- 更简洁，规范的代码，支持实现自定义的翻译接口
-
 现在正在开发中,🚨注意🚨该版本不兼容V0.4.0之前的数据，要使用旧版本请到[这里](https://github.com/abse4411/projz_renpy_translation/tree/9e257770e9b30011b1053da28634c41d958d0fc5)。
 
 # 📈进度
 
 ## 已完成：
 
-- Web翻译，仅限google: translate 1 -t web -n google -lang chinese
-- AI翻译: translate 1 -t ai -n mbart50 -lang chinese
+- [Web翻译](#使用web翻译)，仅限google: translate 1 -t web -n google -lang chinese 
+- [AI翻译](#使用AI翻译): translate 1 -t ai -n mbart50 -lang chinese 
 - 翻译文本潜在错误检查:
   使用`inspect`命令检查已翻译文本中缺失的变量名(如[var])或者样式化标签(如{font})或者转义字符: inspect 1 -l chinese。
   在生成的excel文件完成修复后，使用`updateexcel`命令导入修复的文本：updateexcel 1 -l chinese
@@ -145,9 +138,7 @@ Note that: Translation Stats list translated/untranslated lines of dialogue and 
 
 为方便这里使用`savehtml`和`loadhtml`命令进行快速翻译。
 Web翻译和AI翻译可用，请查看[帮助](#命令帮助)
-，或者参考以前版本的说明：[Web翻译](README_old.md#4使用翻译引擎翻译剩余的文本), [AI翻译](README_old.md#使用dltranslate命令进行ai翻译)。
-`saveexcel`, `loadexcel`
-命令查看：[使用saveexcel和loadexcel⚡快速⚡翻译](README_old.md#使用saveexcel和loadexcel快速翻译)
+，或者使用其他翻译命令：[Web翻译](#使用web翻译), [AI翻译](#使用AI翻译)，[使用saveexcel和loadexcel⚡快速⚡翻译](#使用saveexcel和loadexcel快速翻译)
 
 现在我们用`savehtml`和`loadhtml`命令来翻译：
 
@@ -163,7 +154,7 @@ sh 1 -l schinese
 
 然后使用Chrome或者Microsoft
 Edge打开它，右键菜单翻译为指定语言后，Ctrl+S保存该html文件并覆盖原始的`my_game_None_schinese.html`。
-这个详细步骤参考[使用savehtml和loadhtml⚡快速⚡翻译（浏览器自带网页翻译）](README_old.md#使用savehtml和loadhtml快速翻译浏览器自带网页翻译)
+这个详细步骤参考[使用savehtml和loadhtml⚡快速⚡翻译（浏览器自带网页翻译）](#使用savehtml和loadhtml快速翻译)
 
 然后使用`loadhtml`命令导入翻译：
 
@@ -199,9 +190,9 @@ Note that: Translation Stats list translated/untranslated lines of dialogue and 
 > 
 > 2.savehtml和loadexcel（半自动化）：使用Microsoft Edge或Chrome的网页翻译功能（需要手动滚动网页），并覆盖原始文件后导入
 > 
-> 3.Web翻译（自动化）：translate 1 -t web -n google -lang chinese, 利用自动化工具自动输入文本到翻译网站的输入框，并自动提取翻译结果
+> 3.Web翻译（自动化）：translate 1 -t web -n google -lang chinese 利用自动化工具自动输入文本到翻译网站的输入框，并自动提取翻译结果
 > 
-> 4.AI翻译（自动化）: translate 1 -t ai -n mbart50 -lang chinese, 需要消耗GPU资源
+> 4.AI翻译（自动化）: translate 1 -t ai -n mbart50 -lang chinese 利用深度网络模型翻译，需要消耗GPU资源
 > 
 > 各个翻译命令的翻译文本质量目前无法评估。
 
@@ -285,6 +276,145 @@ new -h
 
 > **🍻最后🍻**<br />
 > 我们欢迎你集成您的翻译实现到我们的项目中，或者帮助我们翻译文档页面。
+
+## 其他说明
+1. 如果你想导入和导出过程忽略某些rpy文件的翻译，请在[config.yaml](config.yaml)中设置`index.ignore`。
+2. [config.yaml](config.yaml)把`translator.ai.chrome_driver_path`设置为空，则会自动下载模型到本地
+
+---
+## 使用`saveexcel`和`loadexcel`⚡快速⚡翻译
+使用`saveexcel`和`loadexcel`命令，导出未翻译文本为excel文件，然后借助Google翻译上传excel文件进行翻译，翻译完成覆盖原始excel文件，来实现快速的翻译。
+  
+### 使用步骤：
+1. 使用`saveexcel {project} -l {lang}`命令，导出未翻译文本为excel文件，然后然后打开Google翻译（任何支持excel文档翻译的网站）使用文档翻译功能，上传该excel文件：![](./imgs/google_excel.png)
+2. 等待翻译完成，下载翻译好的excel并覆盖原始的excel文件：
+
+    ![](./imgs/google_excel_done.png)
+
+3. 使用`loadexcel {project} -l {lang}`命令，把翻译过的excel文件导入TranslationIndex。
+
+> **😕翻译网站不支持文件excel文件？**<br />
+> 您可以把excel文件内容粘贴到doc文件中，再上传doc文件进行翻译。当翻译完成后，把doc文件内翻译的内容重新覆盖原始excel文件即可。
+---
+
+## 使用`savehtml`和`loadhtml`⚡快速⚡翻译
+使用`savehtml`和`loadhtml`命令，导出未翻译文本为html文件，然后借助Microsoft Edge或Chrome浏览器自带的翻译网页功能，并保存覆盖原始html文件，来实现快速的翻译。
+  
+### 使用步骤：
+1. 使用`savehtml {project} -l {lang}`命令，导出未翻译文本为html文件，然后Microsoft Edge或Chrome打开它。
+2. 在网页种右键，使用翻译网页功能，或者在地址栏右边找到翻译网页按钮：
+
+    ![](imgs/trans_menu.png)
+    ![](imgs/trans_edge.png)
+
+3. 滚动网页让所有文本都翻译完毕， 然后`Ctrl + S` 保存文件，并覆盖原始的html文件。
+4. 使用`loadhtml {project} -l {lang}`命令，把翻译过的html文件导入TranslationIndex。
+---
+## 使用Web翻译
+### 安装Chrome driver
+下载并安装[Chrome浏览器](https://www.google.com/chrome/)。安装完成后，进入：设置->关于Chrome，找到您的Chrome版本，前往以下链接下载对应的chrome driver：
+* [Chrome版本116.x.xxxx.xxx以下](https://registry.npmmirror.com/binary.html?path=chromedriver/) 
+* [Chrome版本116.x.xxxx.xxx或更高🆕](https://googlechromelabs.github.io/chrome-for-testing/#stable)
+
+下载针对含有"win"字样的chrome driver(win64/win32取决于您的Windows系统处理器架构，一般是win64），并解压到自定义目录下。 在[config.yaml](config.yaml)中的`translator.web.chrome_driver_path`配置您的`chrome driver`文件路径：
+```text
+projz:
+  translator:
+    web:
+      chrome_driver_path: 'D:\Users\Surface Book2\Downloads\chromedriver_win32\chromedriver.exe'
+```
+  
+### 开始使用
+1. 输入`translate {project} -t web -n google -lang {lang}`命令
+2. 等待浏览器启动完成并显示网页后，手动设置您的翻译目标：![](imgs/chrome_set.png)
+3. 等待控制台出现输入提示后，在输入`Y`或`y`在进行下一步操作（输入其他则退出），程序开始自动翻译。
+---
+## 使用AI翻译
+  
+### 安装符合条件的pytorch（可选）
+如果您想使用CPU进行AI翻译可以跳过此步骤，否则按以下步骤来安装GPU（英伟达显卡，显存建议大于4GB）支持pytorch环境：
+1. 打开命令提示符，使用以下命令查看您的CUDA版本：
+    ```bash
+    nvidia-smi
+    ```
+    一般它将输出如下信息：
+    ```text
+    +-----------------------------------------------------------------------------+
+    | NVIDIA-SMI 517.48       Driver Version: 517.48       CUDA Version: 11.7     |
+    |-------------------------------+----------------------+----------------------+
+    | GPU  Name            TCC/WDDM | Bus-Id        Disp.A | Volatile Uncorr. ECC |
+    | Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+    |                               |                      |               MIG M. |
+    |===============================+======================+======================|
+    |   0  NVIDIA GeForce ... WDDM  | 00000000:02:00.0 Off |                  N/A |
+    | N/A   33C    P0    21W /  N/A |      0MiB /  6144MiB |      1%      Default |
+    |                               |                      |                  N/A |
+    +-------------------------------+----------------------+----------------------+
+    
+    +-----------------------------------------------------------------------------+
+    | Processes:                                                                  |
+    |  GPU   GI   CI        PID   Type   Process name                  GPU Memory |
+    |        ID   ID                                                   Usage      |
+    |=============================================================================|
+    |  No running processes found                                                 |
+    +-----------------------------------------------------------------------------+
+    ```
+    我们可以看到现在的CUDA版本为: 11.7(如果您的CUDA版本也是11.7，且使用了`pip install -r requirements.txt`成功地安装我们的环境，那么可以跳过以下步骤，因为`requirements.txt`中的指定的pytorch版本就是它)
+2. 为了确保安装指定版本的Pytorch，在安装新版本前使用以下命令卸载旧版本Pytorch和transformers库：
+    ```bash
+    pip uninstall torch torchaudio torchvision transformers
+    ```
+    然后接着前往[Pytorch官网](https://pytorch.org)找到对应CUDA的Pytorch版本，打开控制台按照指令安装。如果没有发现相关的CUDA版本可以在[此链接](https://pytorch.org/get-started/previous-versions/)找到旧的CUDA支持的Pytorch版本。例如，以下是我找到关于CUDA11.7的Pytorch安装信息：
+      ```bash
+    # For Linux and Windows
+    # ROCM 5.4.2 (Linux only)
+    pip install torch==2.0.1+rocm5.4.2 torchvision==0.15.2+rocm5.4.2 torchaudio==2.0.2 --index-url https://download.pytorch.org/whl/rocm5.4.2
+    # CUDA 11.7
+    pip install torch==2.0.1+cu117 torchvision==0.15.2+cu117 torchaudio==2.0.2 --index-url https://download.pytorch.org/whl/cu117
+    # CUDA 11.8
+    pip install torch==2.0.1+cu118 torchvision==0.15.2+cu118 torchaudio==2.0.2 --index-url https://download.pytorch.org/whl/cu118
+    # CPU only
+    pip install torch==2.0.1+cpu torchvision==0.15.2+cpu torchaudio==2.0.2 --index-url https://download.pytorch.org/whl/cpu
+    ```
+3. 完成上一步后，重新安装合适的transformers库：
+    ```bash
+    pip install transformers
+    ```
+  
+### 准备模型
+如果您的电脑访问[huggingface](https://huggingface.co/),可以把[config.yaml](config.yaml)中的`translator.web.chrome_driver_path`设置为空：
+```yaml
+projz:
+  translator:
+    ai:
+      model_path: ''
+```
+然后跳到`开始使用`步骤即可。
+如果您访问不了该网站，或在使用时遇到下面的问题：
+![dlt_downloaderror.png](imgs/dlt_downloaderror.png)
+或者想指定模型保存的位置（一般模一个型大小2GB医以上），请按以下步骤进行：
+1. 假设您的保存模型目录为：`'D:\BaiduNetdiskDownload\New36\save_models'`，可用模型下载地址如下：
+   - m2m100：https://huggingface.co/facebook/m2m100_418M/tree/main
+   - mbart50：https://huggingface.co/facebook/mbart-large-50-many-to-many-mmt/tree/main
+   - nllb200：https://huggingface.co/facebook/nllb-200-distilled-600M/tree/main
+
+2. 选择一个模型，在模型`D:\BaiduNetdiskDownload\New36\save_models`目录下建立一个和模型同名文件夹，如`m2m100`，`mbart50`，`nllb200`，然后把所有文件下(除了`rust_model.ot`)载到对应模型文件夹下，例如：`D:\BaiduNetdiskDownload\New36\save_models\m2m100`：
+
+    ![dlt_downloadmodel.png](imgs/dlt_downloadmodel.png)
+
+3. 等文件都下载完后在[config.yaml](config.yaml)中设置模型的下载目录：
+    ```yaml
+    projz:
+      translator:
+        ai:
+          model_path: 'D:\BaiduNetdiskDownload\New36\save_models'
+    ```
+### 开始使用
+1. 输入`translate {project} -t ai -n {model_name} -lang {lang} -b 4`命令，`-n`指定使用的模型，可选的模型有：`m2m100`，`mbart50`，`nllb200`，这里我们选择`m2m100`。`-b`可以指定模型的batch size，其表示模型的一次翻译迭代中的的文本数量，越大的batch size消耗越多的显存，因此可以根据您的显存大小决定。
+2. 设置翻译目标，例如您想从英语(English)翻译到中文(Chinese)，分别输入英语和中文对应索引号就行，例如：19 109：
+    ![dlt_settarget.png](imgs%2Fdlt_settarget.png)
+3. 完成以上步骤，程序会开始自动翻译。
+---
 
 # 💪自定义翻译API
 如果想要实现自己的翻译API非常简单，在[translator](translator)文件夹下新建一个py文件，然后继承CachedTranslatorTemplate类：

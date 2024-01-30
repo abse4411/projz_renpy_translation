@@ -9,7 +9,7 @@ projz:
       chrome_driver_path: 'D:\Users\Surface Book2\Downloads\chromedriver_win32\chromedriver.exe'
     ai:
       # available models: 'm2m100', 'mbart50', 'nllb200'
-      model_path: 'D:\BaiduNetdiskDownload\New36\save_models'
+      model_path: ''
   log:
     enable: False # enable logging
     console: True # log to console
