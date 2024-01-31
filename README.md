@@ -274,7 +274,7 @@ new -h
 
 ## 其他说明
 1. 如果你想导入和导出过程忽略某些rpy文件的翻译，请在[config.yaml](config.yaml)中设置`index.ignore`。
-2. [config.yaml](config.yaml)把`translator.ai.chrome_driver_path`设置为空，则会自动下载模型到本地
+2. 在[config.yaml](config.yaml)中把`translator.ai.chrome_driver_path`设置为空，则会自动下载模型到本地
 
 ---
 ## 使用`saveexcel`和`loadexcel`⚡快速⚡翻译
@@ -387,7 +387,7 @@ projz:
 然后跳到`开始使用`步骤即可。
 如果您访问不了该网站，或在使用时遇到下面的问题：
 ![dlt_downloaderror.png](imgs/dlt_downloaderror.png)
-或者想指定模型保存的位置（一般模一个型大小2GB医以上），请按以下步骤进行：
+或者想指定模型保存的位置（一般模一个型大小2GB以上），请按以下步骤进行：
 1. 假设您的保存模型目录为：`'D:\BaiduNetdiskDownload\New36\save_models'`，可用模型下载地址如下：
    - m2m100：https://huggingface.co/facebook/m2m100_418M/tree/main
    - mbart50：https://huggingface.co/facebook/mbart-large-50-many-to-many-mmt/tree/main
@@ -412,7 +412,7 @@ projz:
 ---
 
 # 💪自定义翻译API
-如果想要实现自己的翻译API非常简单，在[translator](translator)文件夹下新建一个py文件，然后继承CachedTranslatorTemplate类：
+如果想要实现自己的翻译API非常简单，在[translator](translator)文件夹下新建一个py文件，然后继承CachedTranslatorTemplate类（该类实现翻译缓存机制，当翻译文本达到一定数量后就写入到TranslationIndex，可在config.yaml中配置translator.write_cache_size来自定义缓存大小）：
 ```python
 from argparse import ArgumentParser
 from translator.base import CachedTranslatorTemplate
@@ -453,6 +453,8 @@ class DlTranslator(CachedTranslatorTemplate):
     def translate_batch(self, texts: List[str]):
         # 如果您的API支持批量翻译，您可以实现该方法。注意返回翻译结果的list长度应该和传入texts的长度一致。
         # 如果没有实现该方法，基类实现默认会循环调用translate方法。
+        # CachedTranslatorTemplate每调用一次translate_batch后，就把翻译后的文本写入到TranslationIndex
+        # texts最大长度取决于config.yaml中的translator.write_cache_size配置的大小
         return self.mt.translate(texts, self._source, self._source, batch_size=self._batch_size, verbose=True)
 
 # 将您的翻译API注册到translate命令
