@@ -67,11 +67,12 @@ python main.py
 启动主程序后，控制台输入：
 
 ```bash
-new D:\games\renpy_game_demo -n my_game
+n D:\games\renpy_game_demo -n my_game
 ```
 
 - `D:\games\renpy_game_demo` 是您的RenPy游戏根目录。
-- `-n my_game`是可选的，指定TranslationIndex的别名，因此您可以使用别名代替序号。
+- `-n my_game`是可选的，您可以指定该TranslationIndex的别名，因此您可以使用别名代替序号。
+- `n`是`new`命令的缩写，我们为常用命令定义了命令缩写，您可以输入`help -u`命令打印所有命令的详细信息（包括它们的缩写）
 
 > **🚨注意🚨**<br />
 > 在运行该命令前，请确保游戏中所有rpa文件被解压(使用[rpatool](https://github.com/Shizmob/rpatool)或
@@ -104,14 +105,14 @@ Note that: Translation Stats list translated/untranslated lines of dialogue and 
 接着，控制台输入：
 
 ```bash
-import my_game -l schinese
+i my_game -l schinese
 ```
 
-- `my_game` 指定导入的TranslationIndex的别名，也可以用索引：1
+- `my_game` 指定要导入翻译的TranslationIndex的别名（Nickname），也可以用索引（Index）：1
 - `-l schinese` 创建一个名为`schinese`的翻译，
 - 这会读取`D:\games\renpy_game_demo\game\tl\schinese`的已经翻译和未翻译的文本
 
-输入`ls`命令查看我们创建的翻译：
+输入`ls`命令查看我们导入的翻译结果：
 
 ```bash
 ls
@@ -196,7 +197,7 @@ Note that: Translation Stats list translated/untranslated lines of dialogue and 
 然后使用`generate`命令来生成翻译rpy文件到游戏：
 
 ```bash
-generate 1 -l schinese
+g 1 -l schinese
 ```
 
 输出类似：
@@ -226,7 +227,7 @@ projz_renpy-translator/
 使用`inject`命令注入我们提供的I18N插件，其支持修改语言和字体：
 
 ```bash
-inject 1 -t I18n
+ij 1 -t I18n
 ```
 
 输入`ls`命令查看注入结果，输出类似：
@@ -281,12 +282,12 @@ new -h
 使用`saveexcel`和`loadexcel`命令，导出未翻译文本为excel文件，然后借助Google翻译上传excel文件进行翻译，翻译完成覆盖原始excel文件，来实现快速的翻译。
   
 ### 使用步骤：
-1. 使用`saveexcel {project} -l {lang}`命令，导出未翻译文本为excel文件，然后然后打开Google翻译（任何支持excel文档翻译的网站）使用文档翻译功能，上传该excel文件：![](./imgs/google_excel.png)
+1. 使用`se {project} -l {lang}`命令，导出未翻译文本为excel文件，然后然后打开Google翻译（任何支持excel文档翻译的网站）使用文档翻译功能，上传该excel文件：![](./imgs/google_excel.png)
 2. 等待翻译完成，下载翻译好的excel并覆盖原始的excel文件：
 
     ![](./imgs/google_excel_done.png)
 
-3. 使用`loadexcel {project} -l {lang}`命令，把翻译过的excel文件导入TranslationIndex。
+3. 使用`le {project} -l {lang}`命令，把翻译过的excel文件导入TranslationIndex。
 
 > **😕翻译网站不支持文件excel文件？**<br />
 > 您可以把excel文件内容粘贴到doc文件中，再上传doc文件进行翻译。当翻译完成后，把doc文件内翻译的内容重新覆盖原始excel文件即可。
@@ -296,14 +297,14 @@ new -h
 使用`savehtml`和`loadhtml`命令，导出未翻译文本为html文件，然后借助Microsoft Edge或Chrome浏览器自带的翻译网页功能，并保存覆盖原始html文件，来实现快速的翻译。
   
 ### 使用步骤：
-1. 使用`savehtml {project} -l {lang}`命令，导出未翻译文本为html文件，然后Microsoft Edge或Chrome打开它。
+1. 使用`sh {project} -l {lang}`命令，导出未翻译文本为html文件，然后Microsoft Edge或Chrome打开它。
 2. 在网页种右键，使用翻译网页功能，或者在地址栏右边找到翻译网页按钮：
 
     ![](imgs/trans_menu.png)
     ![](imgs/trans_edge.png)
 
 3. 滚动网页让所有文本都翻译完毕， 然后`Ctrl + S` 保存文件，并覆盖原始的html文件。
-4. 使用`loadhtml {project} -l {lang}`命令，把翻译过的html文件导入TranslationIndex。
+4. 使用`lh {project} -l {lang}`命令，把翻译过的html文件导入TranslationIndex。
 ---
 ## 使用Web翻译
 ### 安装Chrome driver
@@ -320,7 +321,7 @@ projz:
 ```
   
 ### 开始使用
-1. 输入`translate {project} -t web -n google -lang {lang}`命令
+1. 输入`t {project} -t web -n google -lang {lang}`命令
 2. 等待浏览器启动完成并显示网页后，手动设置您的翻译目标：![](imgs/chrome_set.png)
 3. 等待控制台出现输入提示后，在输入`Y`或`y`在进行下一步操作（输入其他则退出），程序开始自动翻译。
 ---
@@ -405,7 +406,7 @@ projz:
           model_path: 'D:\BaiduNetdiskDownload\New36\save_models'
     ```
 ### 开始使用
-1. 输入`translate {project} -t ai -n {model_name} -lang {lang} -b 4`命令，`-n`指定使用的模型，可选的模型有：`m2m100`，`mbart50`，`nllb200`，这里我们选择`m2m100`。`-b`可以指定模型的batch size，其表示模型的一次翻译迭代中的的文本数量，越大的batch size消耗越多的显存，因此可以根据您的显存大小决定。
+1. 输入`t {project} -t ai -n {model_name} -lang {lang} -b 4`命令，`-n`指定使用的模型，可选的模型有：`m2m100`，`mbart50`，`nllb200`，这里我们选择`m2m100`。`-b`可以指定模型的batch size，其表示模型的一次翻译迭代中的的文本数量，越大的batch size消耗越多的显存，因此可以根据您的显存大小决定。
 2. 设置翻译目标，例如您想从英语(English)翻译到中文(Chinese)，分别输入英语和中文对应索引号就行，例如：19 109：
     ![dlt_settarget.png](imgs%2Fdlt_settarget.png)
 3. 完成以上步骤，程序会开始自动翻译。
