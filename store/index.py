@@ -31,29 +31,6 @@ from util import exists_dir, strip_or_none, assert_not_blank, strip_linebreakers
 from util.renpy import list_tags
 
 
-def encode_sumid(index: int, n_len: int):
-    s1 = hex(index)[2:]
-    s2 = hex(n_len)[2:]
-    s3 = hex(index + n_len - len(s2))[-len(s2):]
-    s1 = '0' * (len(s2) - len(s1)) + s1
-    return s1 + s2 + s3
-
-
-def decode_sumid(id_str: str):
-    if id_str:
-        id_str = id_str.strip()
-        if id_str == '' or len(id_str) % 3 != 0:
-            return None, None
-    s_len = len(id_str) // 3
-    try:
-        index = int(id_str[:s_len], 16)
-        n_len = int(id_str[s_len:-s_len], 16)
-        s3 = id_str[-s_len:]
-        if hex(index + n_len - s_len)[-s_len:] == s3:
-            return index, n_len
-    except:
-        pass
-    return None, None
 
 
 def _get_task_result(res):
@@ -378,7 +355,7 @@ class TranslationIndex:
                             if old_text is None:
                                 continue
                             res.append([self._encode_tid(self.DIALOGUE_ID_PREFIX, i, v.doc_id),
-                                        _strip_fn(to_translatable_text(old_text))])
+                                        _strip_fn(old_text)])
         for v in string_data:
             for i, b in enumerate(v['block']):
                 if b['new_code'] is None:
@@ -589,7 +566,7 @@ class TranslationIndex:
                     if discord_blank and new_code.strip() == '':
                         continue
                     if self._is_user_block(block):
-                        new_code = self._to_userblock_text(block, to_string_text(new_code))
+                        new_code = self._to_userblock_text(block, new_code)
                         block['new_code'] = new_code
                     else:
                         block['new_code'] = to_string_text(new_code)

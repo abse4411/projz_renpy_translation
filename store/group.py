@@ -58,7 +58,7 @@ def group_translations_by(field_name: str, sorted_by: str, scope: str, index: Tr
         if TranslationIndex._is_say_block(b) or res['what'] is not None:
             res['old_text'] = to_translatable_text(res['what'])
         else:
-            res['old_text'] = to_translatable_text(res['code'])
+            res['old_text'] = res['code']
         # we pop items that may confuse the user
         res.pop('new_code')
         res.pop('who')
