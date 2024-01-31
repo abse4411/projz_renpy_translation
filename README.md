@@ -19,7 +19,7 @@
 - 无需RenPy SDK即可导入和导出翻译
 - 以项目为单位管理RenPy游戏各种语言翻译文本
 - 使用免费翻译资源翻译文本
-- 翻译文本中潜在错误检查，例如变量，样式标签，转义字符等
+- 翻译文本中潜在错误检查，例如变量，样式标签，转义字符等,见：[新增功能 3](#新增功能)
 - 提供I18n插件注入，为游戏提供语言和字体修改的插件
 - 支持实现自定义的翻译接口，见[自定义翻译接口](#自定义翻译api)
 
@@ -42,9 +42,9 @@ translate chinese scene_01_5f0ee2360:
 
 # 新增功能：
 
-- [Web翻译](#使用web翻译)，仅限google: translate 1 -t web -n google -lang chinese 
-- [AI翻译](#使用AI翻译): translate 1 -t ai -n mbart50 -lang chinese 
-- 翻译文本潜在错误检查:
+1. [Web翻译](#使用web翻译)，仅限google: translate 1 -t web -n google -lang chinese 
+2. [AI翻译](#使用AI翻译): translate 1 -t ai -n mbart50 -lang chinese 
+3. 翻译文本潜在错误检查:
   使用`inspect`命令检查已翻译文本中缺失的变量名(如[var])或者样式化标签(如{font})或者转义字符: inspect 1 -l chinese。
   在生成的excel文件完成修复后，使用`updateexcel`命令导入修复的文本：updateexcel 1 -l chinese
 

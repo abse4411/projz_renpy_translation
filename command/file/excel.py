@@ -21,12 +21,11 @@ import pandas as pd
 from pandas import ExcelWriter
 import tqdm
 
-from command import BaseLangIndexCmd
-from command.file.base import SaveFileBaseCmd, LoadFileBaseCmd, DumpToFileBaseCmd, UpdateFromFileBaseCmd
+from command.file.base import SaveFileBaseCmd, LoadFileBaseCmd, DumpToFileBaseCmd, UpdateFromFileBaseCmd, FileBaseCmd
 from store import TranslationIndex
 from store.database.base import db_context
 from store.inspect import detect_missing_vars_and_tags, PRESENT_FIELDS
-from util import file_name, mkdir
+from util import file_name
 
 TID_STR = 'Translation id (Don\'t modify)'
 RAW_TEXT_STR = 'Raw Text'
@@ -149,35 +148,21 @@ class DumpExcelCmd(DumpToFileBaseCmd):
                     df.to_excel(writer, sheet_name=file.strip(), index=False)
 
 
-class DumpErrorExcelCmd(BaseLangIndexCmd):
+class DumpErrorExcelCmd(FileBaseCmd):
     def __init__(self):
         description = f'Inspect each translated line to find missing vars or tags,\n' \
                       f'then save these error lines to a excel file. You can use the\n' \
                       f'updateexcel command to update translations after you fix them.'
-        super().__init__('inspect', description)
-        self.file_type = 'excel'
-        self.file_ext = 'xlsx'
+        super().__init__('inspect', description, 'excel', 'xlsx')
         save_filename = os.path.join(self.config.project_path, self.file_type,
                                      f'nickname_tag_lang_dump.{self.file_ext}')
         self._parser.add_argument("-f", "--file", required=False, type=str, metavar=f'{self.file_type}_file',
                                   help=f"The filename to save the generated {self.file_type} file."
                                        f" if not presented, it will save to {save_filename}.")
 
-    def check_savefile_and_index(self):
-        save_file = self.args.file
-        if save_file:
-            index = self.get_translation_index()
-        else:
-            save_dir = os.path.join(self.config.project_path, self.file_type)
-            mkdir(save_dir)
-            index = self.get_translation_index()
-            save_file = os.path.join(save_dir, f'{index.nickname}_{index.tag}_{self.args.lang}_dump.{self.file_ext}')
-            save_file = os.path.abspath(save_file)
-        return save_file, index
-
     @db_context
     def invoke(self):
-        save_file, index = self.check_savefile_and_index()
+        save_file, index = self.check_savefile_and_index("_dump")
         error_translations = detect_missing_vars_and_tags(index, self.args.lang, say_only=self.config.say_only)
         if error_translations:
             new_cols = ['tid', 'new_text', 'raw_text', 'message', 'identifier', 'filename', 'linenumber']
