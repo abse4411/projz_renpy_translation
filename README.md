@@ -13,7 +13,7 @@
 
 </div>
 
-# 开始之前
+# 👀开始之前
 
 注意，本工具并不是傻瓜式翻译工具，本工具主要用于管理多个RenPy游戏的翻译项目和机器翻译文本，主要功能如下：
 - 无需RenPy SDK即可导入和导出翻译
@@ -36,17 +36,17 @@ translate chinese scene_01_5f0ee2360:
     a "translated text"
 ```
 对于上述翻译rpy，只会提取到`a "translated text"`。
-如果想要提取`voice "path/to/file"`请设置[config.yaml](config.yaml)中的index.say_only为False
+如果想要提取`voice "path/to/file"`请设置[config.yaml](config.yaml)中的`index.say_only`为`False`。
 
 现在正在开发中,🚨注意🚨该版本不兼容V0.4.0之前的数据，要使用旧版本请到[这里](https://github.com/abse4411/projz_renpy_translation/tree/9e257770e9b30011b1053da28634c41d958d0fc5)。
 
-# 新增功能：
+# ✨新增功能：
 
-1. [Web翻译](#使用web翻译)，仅限google: translate 1 -t web -n google -lang chinese 
-2. [AI翻译](#使用AI翻译): translate 1 -t ai -n mbart50 -lang chinese 
+1. [Web翻译](#使用web翻译)，仅限google: `translate {project} -t web -n google -l {lang}`
+2. [AI翻译](#使用AI翻译): `translate {project} -t ai -n mbart50 -l {lang}`
 3. 翻译文本潜在错误检查:
-  使用`inspect`命令检查已翻译文本中缺失的变量名(如[var])或者样式化标签(如{font})或者转义字符: inspect 1 -l chinese。
-  在生成的excel文件完成修复后，使用`updateexcel`命令导入修复的文本：updateexcel 1 -l chinese
+  使用`inspect`命令检查已翻译文本中缺失的变量名(如[var])或者样式化标签(如{font})或者转义字符: `inspect {project} -l {lang}`。
+  在生成的excel文件完成修复后，使用`updateexcel`命令导入修复的文本：`updateexcel {project} -l {lang}`
 
 
 # 🛫快速开始
@@ -64,23 +64,21 @@ python main.py
 
 ## 2.创建TranslationIndex
 
-启动主程序后，控制台输入：
-
-```bash
-n D:\games\renpy_game_demo -n my_game
-```
-
-- `D:\games\renpy_game_demo` 是您的RenPy游戏根目录。
-- `-n my_game`是可选的，您可以指定该TranslationIndex的别名，因此您可以使用别名代替序号。
-- `n`是`new`命令的缩写，我们为常用命令定义了命令缩写，您可以输入`help -u`命令打印所有命令的详细信息（包括它们的缩写）
-
 > **🚨注意🚨**<br />
 > 在运行该命令前，请确保游戏中所有rpa文件被解压(使用[rpatool](https://github.com/Shizmob/rpatool)或
 [UnRPA](https://github.com/Lattyware/unrpa))，rpyc转为rpy文件(
 > 必须的，不然有些大部分rpy文件无法扫描，使用[unrpyc](https://github.com/CensoredUsername/unrpyc)工具)。
 > 或者使用这个集成unrpa和unrypc的工具：[UnRen](https://github.com/VepsrP/UnRen-Gideon-mod-)。
 
-确保以上事项，后输入`ls`命令查看我们创建的TranslationIndex：
+启动主程序后，控制台输入：
+```bash
+n D:\games\renpy_game_demo -n my_game
+```
+- `D:\games\renpy_game_demo` 是您的RenPy游戏根目录。
+- `-n my_game`是可选的，您可以指定该TranslationIndex的别名，因此您可以使用别名代替序号。
+- `n`是`new`命令的缩写，我们为常用命令定义了命令缩写，您可以输入`help -u`命令打印所有命令的详细信息（包括它们的缩写）
+
+然后输入`ls`命令查看我们创建的TranslationIndex：
 
 ```bash
 ls
@@ -97,7 +95,6 @@ Note that: Translation Stats list translated/untranslated lines of dialogue and 
 |       |               |                   |                  |                D:\games\renpy_game_demo             |
 +-------+---------------+-------------------+------------------+-----------------------------------------------------+
 ```
-
 注意`Injection state`中`Base   True`，这表示我们成功识别并注入该游戏。
 
 ## 3.导入一个语言的翻译
@@ -275,7 +272,9 @@ new -h
 
 ## 其他说明
 1. 如果你想导入和导出过程忽略某些rpy文件的翻译，请在[config.yaml](config.yaml)中设置`index.ignore`。
-2. 在[config.yaml](config.yaml)中把`translator.ai.chrome_driver_path`设置为空，则会自动下载模型到本地
+2. 在[config.yaml](config.yaml)中把`translator.ai.chrome_driver_path`设置为空，则会自动下载模型到本地。
+3. 您可以使用`de {project} -l {lang}`和`ue {project} -l {lang}`将指定TranslationIndex的数据（包括翻译和未翻译文本）分别导出到excel和从excel导入，这样您就可以修改已经翻译过的文本或者手动翻译某些文本。
+4. 如果您想在翻译前去除文本的样式标签（如{font}），请在[config.yaml](config.yaml)中把`index.strip_tag`设置为`True`。
 
 ---
 ## 使用`saveexcel`和`loadexcel`⚡快速⚡翻译
@@ -321,7 +320,7 @@ projz:
 ```
   
 ### 开始使用
-1. 输入`t {project} -t web -n google -lang {lang}`命令
+1. 输入`t {project} -t web -n google -l {lang}`命令
 2. 等待浏览器启动完成并显示网页后，手动设置您的翻译目标：![](imgs/chrome_set.png)
 3. 等待控制台出现输入提示后，在输入`Y`或`y`在进行下一步操作（输入其他则退出），程序开始自动翻译。
 ---
@@ -378,14 +377,15 @@ projz:
     ```
   
 ### 准备模型
-如果您的电脑访问[huggingface](https://huggingface.co/),可以把[config.yaml](config.yaml)中的`translator.web.chrome_driver_path`设置为空：
+如果您的电脑可以正常访问[huggingface](https://huggingface.co/),说明模型可以正常下载，这时您可以把[config.yaml](config.yaml)中的`translator.web.chrome_driver_path`设置为空：
 ```yaml
 projz:
   translator:
     ai:
       model_path: ''
 ```
-然后跳到`开始使用`步骤即可。
+，这样transformer库可以自动决定模型下载位置，然后跳到`开始使用`步骤即可。
+
 如果您访问不了该网站，或在使用时遇到下面的问题：
 ![dlt_downloaderror.png](imgs/dlt_downloaderror.png)
 或者想指定模型保存的位置（一般模一个型大小2GB以上），请按以下步骤进行：
@@ -406,14 +406,16 @@ projz:
           model_path: 'D:\BaiduNetdiskDownload\New36\save_models'
     ```
 ### 开始使用
-1. 输入`t {project} -t ai -n {model_name} -lang {lang} -b 4`命令，`-n`指定使用的模型，可选的模型有：`m2m100`，`mbart50`，`nllb200`，这里我们选择`m2m100`。`-b`可以指定模型的batch size，其表示模型的一次翻译迭代中的的文本数量，越大的batch size消耗越多的显存，因此可以根据您的显存大小决定。
-2. 设置翻译目标，例如您想从英语(English)翻译到中文(Chinese)，分别输入英语和中文对应索引号就行，例如：19 109：
+1. 输入`t {project} -t ai -n {model_name} -l {lang} -b 4`命令。
+    - `-n`指定使用的模型，可选的模型有：`m2m100`，`mbart50`，`nllb200`，这里我们选择`m2m100`。
+    - `-b`可以指定模型的batch size，其表示模型的一次翻译迭代中的的文本数量，越大的batch size消耗越多的显存，因此可以根据您的显存大小决定。
+2. 设置翻译目标，例如您想从英语(English)翻译到中文(Chinese)，分别输入英语和中文对应索引号就行，例如：`19 109`
     ![dlt_settarget.png](imgs%2Fdlt_settarget.png)
 3. 完成以上步骤，程序会开始自动翻译。
 ---
 
 # 💪自定义翻译API
-如果想要实现自己的翻译API非常简单，在[translator](translator)文件夹下新建一个py文件，然后继承CachedTranslatorTemplate类（该类实现翻译缓存机制，当翻译文本达到一定数量后就写入到TranslationIndex，可在config.yaml中配置translator.write_cache_size来自定义缓存大小）：
+如果想要实现自己的翻译API非常简单，在[translator](translator)文件夹下新建一个py文件，然后继承`CachedTranslatorTemplate`类（该类实现翻译缓存机制，当翻译文本达到一定数量后就写入到TranslationIndex，可在[config.yaml](config.yaml)中配置`translator.write_cache_size`来决定翻译写入缓存大小）：
 ```python
 from argparse import ArgumentParser
 from translator.base import CachedTranslatorTemplate
