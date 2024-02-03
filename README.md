@@ -22,6 +22,7 @@
 - 翻译文本中潜在错误检查，例如变量，样式标签，转义字符等,见：[新增功能 3](#新增功能)
 - 提供I18n插件注入，为游戏提供语言和字体修改的插件
 - 支持实现自定义的翻译接口，见[自定义翻译接口](#自定义翻译api)
+- 翻译复用，导入翻译时可以使用预翻译好string文本，见[新增功能 4](#新增功能)
 
 本工具要求您熟悉一定RenPy翻译流程，通过合理利用此工具可以实现快速翻译，并节省大量资源和时间。
 
@@ -47,6 +48,19 @@ translate chinese scene_01_5f0ee2360:
 3. 翻译文本潜在错误检查:
   使用`inspect`命令检查已翻译文本中缺失的变量名(如[var])或者样式化标签(如{font})或者转义字符: `inspect {project} -l {lang}`。
   在生成的excel文件完成修复后，使用`updateexcel`命令导入修复的文本：`updateexcel {project} -l {lang}`
+4. String翻译复用: 您可以将某个语言`{lang}`已经翻译好的rpy文件在`resources/tl/{lang}`下。注意：仅支持像以下string类型翻译文本：
+   ```text
+   translate schinese strings:
+   
+       # renpy/common/00accessibility.rpy:28
+       old "Self-voicing disabled."
+       new "机器朗读已禁用。"
+   
+       # renpy/common/00accessibility.rpy:29
+       old "Clipboard voicing enabled. "
+       new "剪贴板朗读已启用。"
+   ```
+   此外，我们也预置许多语言的预翻译rpy文件（这些文件来源于[Renpy](https://github.com/renpy/renpy/tree/master/launcher/game/tl)）。当您使用`import`命令, 如：`i {projrct} -l {lang}`时，如果指定的lang参数与`resources/tl`目录下的某个目录名一致时，将自动复用`resources/tl/{lang}`中rpy存在的string翻译。如果您不想复用这些翻译，请在使用`import`命后面令添加`-nr`选项。
 
 
 # 🛫快速开始
@@ -500,3 +514,4 @@ except Exception as e:
 * 早期项目代码（Web翻译）参考：[Maooookai(Mirage)](https://github.com/Maooookai/WebTranslator), [DrDRR](https://github.com/DrDRR/RenPy-WebTranslator/commits?author=DrDRR "View all commits by DrDRR")
 * 使用的AI翻译库：[dl-translate](https://github.com/xhluca/dl-translate)
 * 其他使用的python库见：[requirements.txt](./requirements.txt)
+* 预翻译RPY文件来源：[Renpy](https://github.com/renpy/renpy/tree/master/launcher/game/tl)

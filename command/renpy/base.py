@@ -25,6 +25,7 @@ from injection.cmd import lang_project
 from injection.default import RENPY_GAME_DIR, RENPY_TL_DIR
 from store import TranslationIndex
 from store.database.base import db_context
+from store.scanstrings import update_string
 from util import walk_and_select
 
 
@@ -51,10 +52,15 @@ class ImportTranslationCmd(BaseLangIndexCmd):
         self._parser.add_argument("-to", "--translated_only", action='store_true',
                                   help="Only import translated texts. The translated texts means translations "
                                        "listed in ryp files in you_game/game/tl/{lang} dir.")
+        self._parser.add_argument("-nr", "--not_reuse", action='store_true', default=False,
+                                  help="Don't reuse pre-translated string translations.")
 
     def invoke(self):
-        self.get_translation_index().import_translations(self.args.lang, self.args.translated_only,
-                                                         say_only=self.config.say_only)
+        index = self.get_translation_index()
+        index.import_translations(self.args.lang, self.args.translated_only, say_only=self.config.say_only)
+        if not self.args.not_reuse:
+            tl_dir = os.path.join(self.config['index']['recycle_dir'], self.args.lang)
+            update_string(index, tl_dir, self.args.lang, say_only=self.config.say_only, discord_blank=False)
 
 
 class GenerateTranslationCmd(BaseLangIndexCmd):
