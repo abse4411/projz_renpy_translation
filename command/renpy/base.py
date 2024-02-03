@@ -88,7 +88,7 @@ class CountTranslationCmd(BaseLangIndexCmd):
 
     def invoke(self):
         self.get_translation_index().count_translations(self.args.lang, show_detail=self.args.verbose,
-                                                        say_only=_say_only)
+                                                        say_only=self.config.say_only)
 
 
 class LaunchProjectCmd(BaseIndexCmd):
