@@ -13,6 +13,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
+import logging
 import os.path
 import re
 from collections import defaultdict
@@ -22,7 +23,7 @@ from store import TranslationIndex
 from util import exists_file, default_read, exists_dir, walk_and_select, strip_or_none
 
 # match for: translate chinese nikiinvite2_442941ca_1:"
-_regex_trans = re.compile(r'^translate[\t ]+(\S+)[\t ]+strings:\s+')
+_regex_trans = re.compile(r'^translate[\t ]+(\S+)[\t ]+strings:\s*')
 # match fo: old "RenPy机翻工具"
 _regex_str = re.compile(r'^([\t ]+)(\S+)[\t ]+"(.*)"\s*')
 _new_str = 'new'
@@ -76,10 +77,16 @@ def process_file(fn: str):
                             else:
                                 raise RuntimeError(f'File "{fn}", line {i}: '
                                                    f'Inconsistent indentation at line {oi}:\n{l}')
+                        else:
+                            raise RuntimeError(f'File "{fn}", line {i}: expect an old statement before:\n{l}')
                     elif k == _old_str:
                         if old_info is None:
                             old_info = b, c, i
                             continue
+                        else:
+                            raise RuntimeError(f'File "{fn}", line {i}: expect a new statement:\n{l}')
+                else:
+                    raise RuntimeError(f'File "{fn}", line {i}: expect a translate statement before:\n{l}')
         raise RuntimeError(f'File "{fn}", line {i}: unexpected statement\n{l}')
     return res
 
@@ -92,14 +99,17 @@ def get_default_strings(tl_dir: str, lang: str):
         if exists_dir(tl_dir):
             rpys = walk_and_select(tl_dir, select_fn=lambda x: x.endswith('.rpy'))
             for r in rpys:
-                string_map.update(process_file(r)[lang])
+                try:
+                    string_map.update(process_file(r)[lang])
+                except RuntimeError as e:
+                    logging.exception(e)
     return string_map
 
 
 def update_string(index: TranslationIndex, tl_dir: str, lang: str, say_only: bool = True,
                   discord_blank=True):
     string_map = get_default_strings(tl_dir, lang)
-    print(f'{len(string_map)} string translation found at {tl_dir}')
+    print(f'{len(string_map)} string translations found in {tl_dir}')
     tids_and_texts = index.get_untranslated_lines(lang, say_only=say_only)
     updates = []
     for tid, text in tids_and_texts:
