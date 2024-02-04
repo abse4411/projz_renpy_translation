@@ -72,16 +72,16 @@ class BaseLangIndexCmd(BaseIndexCmd):
 class BaseConfirmationCmd(BaseCmd):
     def __init__(self, name: str, description: str):
         super().__init__(name, description)
-        self._parser.add_argument("-y", "--yes", action='store_true', help="Assume yes to all queries.")
+        self._parser.add_argument("-y", "--yes", action='store_true', help="Assume yes on all queries.")
 
 
 class BaseIndexConfirmationCmd(BaseIndexCmd):
     def __init__(self, name: str, description: str):
         super().__init__(name, description)
-        self._parser.add_argument("-y", "--yes", action='store_true', help="Assume yes to all queries.")
+        self._parser.add_argument("-y", "--yes", action='store_true', help="Assume yes on all queries.")
 
 
 class BaseLangIndexConfirmationCmd(BaseLangIndexCmd):
     def __init__(self, name: str, description: str):
         super().__init__(name, description)
-        self._parser.add_argument("-y", "--yes", action='store_true', help="Assume yes to all queries.")
+        self._parser.add_argument("-y", "--yes", action='store_true', help="Assume yes on all queries.")

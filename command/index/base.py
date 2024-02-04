@@ -110,7 +110,7 @@ class RenameLanguageCmd(BaseLangIndexCmd):
 
 class ClearUntranslationIndexCmd(BaseLangIndexConfirmationCmd):
     def __init__(self):
-        super().__init__('mark', 'Mark all untranslated lines to as translated ones.')
+        super().__init__('mark', 'Mark all untranslated lines as translated ones.')
 
     def invoke(self):
         if self.args.yes or yes(f'Are your sure to make all untranslated lines as translated ones?'):
