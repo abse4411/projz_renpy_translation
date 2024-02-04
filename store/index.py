@@ -407,7 +407,8 @@ class TranslationIndex:
         self._update_batch(dlang, updated_ddocids, ddocid_map)
         self._update_batch(slang, updated_sdocids, sdocid_map)
         # update statistics when updating translation
-        self.update_translation_stats(lang, say_only=say_only)
+        if updated_ddocids or updated_sdocids:
+            self.update_translation_stats(lang, say_only=say_only)
         print(f'{lang}: {len(updated_ddocids)} updated dialogue translations, '
               f'{len(updated_sdocids)} updated string translations.')
 
@@ -492,7 +493,8 @@ class TranslationIndex:
         self._update_batch(dlang, updated_ddocids, ddocid_map)
         self._update_batch(slang, updated_sdocids, sdocid_map)
         # update statistics when updating translation
-        self.update_translation_stats(lang, say_only=say_only)
+        if updated_ddocids or updated_sdocids:
+            self.update_translation_stats(lang, say_only=say_only)
         print(f'{lang}: {len(updated_ddocids)} updated dialogue translations, '
               f'{len(updated_sdocids)} updated string translations. '
               f'[use:{use_cnt}, discord:{find_cnt - use_cnt}, total:{find_cnt}]')
@@ -585,12 +587,13 @@ class TranslationIndex:
               f'[use:{updating_cnt}, discord:{len(translated_lines) - updating_cnt}, total:{len(translated_lines)}]')
 
     def _update_batch(self, table_name, updated_docids, docid_map):
-        ids, blocks = [], []
-        for did in updated_docids:
-            ids.append(did)
-            blocks.append(docid_map[did])
-        with self._open_db() as dao:
-            dao.update_blocks(table_name, ids, blocks)
+        if updated_docids:
+            ids, blocks = [], []
+            for did in updated_docids:
+                ids.append(did)
+                blocks.append(docid_map[did])
+            with self._open_db() as dao:
+                dao.update_blocks(table_name, ids, blocks)
 
     @db_context
     def import_translations(self, lang: str, translated_only: bool = True, say_only: bool = True):
@@ -606,13 +609,16 @@ class TranslationIndex:
                                                       translated_only=translated_only, say_only=say_only))
         dialogue_data = data['dialogues']
         string_data = data['strings']
-        with self._open_db() as dao:
-            self.drop_translations(lang)
-            dlang, slang = self._get_table_name(lang)
-            dao.add_batch(dlang, dialogue_data)
-            dao.add_batch(slang, string_data)
-            # update statistics when updating translation
-            self.update_translation_stats(lang, say_only=say_only)
+        if dialogue_data or string_data:
+            with self._open_db() as dao:
+                self.drop_translations(lang)
+                dlang, slang = self._get_table_name(lang)
+                dao.add_batch(dlang, dialogue_data)
+                dao.add_batch(slang, string_data)
+                # update statistics when updating translation
+                self.update_translation_stats(lang, say_only=say_only)
+        else:
+            print(f'Empty translations of language {lang}')
         print(msg)
 
     @db_context
