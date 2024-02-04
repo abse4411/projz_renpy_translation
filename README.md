@@ -39,7 +39,9 @@ translate chinese scene_01_5f0ee2360:
 对于上述翻译rpy，只会提取到`a "translated text"`。
 如果想要提取`voice "path/to/file"`请设置[config.yaml](config.yaml)中的`index.say_only`为`False`。
 
-现在正在开发中,🚨注意🚨该版本不兼容V0.4.0之前的数据，要使用旧版本请到[这里](https://github.com/abse4411/projz_renpy_translation/tree/9e257770e9b30011b1053da28634c41d958d0fc5)。
+## 🚨注意🚨
+- 现在正在开发中,该版本不兼容V0.4.0之前的数据，要使用旧版本请到[这里](https://github.com/abse4411/projz_renpy_translation/tree/9e257770e9b30011b1053da28634c41d958d0fc5)。
+- 我们步提供任何RenPy游戏文件以，该程序仅为方便开发人员管理翻译文件。任何因使用本程序产生的后果由使用者负责。
 
 # ✨新增功能：
 
@@ -48,7 +50,7 @@ translate chinese scene_01_5f0ee2360:
 3. 翻译文本潜在错误检查:
   使用`inspect`命令检查已翻译文本中缺失的变量名(如[var])或者样式化标签(如{font})或者转义字符: `inspect {project} -l {lang}`。
   在生成的excel文件完成修复后，使用`updateexcel`命令导入修复的文本：`updateexcel {project} -l {lang}`
-4. String翻译复用: 您可以将某个语言`{lang}`已经翻译好的rpy文件在`resources/tl/{lang}`下。注意：仅支持像以下string类型翻译文本：
+4. [0.4.1] String翻译复用: 您可以将某个语言`{lang}`已经翻译好的rpy文件在`resources/tl/{lang}`下。注意：仅支持像以下string类型翻译文本：
    ```text
    translate schinese strings:
    
@@ -390,7 +392,7 @@ projz:
     pip install transformers
     ```
   
-### 准备模型
+### 准备模型(可选)
 如果您的电脑可以正常访问[huggingface](https://huggingface.co/),说明模型可以正常下载，这时您可以把[config.yaml](config.yaml)中的`translator.web.chrome_driver_path`设置为空：
 ```yaml
 projz:
@@ -398,17 +400,17 @@ projz:
     ai:
       model_path: ''
 ```
-，这样transformer库可以自动决定模型下载位置，然后跳到`开始使用`步骤即可。
+这样transformer库可以自动决定模型下载位置，然后跳到`开始使用`步骤即可。
 
 如果您访问不了该网站，或在使用时遇到下面的问题：
 ![dlt_downloaderror.png](imgs/dlt_downloaderror.png)
-或者想指定模型保存的位置（一般模一个型大小2GB以上），请按以下步骤进行：
-1. 假设您的保存模型目录为：`'D:\BaiduNetdiskDownload\New36\save_models'`，可用模型下载地址如下：
+或者想指定模型保存的位置（一般模型大小2GB以上），请按以下步骤进行：
+1. 假设您的保存模型目录为：`'D:\Download\New36\save_models'`，可用模型下载地址如下：
    - m2m100：https://huggingface.co/facebook/m2m100_418M/tree/main
    - mbart50：https://huggingface.co/facebook/mbart-large-50-many-to-many-mmt/tree/main
    - nllb200：https://huggingface.co/facebook/nllb-200-distilled-600M/tree/main
 
-2. 选择一个模型，在模型`D:\BaiduNetdiskDownload\New36\save_models`目录下建立一个和模型同名文件夹，如`m2m100`，`mbart50`，`nllb200`，然后把所有文件下(除了`rust_model.ot`)载到对应模型文件夹下，例如：`D:\BaiduNetdiskDownload\New36\save_models\m2m100`：
+2. 选择一个模型，在模型目录`D:\Download\New36\save_models`下建立一个和模型同名目录，如`m2m100`，`mbart50`，`nllb200`，然后把所有文件(除了`rust_model.ot`)下载到对应模型目录下，例如：`D:\Download\New36\save_models\m2m100`：
 
     ![dlt_downloadmodel.png](imgs/dlt_downloadmodel.png)
 
@@ -417,7 +419,7 @@ projz:
     projz:
       translator:
         ai:
-          model_path: 'D:\BaiduNetdiskDownload\New36\save_models'
+          model_path: 'D:\Download\New36\save_models'
     ```
 ### 开始使用
 1. 输入`t {project} -t ai -n {model_name} -l {lang} -b 4`命令。
