@@ -20,7 +20,7 @@ from command import BaseLangIndexCmd
 from store import TranslationIndex
 from store.database.base import db_context
 from store.group import ALL, TRANS, UNTRANS, group_translations_by, GROUPBY_FIELDS, SORTBY_FIELDS
-from util import exists_file, mkdir
+from util import exists_file, mkdir, open_and_select
 
 
 class FileBaseCmd(BaseLangIndexCmd):
@@ -82,6 +82,8 @@ class SaveFileBaseCmd(FileBaseCmd):
                                        f" if not presented, it will save to {save_filename}.")
         self._parser.add_argument("-ab", "--accept_blank", action='store_true',
                                   help="Accept blank untranslated lines to write to the file.")
+        self._parser.add_argument("-nw", "--no_window", action='store_true',
+                                  help="Not open File Explorer to view the saved file after saving.")
 
     def save(self, save_file: str, index: TranslationIndex, tids_and_texts: List[Tuple[str, str]]):
         raise NotImplementedError()
@@ -91,6 +93,8 @@ class SaveFileBaseCmd(FileBaseCmd):
         if tids_and_texts:
             self.save(save_file, index, tids_and_texts)
             print(f'{len(tids_and_texts)} untranslated lines are saved to {save_file}.')
+            if not self.args.no_window:
+                open_and_select(save_file)
 
 
 class DumpToFileBaseCmd(FileBaseCmd):
@@ -109,6 +113,8 @@ class DumpToFileBaseCmd(FileBaseCmd):
                                   help="Sort translations in group by the field.")
         self._parser.add_argument("-r", "--reverse", action='store_true',
                                   help="Use a reverse order in sorting.")
+        self._parser.add_argument("-nw", "--no_window", action='store_true',
+                                  help="Not open File Explorer to view the saved file after saving.")
 
     @db_context
     def get_dump_data(self):
@@ -128,6 +134,8 @@ class DumpToFileBaseCmd(FileBaseCmd):
         if sorted_data:
             self.dump(save_file, index, sorted_data)
             print(f'{sum([len(i) for i in sorted_data.values()])} translations are dump to {save_file}.')
+            if not self.args.no_window:
+                open_and_select(save_file)
 
 
 class LoadFileBaseCmd(FileBaseCmd):

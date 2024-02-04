@@ -25,7 +25,7 @@ from command.file.base import SaveFileBaseCmd, LoadFileBaseCmd, DumpToFileBaseCm
 from store import TranslationIndex
 from store.database.base import db_context
 from store.inspect import detect_missing_vars_and_tags, PRESENT_FIELDS
-from util import file_name
+from util import file_name, open_and_select
 
 TID_STR = 'Translation id (Don\'t modify)'
 RAW_TEXT_STR = 'Raw Text'
@@ -159,6 +159,8 @@ class DumpErrorExcelCmd(FileBaseCmd):
         self._parser.add_argument("-f", "--file", required=False, type=str, metavar=f'{self.file_type}_file',
                                   help=f"The filename to save the generated {self.file_type} file."
                                        f" if not presented, it will save to {save_filename}.")
+        self._parser.add_argument("-nw", "--no_window", action='store_true',
+                                  help="Not open File Explorer to view the saved file after saving.")
 
     @db_context
     def invoke(self):
@@ -172,6 +174,8 @@ class DumpErrorExcelCmd(FileBaseCmd):
             df = df.reindex(columns=new_cols)
             df.to_excel(save_file, index=False)
             print(f'{len(error_translations)} error lines are saved to {save_file}.')
+            if not self.args.no_window:
+                open_and_select(save_file)
         else:
             print('Congratulations! No missing vars or tags found in translated lines.')
 

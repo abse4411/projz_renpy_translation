@@ -26,7 +26,7 @@ from injection.default import RENPY_GAME_DIR, RENPY_TL_DIR
 from store import TranslationIndex
 from store.database.base import db_context
 from store.scanstrings import update_string
-from util import walk_and_select
+from util import walk_and_select, open_and_select
 
 
 class NewTranslationIndexCmd(BaseCmd):
@@ -103,6 +103,17 @@ class LaunchProjectCmd(BaseIndexCmd):
 
     def invoke(self):
         lang_project(self.get_translation_index().project, wait=False)
+
+
+class OpenProjectCmd(BaseIndexCmd):
+    def __init__(self):
+        super().__init__('open', 'Open the location of the RenPy game executable '
+                                 'associated with the TranslationIndex. (Windows OS Only)')
+
+    def invoke(self):
+        index = self.get_translation_index()
+        exe = os.path.join(index.project_path, f'{index.project.project_name}.exe')
+        open_and_select(exe)
 
 
 INJECTION_TYPES = {
