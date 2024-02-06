@@ -41,7 +41,7 @@ translate chinese scene_01_5f0ee2360:
 
 ## 🚨注意🚨
 - 现在正在开发中,该版本不兼容V0.4.0之前的数据，要使用旧版本请到[这里](https://github.com/abse4411/projz_renpy_translation/tree/9e257770e9b30011b1053da28634c41d958d0fc5)。
-- 我们步提供任何RenPy游戏文件以，该程序仅为方便开发人员管理翻译文件。任何因使用本程序产生的后果由使用者负责。
+- 我们不提供任何RenPy游戏文件，该程序仅为方便开发人员管理翻译文件。任何因使用本程序产生的后果由使用者负责。
 
 # ✨新增功能：
 
@@ -233,8 +233,10 @@ schinese: dialogue translation: using 856 and missing 84, string translation: us
 ```text
 projz_renpy-translator/
     |–– resources/
-        –– DejaVuSans.ttf
-        –– SourceHanSansLite.ttf
+        |–– fonts
+           –– DejaVuSans.ttf
+           –– SourceHanSansLite.ttf
+           -- Roboto-Light.ttf
 ```
 
 使用`inject`命令注入我们提供的I18N插件，其支持修改语言和字体：
@@ -283,10 +285,12 @@ new -h
 > 我们欢迎你集成您的翻译实现到我们的项目中，或者帮助我们翻译文档页面。
 
 ## 其他说明
-1. 如果你想导入和导出过程忽略某些rpy文件的翻译，请在[config.yaml](config.yaml)中设置`index.ignore`。
+1. 如果你想导入和导出过程忽略某些rpy文件的翻译，请在[config.yaml](config.yaml)中设置`index.ignore`。注意，在window下目录分割符为`\`。假设您要屏蔽游戏`game`目录下的`script/demo.rpy`的翻译,这是添加的到`index.ignore`的文件路径应该是：`script\demo.rpy`
 2. 在[config.yaml](config.yaml)中把`translator.ai.chrome_driver_path`设置为空，则会自动下载模型到本地。
 3. 您可以使用`de {project} -l {lang}`和`ue {project} -l {lang}`将指定TranslationIndex的数据（包括翻译和未翻译文本）分别导出到excel和从excel导入，这样您就可以修改已经翻译过的文本或者手动翻译某些文本。
 4. 如果您想在翻译前去除文本的样式标签（如{font}），请在[config.yaml](config.yaml)中把`index.strip_tag`设置为`True`。
+5. 如果您发现导出未翻译文本都是不需要翻译的，可以使用`mark`命令将这些文本变为已翻译文本：`mark {project} -l {lang}`
+6. 如果您想重命名一个语言的翻译（即{lang}名字），可以使用`rename`命本：`rename {project} -l {lang} t {new_lang}`，其中`{new_lang}`新的名称
 
 ---
 ## 使用`saveexcel`和`loadexcel`⚡快速⚡翻译
@@ -427,7 +431,7 @@ projz:
 ---
 
 # 💪自定义翻译API
-如果想要实现自己的翻译API非常简单，在[translator](translator)文件夹下新建一个py文件，然后继承`CachedTranslatorTemplate`类（该类实现翻译缓存机制，当翻译文本达到一定数量后就写入到TranslationIndex，可在[config.yaml](config.yaml)中配置`translator.write_cache_size`来决定翻译写入缓存大小）：
+如果想要实现自己的翻译API非常简单，在[translator](translator)文件夹下新建一个py文件，然后继承`CachedTranslatorTemplate`类或者`TranslatorTemplate`类（`CachedTranslatorTemplate`类实现了翻译缓存机制，当翻译文本达到一定数量后就写入到TranslationIndex，可在[config.yaml](config.yaml)中配置`translator.write_cache_size`来决定翻译写入缓存大小，而`TranslatorTemplate`类则一次性给出所有未翻译文本，并调用`translate_batch`方法）：
 ```python
 from argparse import ArgumentParser
 from translator.base import CachedTranslatorTemplate
@@ -469,7 +473,7 @@ class DlTranslator(CachedTranslatorTemplate):
         # 如果您的API支持批量翻译，您可以实现该方法。注意返回翻译结果的list长度应该和传入texts的长度一致。
         # 如果没有实现该方法，基类实现默认会循环调用translate方法。
         # CachedTranslatorTemplate每调用一次translate_batch后，就把翻译后的文本写入到TranslationIndex
-        # texts最大长度取决于config.yaml中的translator.write_cache_size配置的大小
+        # texts数组最大长度取决于config.yaml中的translator.write_cache_size配置的大小
         return self.mt.translate(texts, self._source, self._source, batch_size=self._batch_size, verbose=True)
 
 # 将您的翻译API注册到translate命令
