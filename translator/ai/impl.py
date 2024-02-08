@@ -25,7 +25,7 @@ from prettytable import PrettyTable
 from command.translation.base import register
 from config.base import ProjzConfig
 from translator.base import CachedTranslatorTemplate
-from util import exists_dir, strip_or_none, my_input
+from util import exists_dir, strip_or_none, my_input, line_to_args
 import dl_translate as dlt
 
 AVAILABLE_MODELS = ['m2m100', 'mbart50', 'nllb200']
@@ -87,8 +87,7 @@ class DlTranslator(CachedTranslatorTemplate):
                 'Please set the translation target (enter two language indexes from above table, '
                 'like "0 1" which means that translating text from '
                 f'source language {ava_langs[0]} into target language {ava_langs[1]}), or enter Q/q to exit): ')
-            args = args.strip()
-            args = [c.strip() for c in args.split() if c.strip() != '']
+            args = line_to_args(args.strip())
             if len(args) >= 1:
                 if len(args) == 1:
                     if args[0].lower() == 'q':

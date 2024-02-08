@@ -172,11 +172,18 @@ class Project:
 
     def launch(self, cmd, args: List[str], verbose=False, wait=False):
         # Put the command and args together.
-        cmd_line = [self.executable_path, os.path.join(self.project_path, f'{self.project_name}.py'),
-                    self.project_path, cmd, ' '.join(args)]
-        cmd_line = ' '.join(cmd_line)
+        cmd_args = [self.executable_path, os.path.join(self.project_path, f'{self.project_name}.py'),
+                    self.project_path, cmd] + args
+        new_args = []
+        for c in cmd_args:
+            if ' ' in c:
+                new_args.append(f'"{c}"')
+            else:
+                new_args.append(c)
+        cmd_line = ' '.join(new_args)
         if verbose:
             logging.info(f'launching: {cmd_line}')
+        # raise RuntimeError()
         # print(cmd_line)
         # we don't send any input to subprocess
         p = subprocess.Popen(cmd_line, shell=True, stdin=subprocess.PIPE)
@@ -196,7 +203,7 @@ class Project:
             with default_write(json_file) as f:
                 json.dump({'uuid': str_id, 'items': payload}, f, ensure_ascii=False, indent=2)
             print('Launching a new task...')
-            code = self.launch('projz_inject_command', args=[json_file, f'--uuid {str_id}'] + args, verbose=verbose,
+            code = self.launch('projz_inject_command', args=[json_file, '--uuid', str_id] + args, verbose=verbose,
                                wait=True)
             if code == 0:
                 ok, data = check_ok_json(json_file, str_id, verbose=verbose)

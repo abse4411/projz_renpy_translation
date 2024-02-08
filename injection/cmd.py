@@ -32,7 +32,8 @@ def _get_base_args(lang: str = None, translated_only: bool = True, say_only: boo
     kwargs.pop('common_only', None)
     kwargs.pop('ignore', None)
     if lang:
-        args.append(f'--language {lang}')
+        args.append(f'--language')
+        args.append(f'{lang}')
     if translated_only:
         args.append('--translated-only')
     if say_only:
@@ -42,7 +43,9 @@ def _get_base_args(lang: str = None, translated_only: bool = True, say_only: boo
     if common_only:
         args.append('--common-only')
     if ignore:
-        args.append(f'--ignore {" ".join(ignore)}')
+        args.append(f'--ignore')
+        for i in ignore:
+            args.append(i)
     return args, kwargs
 
 

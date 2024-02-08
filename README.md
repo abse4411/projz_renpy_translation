@@ -93,6 +93,8 @@ n D:\games\renpy_game_demo -n my_game
 - `D:\games\renpy_game_demo` 是您的RenPy游戏根目录。
 - `-n my_game`是可选的，您可以指定该TranslationIndex的别名，因此您可以使用别名代替序号。
 - `n`是`new`命令的缩写，我们为常用命令定义了命令缩写，您可以输入`help -u`命令打印所有命令的详细信息（包括它们的缩写）
+> **🚨注意🚨**<br />
+> 如果RenPy游戏目录中含有空格，请用半角单双引号（或单引号）括起来，例如：new "D:\games\renpy game_demo" -n my_game
 
 然后输入`ls`命令查看我们创建的TranslationIndex：
 
@@ -285,7 +287,7 @@ new -h
 > 我们欢迎你集成您的翻译实现到我们的项目中，或者帮助我们翻译文档页面。
 
 ## 其他说明
-1. 如果你想导入和导出过程忽略某些rpy文件的翻译，请在[config.yaml](config.yaml)中设置`index.ignore`。注意，在window下目录分割符为`\`。假设您要屏蔽游戏`game`目录下的`script/demo.rpy`的翻译,这是添加的到`index.ignore`的文件路径应该是：`script\demo.rpy`
+1. 如果你想导入和导出过程忽略某些rpy文件的翻译，请在[config.yaml](config.yaml)中设置`index.ignore`。注意，在window下目录分割符为`\`。假设您要屏蔽游戏`game`目录下的`script/demo.rpy`的翻译,这是添加的到`index.ignore`的文件路径应该是：`script\demo.rpy`。如果文件路径中含有空格，请保持原样即可，无需处理。
 2. 在[config.yaml](config.yaml)中把`translator.ai.chrome_driver_path`设置为空，则会自动下载模型到本地。
 3. 您可以使用`de {project} -l {lang}`和`ue {project} -l {lang}`将指定TranslationIndex的数据（包括翻译和未翻译文本）分别导出到excel和从excel导入，这样您就可以修改已经翻译过的文本或者手动翻译某些文本。
 4. 如果您想在翻译前去除文本的样式标签（如{font}），请在[config.yaml](config.yaml)中把`index.strip_tag`设置为`True`。

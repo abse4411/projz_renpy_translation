@@ -73,3 +73,53 @@ def to_translatable_text(text: str):
     if text:
         return quote_unicode(text)
     return text
+
+
+def line_to_args(text: str):
+    args = []
+    text = strip_or_none(text)
+    if text:
+        text += ' '
+        pos = 0
+        lpos = 0
+        while pos < len(text):
+            char = text[pos]
+            if char == ' ':
+                arg_text = strip_or_none(text[lpos:pos])
+                if arg_text:
+                    args.append(arg_text)
+                tmp_pos = pos + 1
+                while tmp_pos < len(text):
+                    if text[tmp_pos] == ' ':
+                        tmp_pos += 1
+                    else:
+                        break
+                lpos = pos = tmp_pos
+            elif char == '"' or char == '\'':
+                def _find_continual_text(p):
+                    nonlocal text
+                    lpi = pi = p
+                    tmep_text = ''
+                    while pi < len(text):
+                        c = text[pi]
+                        if c == '"' or c == '\'':
+                            right_quote_pos = text.find(c, pi + 1)
+                            if right_quote_pos != -1:
+                                tmep_text += text[lpi:pi] + text[pi + 1:right_quote_pos]
+                                if right_quote_pos + 1 < len(text) and text[right_quote_pos + 1] == ' ':
+                                    return tmep_text, right_quote_pos+2
+                                else:
+                                    lpi = pi = right_quote_pos + 1
+                            else:
+                                pi += 1
+                        elif c != ' ':
+                            pi += 1
+                        else:
+                            tmep_text += text[lpi:pi]
+                            return tmep_text, pi+1
+                t, new_pos = _find_continual_text(pos)
+                args.append(text[lpos:pos]+t)
+                lpos = pos = new_pos
+            else:
+                pos += 1
+    return args

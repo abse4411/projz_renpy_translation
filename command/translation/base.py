@@ -17,6 +17,7 @@
 from command import BaseLangIndexCmd
 from config import default_config
 from store import TranslationIndex
+from util import line_to_args
 
 _TRANSLATOR = dict()
 
@@ -63,7 +64,7 @@ class TranslateCmd(BaseLangIndexCmd):
     def parse_args(self, text: str):
         # we create new _parser as we don't know what args dose _translator.register_args
         self.reinit()
-        args_list = text.split()
+        args_list = line_to_args(text)
         # we let _translator register its args if user specify --translator and --help args
         # this enables to show help of _translator
         if ('-h' in args_list or '--help' in args_list) and ('-t' in args_list or '--translator' in args_list):

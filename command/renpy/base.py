@@ -26,7 +26,7 @@ from injection.default import RENPY_GAME_DIR, RENPY_TL_DIR
 from store import TranslationIndex
 from store.database.base import db_context
 from store.scanstrings import update_string
-from util import walk_and_select, open_and_select
+from util import walk_and_select, open_and_select, line_to_args
 
 
 class NewTranslationIndexCmd(BaseCmd):
@@ -147,7 +147,7 @@ class InjectionCmd(BaseIndexCmd):
                                   help="Undo the specified injection.")
 
     def parse_args(self, text: str):
-        args = text.split()
+        args = line_to_args(text)
         # we don't change the text if '--help' arg found in it
         if not ('-h' in args or '--help' in args) and ('-l' in args or '--list' in args):
             # if '--list' found, we pass a valid but useless text to suppress possible parsing error

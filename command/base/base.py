@@ -17,6 +17,7 @@ import argparse
 
 from config import default_config
 from store import TranslationIndex
+from util import line_to_args
 
 
 class BaseCmd:
@@ -28,7 +29,7 @@ class BaseCmd:
         self.args = None
 
     def parse_args(self, text: str):
-        self.args = self._parser.parse_args(text.split())
+        self.args = self._parser.parse_args(line_to_args(text))
 
     def invoke(self):
         pass

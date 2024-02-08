@@ -17,7 +17,7 @@ import logging
 
 from command import BaseCmd
 from command.manage import exists_cmd, execute_cmd, all_cmds, register
-from util import my_input
+from util import my_input, line_to_args
 import translator
 
 __VERSION__ = '0.4.1'
@@ -51,14 +51,15 @@ def main():
     print_banner()
     execute_cmd('help', '')
     while True:
-        args = my_input('What is your next step? (Enter a command (case insensitive) or Q/q to exit): ')
-        args = args.strip()
-        args = [c.strip() for c in args.split() if c.strip() != '']
+        cmd_line = my_input('What is your next step? (Enter a command (case insensitive) or Q/q to exit): ')
+        args = cmd_line.strip()
+        args = line_to_args(args)
         if len(args) >= 1:
             cmd_name = args[0].lower()
             if exists_cmd(cmd_name):
                 try:
-                    execute_cmd(cmd_name, ' '.join(args[1:]))
+                    cmd_line = cmd_line.replace(args[0], '', 1)
+                    execute_cmd(cmd_name, cmd_line)
                 except Exception as e:
                     logging.exception(e)
             else:

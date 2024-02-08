@@ -16,5 +16,5 @@
 
 from .file import *
 from .os_info import *
-from .string import *
+from .strings import *
 from .misc import my_input, yes, quick_prettytable
