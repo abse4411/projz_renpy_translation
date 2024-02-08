@@ -15,5 +15,5 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from .base import (ListTranslationIndexCmd, DeleteTranslationIndexCmd, ClearAllTranslationIndexCmd,
-                   DropTranslationCmd, MergeTranslationCmd, UpdateTranslationStatsCmd, RenameLanguageCmd,
+                   DiscardTranslationCmd, MergeTranslationCmd, UpdateTranslationStatsCmd, RenameLanguageCmd,
                    ClearUntranslationIndexCmd)

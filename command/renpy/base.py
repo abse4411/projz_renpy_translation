@@ -48,7 +48,7 @@ class NewTranslationIndexCmd(BaseCmd):
 class ImportTranslationCmd(BaseLangIndexCmd):
     def __init__(self):
         super().__init__('import', 'Import translations of the given language into this '
-                                   'TranslationIndex. (Base injection required)')
+                                   'TranslationIndex.\n(Base injection required)')
         self._parser.add_argument("-to", "--translated_only", action='store_true',
                                   help="Only import translated texts. The translated texts means translations "
                                        "listed in ryp files in you_game/game/tl/{lang} dir.")
@@ -66,7 +66,7 @@ class ImportTranslationCmd(BaseLangIndexCmd):
 class GenerateTranslationCmd(BaseLangIndexCmd):
     def __init__(self):
         super().__init__('generate', 'Generate translations of the given language from this '
-                                     'TranslationIndex. (Base injection required)')
+                                     'TranslationIndex.\n(Base injection required)')
         self._parser.add_argument("-a", "--all", action='store_true',
                                   help="Generate all translated and translated texts. "
                                        "If this arg is not specified, only translated text are used to generate.")
@@ -88,7 +88,7 @@ class GenerateTranslationCmd(BaseLangIndexCmd):
 class CountTranslationCmd(BaseLangIndexCmd):
     def __init__(self):
         super().__init__('count', 'Print a count of missing translations of the given language.'
-                                  ' (Base injection required)')
+                                  '\n(Base injection required)')
         self._parser.add_argument("-v", "--verbose", action='store_true',
                                   help="Print each missed translation.")
 
@@ -107,8 +107,8 @@ class LaunchProjectCmd(BaseIndexCmd):
 
 class OpenProjectCmd(BaseIndexCmd):
     def __init__(self):
-        super().__init__('open', 'Open the location of the RenPy game executable '
-                                 'associated with the TranslationIndex. (Windows OS Only)')
+        super().__init__('open', 'Open the location of the RenPy gameassociated with the '
+                                 'TranslationIndex.\n(Windows OS Only)')
 
     def invoke(self):
         index = self.get_translation_index()

@@ -78,16 +78,16 @@ class ClearAllTranslationIndexCmd(BaseConfirmationCmd):
 
 class DeleteTranslationIndexCmd(BaseIndexConfirmationCmd):
     def __init__(self):
-        super().__init__('del', 'Delete a TranslationIndex.')
+        super().__init__('del', 'Delete the TranslationIndex.')
 
     def invoke(self):
         if self.args.yes or yes(f'Are your sure to delete?'):
             TranslationIndex.remove_index(self._index, self._nick_name)
 
 
-class DropTranslationCmd(BaseLangIndexConfirmationCmd):
+class DiscardTranslationCmd(BaseLangIndexConfirmationCmd):
     def __init__(self):
-        super().__init__('drop', 'Drop translations of the given language.')
+        super().__init__('discard', 'Discard translations with the given language.')
 
     @db_context
     def invoke(self):
@@ -99,7 +99,7 @@ class DropTranslationCmd(BaseLangIndexConfirmationCmd):
 class RenameLanguageCmd(BaseLangIndexCmd):
     def __init__(self):
         super().__init__('rename', 'Rename a name of language translations.')
-        self._parser.add_argument("-t", "--target", required=True, type=str, metavar='new_name',
+        self._parser.add_argument("-t", "--target", required=True, type=str, metavar='new_lang',
                                   help="The new name.")
 
     @db_context
@@ -132,7 +132,7 @@ class UpdateTranslationStatsCmd(BaseIndexCmd):
 
 class MergeTranslationCmd(BaseLangIndexConfirmationCmd):
     def __init__(self):
-        super().__init__('merge', 'Merge translated texts of the given language '
+        super().__init__('merge', 'Merge translations of the given language '
                                   'from another TranslationIndex.')
         self._parser.add_argument("-s", "--source", required=True, type=str, metavar='another_index',
                                   help="The index or nickname of another TranslationIndex.")
