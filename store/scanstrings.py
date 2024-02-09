@@ -68,12 +68,12 @@ def process_file(fn: str):
                             if b == ob:
                                 lang_map = res[lang]
                                 if oc in lang_map:
-                                    raise RuntimeError(f'File "{fn}", line {i}: '
-                                                       f'A translation for {oc}" already exists at line {oi}:\n{l}')
-                                else:
-                                    lang_map[oc] = c
-                                    old_info = None
-                                    continue
+                                    print(f'File "{fn}", line {i}: '
+                                          f'A translation for "{oc}" already exists in this file, '
+                                          f'and it will be overwritten by "{c}"')
+                                lang_map[oc] = c
+                                old_info = None
+                                continue
                             else:
                                 raise RuntimeError(f'File "{fn}", line {i}: '
                                                    f'Inconsistent indentation at line {oi}:\n{l}')
@@ -93,6 +93,7 @@ def process_file(fn: str):
 
 def get_default_strings(tl_dir: str, lang: str):
     string_map = dict()
+    string_file_map = dict()
     lang = strip_or_none(lang)
     if lang:
         # tl_dir = default_config['index']['recycle_dir']
@@ -100,7 +101,14 @@ def get_default_strings(tl_dir: str, lang: str):
             rpys = walk_and_select(tl_dir, select_fn=lambda x: x.endswith('.rpy'))
             for r in rpys:
                 try:
-                    string_map.update(process_file(r)[lang])
+                    new_dict = process_file(r)[lang]
+                    for k, v in new_dict.items():
+                        if k in string_map:
+                            print(f'File "{r}": A translation for "{k}" already exists '
+                                  f'in "{string_file_map[k]}". It will be overwritten by "{v}"')
+                        string_map[k] = v
+                        string_file_map[k] = r
+                    string_map.update()
                 except RuntimeError as e:
                     logging.exception(e)
     return string_map
