@@ -801,11 +801,24 @@ class TranslationIndex:
             self._tag = tag
 
     @classmethod
+    def _split_nickname(cls, nickname:str):
+        tag = None
+        if nickname:
+            if ":" in nickname:
+                arr = nickname.split(':')
+                nickname = arr[0]
+                tag = ''.join(arr[1:])
+                if tag == 'None':
+                    tag = None
+        return nickname, tag
+
+    @classmethod
     def from_docid_or_nickname(cls, doc_id: int = None, nickname: str = None):
         if doc_id is None and nickname is None:
             return None
         with TranslationIndexDao() as dao:
-            p = dao.select_first(doc_id, nickname)
+            nickname, tag = cls._split_nickname(nickname)
+            p = dao.select_first(doc_id, nickname, tag)
             if p:
                 return TranslationIndex.from_dict(p)
         return None
@@ -821,9 +834,10 @@ class TranslationIndex:
         if doc_id is None and nickname is None:
             return True
         with TranslationIndexDao() as dao:
-            p = dao.select_first(doc_id, nickname)
+            nickname, tag = TranslationIndex._split_nickname(nickname)
+            p = dao.select_first(doc_id, nickname, tag)
             if p is not None:
-                dao.delete(p.doc_id, nickname=None)
+                dao.delete(p.doc_id)
                 print(f'TranslationIndex({p["nickname"]}:{p["tag"]}) is deleted.')
                 db_file = p.get('db_file', None)
                 if db_file and exists_file(db_file):

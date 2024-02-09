@@ -38,7 +38,8 @@ class BaseCmd:
 class BaseIndexCmd(BaseCmd):
     def __init__(self, name: str, description: str):
         super().__init__(name, description)
-        self._parser.add_argument("index_or_name", help="The index or nickname of TranslationIndex to select.")
+        self._parser.add_argument("index_or_name", help="The index or nickname(:tag) of "
+                                                        "TranslationIndex to select.")
         self._index = None
         self._nick_name = None
 
@@ -59,7 +60,8 @@ class BaseIndexCmd(BaseCmd):
     def get_translation_index(self):
         res = TranslationIndex.from_docid_or_nickname(self._index, self._nick_name)
         assert res is not None, \
-            'Could\'n load this TranslationIndex. Please check whether the entered index or nickname is correct'
+            (f'Could\'n load this TranslationIndex with "{self.args.index_or_name}". '
+             f'Please check whether the entered index or nickname is correct')
         return res
 
 

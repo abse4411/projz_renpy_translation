@@ -30,7 +30,7 @@ class ListTranslationIndexCmd(BaseCmd):
 
     def invoke(self):
         res = TranslationIndex.list_indexes()
-        table = PrettyTable(['Index', 'Nickname:tag', 'Translation Stats', 'Injection state', 'Game info'])
+        table = PrettyTable(['Index', 'Nickname:Tag', 'Translation Stats', 'Injection State', 'Game Info'])
         table.hrules = prettytable.ALL
 
         def format_stats(stats: dict):
@@ -55,7 +55,7 @@ class ListTranslationIndexCmd(BaseCmd):
             injection_table = quick_prettytable([[k, v] for k, v in index.injection_state.items()])
             injection_table.vrules = prettytable.NONE
             injection_table.hrules = prettytable.NONE
-            game_info = (f'{index.project_name}-V{index.project_version}, {index.project_renpy_version}\n'
+            game_info = (f'{index.project_name} ({index.project_version})\n{index.project_renpy_version}\n'
                          f'{index.project_path}')
             table.add_row([i[0], f'{index.nickname}:{index.tag}', format_stats(index.translation_state),
                            injection_table, game_info])

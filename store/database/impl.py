@@ -35,12 +35,14 @@ class TranslationIndexDao(BaseDao):
         res = self.db.all()
         return [(i.doc_id, i) for i in res]
 
-    def select_first(self, doc_id: int, nickname: str):
+    def select_first(self, doc_id: int, nickname: str, tag: str = None):
         res = None
         if doc_id is not None:
             res = self.db.get(doc_id=doc_id)
         if res is None and nickname is not None:
-            return self.db.get(where('nickname') == nickname)
+            if tag is None:
+                return self.db.get((where('nickname') == nickname))
+            return self.db.get((where('nickname') == nickname) & (where('tag') == tag))
         return res
 
     def contains(self, data: dict, exclude_docid: int = None):
@@ -58,11 +60,8 @@ class TranslationIndexDao(BaseDao):
     def update(self, data: dict, doc_id: int):
         return self.db.update(data, doc_ids=[doc_id])
 
-    def delete(self, doc_id: int, nickname: str):
-        one = self.select_first(doc_id, nickname)
-        if one:
-            return self.db.remove(doc_ids=[one.doc_id])
-        return []
+    def delete(self, doc_id: int):
+        return self.db.remove(doc_ids=[doc_id])
 
     def delete_all(self):
         self.db.truncate()
