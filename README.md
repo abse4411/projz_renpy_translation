@@ -45,11 +45,11 @@ translate chinese scene_01_5f0ee2360:
 
 # ✨新增功能：
 
-1. [Web翻译](#使用web翻译)，仅限google: `translate {project} -t web -n google -l {lang}`
-2. [AI翻译](#使用AI翻译): `translate {project} -t ai -n mbart50 -l {lang}`
+1. [Web翻译](#使用web翻译)，仅限google: `translate {index_or_name} -t web -n google -l {lang}`
+2. [AI翻译](#使用AI翻译): `translate {index_or_name} -t ai -n mbart50 -l {lang}`
 3. 翻译文本潜在错误检查:
-  使用`inspect`命令检查已翻译文本中缺失的变量名(如[var])或者样式化标签(如{font})或者转义字符: `inspect {project} -l {lang}`。
-  在生成的excel文件完成修复后，使用`updateexcel`命令导入修复的文本：`updateexcel {project} -l {lang}`
+  使用`inspect`命令检查已翻译文本中缺失的变量名(如[var])或者样式化标签(如{font})或者转义字符: `inspect {index_or_name} -l {lang}`。
+  在生成的excel文件完成修复后，使用`updateexcel`命令导入修复的文本：`updateexcel {index_or_name} -l {lang}`
 4. [0.4.1] String翻译复用: 您可以将某个语言`{lang}`已经翻译好的rpy文件在`resources/tl/{lang}`下。注意：仅支持像以下string类型翻译文本：
    ```text
    translate schinese strings:
@@ -299,24 +299,24 @@ new -h
 > 我们欢迎你集成您的翻译实现到我们的项目中，或者帮助我们翻译文档页面。
 
 ## 其他说明
-1. 如果你想导入和导出过程忽略某些rpy文件的翻译，请在[config.yaml](config.yaml)中设置`index.ignore`。注意，在window下目录分割符为`\`。假设您要屏蔽游戏`game`目录下的`script/demo.rpy`的翻译,这是添加的到`index.ignore`的文件路径应该是：`script\demo.rpy`。如果文件路径中含有空格，请保持原样即可，无需处理。
+1. 如果你想导入和导出过程忽略某些rpy文件的翻译，请在[config.yaml](config.yaml)中设置`index.ignore`。注意，在window下目录分割符为`\`。假设您要屏蔽游戏`game`目录下的`script/demo.rpy`文件的翻译,这时添加的到`index.ignore`的文件路径应该是：`script\demo.rpy`。如果文件路径中含有空格，请保持原样即可，无需处理。
 2. 在[config.yaml](config.yaml)中把`translator.ai.chrome_driver_path`设置为空，则会自动下载模型到本地。
-3. 您可以使用`de {project} -l {lang}`和`ue {project} -l {lang}`将指定TranslationIndex的数据（包括翻译和未翻译文本）分别导出到excel和从excel导入，这样您就可以修改已经翻译过的文本或者手动翻译某些文本。
+3. 您可以使用`de {index_or_name} -l {lang}`和`ue {index_or_name} -l {lang}`将指定TranslationIndex的数据（包括翻译和未翻译文本）分别导出到excel和从excel导入，这样您就可以修改已经翻译过的文本或者手动翻译某些文本。
 4. 如果您想在翻译前去除文本的样式标签（如{font}），请在[config.yaml](config.yaml)中把`index.strip_tag`设置为`True`。
-5. 如果您发现导出未翻译文本都是不需要翻译的，可以使用`mark`命令将这些文本变为已翻译文本：`mark {project} -l {lang}`
-6. 如果您想重命名一个语言的翻译（即{lang}名字），可以使用`rename`命本：`rename {project} -l {lang} t {new_lang}`，其中`{new_lang}`新的名称
+5. 如果您发现导出未翻译文本都是不需要翻译的，可以使用`mark`命令将这些文本变为已翻译文本：`mark {index_or_name} -l {lang}`
+6. 如果您想重命名一个语言的翻译（即{lang}名字），可以使用`rename`命令：`rename {index_or_name} -l {lang} t {new_lang}`，其中`{new_lang}`新的名称
 
 ---
 ## 使用`saveexcel`和`loadexcel`⚡快速⚡翻译
 使用`saveexcel`和`loadexcel`命令，导出未翻译文本为excel文件，然后借助Google翻译上传excel文件进行翻译，翻译完成覆盖原始excel文件，来实现快速的翻译。
   
 ### 使用步骤：
-1. 使用`se {project} -l {lang}`命令，导出未翻译文本为excel文件，然后然后打开Google翻译（任何支持excel文档翻译的网站）使用文档翻译功能，上传该excel文件：![](./imgs/google_excel.png)
+1. 使用`se {index_or_name} -l {lang}`命令，导出未翻译文本为excel文件，然后然后打开Google翻译（任何支持excel文档翻译的网站）使用文档翻译功能，上传该excel文件：![](./imgs/google_excel.png)
 2. 等待翻译完成，下载翻译好的excel并覆盖原始的excel文件：
 
     ![](./imgs/google_excel_done.png)
 
-3. 使用`le {project} -l {lang}`命令，把翻译过的excel文件导入TranslationIndex。
+3. 使用`le {index_or_name} -l {lang}`命令，把翻译过的excel文件导入TranslationIndex。
 
 > **😕翻译网站不支持文件excel文件？**<br />
 > 您可以把excel文件内容粘贴到doc文件中，再上传doc文件进行翻译。当翻译完成后，把doc文件内翻译的内容重新覆盖原始excel文件即可。
@@ -326,14 +326,14 @@ new -h
 使用`savehtml`和`loadhtml`命令，导出未翻译文本为html文件，然后借助Microsoft Edge或Chrome浏览器自带的翻译网页功能，并保存覆盖原始html文件，来实现快速的翻译。
   
 ### 使用步骤：
-1. 使用`sh {project} -l {lang}`命令，导出未翻译文本为html文件，然后Microsoft Edge或Chrome打开它。
+1. 使用`sh {index_or_name} -l {lang}`命令，导出未翻译文本为html文件，然后Microsoft Edge或Chrome打开它。
 2. 在网页种右键，使用翻译网页功能，或者在地址栏右边找到翻译网页按钮：
 
     ![](imgs/trans_menu.png)
     ![](imgs/trans_edge.png)
 
 3. 滚动网页让所有文本都翻译完毕， 然后`Ctrl + S` 保存文件，并覆盖原始的html文件。
-4. 使用`lh {project} -l {lang}`命令，把翻译过的html文件导入TranslationIndex。
+4. 使用`lh {index_or_name} -l {lang}`命令，把翻译过的html文件导入TranslationIndex。
 ---
 ## 使用Web翻译
 ### 安装Chrome driver
@@ -350,7 +350,7 @@ projz:
 ```
   
 ### 开始使用
-1. 输入`t {project} -t web -n google -l {lang}`命令
+1. 输入`t {index_or_name} -t web -n google -l {lang}`命令
 2. 等待浏览器启动完成并显示网页后，手动设置您的翻译目标：![](imgs/chrome_set.png)
 3. 等待控制台出现输入提示后，在输入`Y`或`y`在进行下一步操作（输入其他则退出），程序开始自动翻译。
 ---
@@ -436,7 +436,7 @@ projz:
           model_path: 'D:\Download\New36\save_models'
     ```
 ### 开始使用
-1. 输入`t {project} -t ai -n {model_name} -l {lang} -b 4`命令。
+1. 输入`t {index_or_name} -t ai -n {model_name} -l {lang} -b 4`命令。
     - `-n`指定使用的模型，可选的模型有：`m2m100`，`mbart50`，`nllb200`，这里我们选择`m2m100`。
     - `-b`可以指定模型的batch size，其表示模型的一次翻译迭代中的的文本数量，越大的batch size消耗越多的显存，因此可以根据您的显存大小决定。
 2. 设置翻译目标，例如您想从英语(English)翻译到中文(Chinese)，分别输入英语和中文对应索引号就行，例如：`19 109`
