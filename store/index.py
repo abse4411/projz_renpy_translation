@@ -26,8 +26,7 @@ from config import default_config
 from injection import Project, get_translations, generate_translations, count_translations
 from store.database import TranslationIndexDao, TranslationDao
 from store.database.base import db_context
-from util import exists_dir, strip_or_none, assert_not_blank, strip_linebreakers, exists_file, to_translatable_text, \
-    to_string_text
+from util import exists_dir, strip_or_none, assert_not_blank, exists_file, to_translatable_text, to_string_text
 from util.renpy import list_tags
 
 

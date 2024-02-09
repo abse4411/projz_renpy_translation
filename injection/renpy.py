@@ -182,7 +182,7 @@ class Project:
                 new_args.append(c)
         cmd_line = ' '.join(new_args)
         if verbose:
-            logging.info(f'launching: {cmd_line}')
+            logging.info(f'Launching: {cmd_line}')
         # raise RuntimeError()
         # print(cmd_line)
         # we don't send any input to subprocess
@@ -190,7 +190,7 @@ class Project:
         if wait:
             return_code = p.wait()
             if verbose:
-                logging.info(f'subprocess returns code: {return_code}')
+                logging.info(f'Subprocess returns code: {return_code}')
             return return_code
         return None
 
