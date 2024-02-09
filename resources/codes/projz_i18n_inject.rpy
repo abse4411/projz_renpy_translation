@@ -48,11 +48,23 @@ init python:
         setattr(persistent, name, value)
         return value
 
-    if projz_get("projz_config_developer", None) is not None:
-        renpy.config.developer = projz_get("projz_config_developer", {projz_enable_console_content})
+    def projz_config_get(name, default_value):
+        return projz_get("projz_config_"+name, default_value)
+
+    def projz_config_set(name, value):
+        projz_set("projz_config_"+name, value)
+
+    if projz_config_get("developer", None) is not None:
+        renpy.config.developer = projz_config_get("developer", {projz_enable_developer_content})
     else:
-        projz_set("projz_config_developer", {projz_enable_console_content})
-        renpy.config.developer = {projz_enable_console_content}
+        projz_config_set("developer", {projz_enable_developer_content})
+        renpy.config.developer = {projz_enable_developer_content}
+
+    if projz_config_get("console", None) is not None:
+        renpy.config.console = projz_config_get("console", {projz_enable_console_content})
+    else:
+        projz_config_set("console", {projz_enable_console_content})
+        renpy.config.console = {projz_enable_console_content}
 
 
 # Names of gui font var for saving default font
@@ -181,7 +193,7 @@ init python:
             self.rebuild = rebuild
 
         def __call__(self):
-            projz_set("projz_config_"+self.name, self.value)
+            projz_config_set(self.name, self.value)
             setattr(renpy.config, self.name, self.value)
 
             if self.rebuild:
@@ -200,6 +212,9 @@ init python:
     def projz_show_i18n_settings():
         renpy.show_screen('projz_i18n_settings')
 
+    def projz_reload_game():
+        renpy.reload_script()
+
     config.underlay[0].keymap['projz_show_i18n_settings'] = projz_show_i18n_settings
     config.keymap['projz_show_i18n_settings'] = ['{projz_shortcut_key}']
 
@@ -213,21 +228,14 @@ screen projz_i18n_settings():
                 vbox:
                     style_prefix "radio"
                     label _("Language")
-                    textbutton "Default" action [Function(projz_set_font, None), Language(None)]
+                    textbutton _("Default") action [Function(projz_set_font, None), Language(None)]
                     for k,v in projz_languages.items():
                         textbutton v[0] text_font projz_font_dir+v[1] action [Function(projz_set_font, projz_font_dir+v[1]), Language(k)]
-                vbox:
-                    style_prefix "radio"
-                    label _("Developer Mode")
-                    textbutton "auto" action [ProjzConfigAction("developer", "auto")]
-                    textbutton "True" action [ProjzConfigAction("developer", True)]
-                    textbutton "False" action [ProjzConfigAction("developer", False)]
-                    text _("Restart Required")
                 ################### Make font vars dynamic by our implementation ###################
                 vbox:
                     style_prefix "radio"
                     label _("Font")
-                    textbutton "Default" action ProjzDefaultAllFontAction()
+                    textbutton _("Default") action ProjzDefaultAllFontAction()
                     for f in projz_fonts:
                         textbutton f:
                             text_font projz_font_dir+f
@@ -242,7 +250,7 @@ screen projz_i18n_settings():
                         vbox:
                             style_prefix "radio"
                             label _(n)
-                            textbutton "Default" action ProjzDefaultFontAction(sf)
+                            textbutton _("Default") action ProjzDefaultFontAction(sf)
                             for f in projz_fonts:
                                 textbutton f:
                                     text_font projz_font_dir+f
@@ -264,29 +272,63 @@ screen projz_i18n_settings():
                     style_prefix "slider"
                     box_wrap True
                     vbox:
-                        label "Text Size Scaling"
+                        label _("Text Size Scaling")
                         bar value Preference("font size")
                         textbutton _("Reset") action Preference("font size", 1.0)
                     vbox:
-                        label "Line Spacing Scaling"
+                        label _("Line Spacing Scaling")
                         bar value Preference("font line spacing")
                         textbutton _("Reset") action Preference("font line spacing", 1.0)
+                null height 10
+                hbox:
+                    vbox:
+                        style_prefix "radio"
+                        label _("Developer Mode")
+                        textbutton "auto" action [ProjzConfigAction("developer", "auto")]
+                        textbutton "True" action [ProjzConfigAction("developer", True)]
+                        textbutton "False" action [ProjzConfigAction("developer", False)]
+                        text _("Restart Required")
+                    vbox:
+                        style_prefix "radio"
+                        label _("Console (Shift+O)")
+                        textbutton "True" action [ProjzConfigAction("console", True)]
+                        textbutton "False" action [ProjzConfigAction("console", False)]
+                        text _("Restart Required")
+                    vbox:
+                        style_prefix "check"
+                        label _("Reload Game (Shift+R)")
+                        textbutton _("Reload") action[Function(projz_reload_game)]
             null height 10
-            label "Watch"
-            text _("language: [_preferences.language]")
-            text _("developer_mode: [config.developer]")
-            text _("text_font: [gui.text_font]")
-            text _("name_text_font: [gui.name_text_font]")
-            text _("interface_text_font: [gui.interface_text_font]")
-            text _("button_text_font: [gui.button_text_font]")
-            text _("choice_button_text_font: [gui.choice_button_text_font]")
-            text _("system_font: [gui.system_font]")
-            text _("main_font: [gui.main_font]")
-            text _("font_size: [_preferences.font_size:.1]")
-            text _("font_line_spacing: [_preferences.font_line_spacing:.1]")
+            label _("Watch")
+            grid 2 12:
+                text _("Language")
+                text "[_preferences.language]"
+                text _("Developer Mode")
+                text "[config.developer]"
+                text _("Debug Console")
+                text "[config.console]"
+                text _("Text Font")
+                text "[gui.text_font]"
+                text _("Name Text Font")
+                text "[gui.name_text_font]"
+                text _("Interface Text Font")
+                text "[gui.interface_text_font]"
+                text _("Button Text Font")
+                text "[gui.button_text_font]"
+                text _("Choice Button Text Font")
+                text "[gui.choice_button_text_font]"
+                text _("System Font")
+                text "[gui.system_font]"
+                text _("Main Font")
+                text "[gui.main_font]"
+                text _("Text Size Scaling")
+                text "[_preferences.font_size:.1]"
+                text _("Line Spacing Scaling")
+                text "[_preferences.font_line_spacing:.1]"
+
             null height 10
             label _("Note that")
-            text _("If there exists the font configuration in /game/tl/language/style.rpy, it will disable our font setting because of its higher priority. For more infomation, please see {a=https://www.renpy.org/doc/html/translation.html#style-translations}this{/a}.")
+            text _("If there exists the font configuration in game/tl/language/style.rpy, it will disable our font setting because of its higher priority. For more infomation, please see {a=https://www.renpy.org/doc/html/translation.html#style-translations}this{/a}.")
             null height 10
             text _("This plugin is injected by the {a=https://github.com/abse4411/projz_renpy_translation}projz_renpy_translation{/a} project under the {a=https://github.com/abse4411/projz_renpy_translation?tab=GPL-3.0-1-ov-file}GPL-3.0 license{/a}.") xalign 1.0
             null height 60

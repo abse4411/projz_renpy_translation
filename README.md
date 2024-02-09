@@ -269,8 +269,17 @@ Note that: Translation Stats list translated/untranslated lines of dialogue and 
 
 > **💡额外内容💡**<br />
 > 你可以在[config.yaml](config.yaml)文件配置生成I18N插件语言设置和字体内容，`inject`命令
-> 生成的语言取决于`game/tl`下的非`None`文件夹与[config.yaml](config.yaml)的`lang_map`配置的语言交集，
-> 字体可以在[config.yaml](config.yaml)的`fonts`添加。
+> 
+> 生成的语言取决于`game/tl`下的非`None`文件夹与[config.yaml](config.yaml)的`lang_map`配置的语言交集
+> 
+> 字体可以在[config.yaml](config.yaml)的`fonts`添加
+> 
+> 如果`game/tl/{lang}`目录下存在对字体的配置（例如style.rpy）,我们的字体设置将会被覆盖而无效，这些字体配置类似：
+```text
+translate schinese python:
+    gui.system_font = gui.main_font = gui.text_font = gui.name_text_font = gui.interface_text_font = gui.button_text_font = gui.choice_button_text_font = "SourceHanSansLite.ttf"
+```
+> 如果存在以上配置，您将无法通过我们的插件修改字体。
 
 ## 命令帮助
 

@@ -172,7 +172,8 @@ screen preferences():
         self.project_path = project_path
         self.game_dir = os.path.join(project_path, RENPY_GAME_DIR)
         self.font_dir = os.path.join(self.game_dir, self.PROJZ_FONT_DIR)
-        self.enable_console = default_config['renpy']['developer_console']
+        self.enable_console = default_config['renpy']['debug_console']
+        self.enable_developer = default_config['renpy']['developer_mode']
         self.screen_rpys = walk_and_select(os.path.join(project_path, RENPY_GAME_DIR),
                                            select_fn=lambda x: file_name(x) == 'screens.rpy',
                                            exclude_dirs=[RENPY_TL_DIR])
@@ -226,7 +227,9 @@ screen preferences():
         lang_content = ','.join(
             [f'"{k}":("{v["title"]}","{file_name(v["font"])}")' for k, v in self.valid_lang_map.items()])
         font_content = ','.join(f'"{f}"' for f in self.valid_font_map.keys())
-        rpy_template = (rpy_template.replace("{projz_enable_console_content}", str(self.enable_console))
+        rpy_template = (rpy_template
+                        .replace("{projz_enable_console_content}", str(self.enable_console))
+                        .replace("{projz_enable_developer_content}", str(self.enable_developer))
                         .replace("{projz_lang_content}", lang_content)
                         .replace("{projz_shortcut_key}", self.shortcut_key)
                         .replace("{projz_font_content}", font_content))
