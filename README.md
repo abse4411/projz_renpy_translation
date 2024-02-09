@@ -280,6 +280,9 @@ translate schinese python:
     gui.system_font = gui.main_font = gui.text_font = gui.name_text_font = gui.interface_text_font = gui.button_text_font = gui.choice_button_text_font = "SourceHanSansLite.ttf"
 ```
 > 如果存在以上配置，您将无法通过我们的插件修改字体。
+> 
+> 开发者模式（Developer Mode）和调试控制台（Debug Console）的配置更改后需要重新加载游戏才能生效。
+> 调试控制台的快捷键（Shift+O）和重新加载游戏的快捷键（Shift+R）需要在开发者模式打开时（Developer Mode=True）才可用。
 
 ## 命令帮助
 

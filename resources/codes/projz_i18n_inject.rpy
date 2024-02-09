@@ -287,13 +287,13 @@ screen projz_i18n_settings():
                         textbutton "auto" action [ProjzConfigAction("developer", "auto")]
                         textbutton "True" action [ProjzConfigAction("developer", True)]
                         textbutton "False" action [ProjzConfigAction("developer", False)]
-                        text _("Restart Required")
+                        text _("Reload Required")
                     vbox:
                         style_prefix "radio"
                         label _("Console (Shift+O)")
                         textbutton "True" action [ProjzConfigAction("console", True)]
                         textbutton "False" action [ProjzConfigAction("console", False)]
-                        text _("Restart Required")
+                        text _("Reload Required")
                     vbox:
                         style_prefix "check"
                         label _("Reload Game (Shift+R)")
