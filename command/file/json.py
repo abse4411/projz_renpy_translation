@@ -26,14 +26,11 @@ class SaveJsonCmd(SaveFileBaseCmd):
         super().__init__('savejson', 'json', 'json')
 
     def save(self, save_file: str, index: TranslationIndex, tids_and_texts: List[Tuple[str, str]]):
-        json_arr = []
+        json_dict = { }
         for tid, raw_text in tids_and_texts:
-            json_arr.append({
-                'tid': tid,
-                'raw_text': raw_text,
-            })
+            json_dict[tid] = raw_text
         with default_write(save_file) as f:
-            json.dump(json_arr, f, ensure_ascii=False, indent=2)
+            json.dump(json_dict, f, ensure_ascii=False, indent=2)
 
 
 class LoadJsonCmd(LoadFileBaseCmd):
@@ -48,9 +45,8 @@ class LoadJsonCmd(LoadFileBaseCmd):
         tids_and_texts = []
         accept_blank = self.args.accept_blank
         verbose = self.args.verbose
-        for i, l in enumerate(data):
-            tid = l.get('tid', None)
-            new_text = l.get('raw_text', None)
+        for i, l in enumerate(data.items()):
+            tid, new_text = l
             if tid is not None and new_text is not None:
                 if TranslationIndex.is_valid_tid(tid):
                     raw_text = tid_map.get(tid, None)
