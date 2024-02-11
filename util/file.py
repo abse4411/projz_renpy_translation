@@ -23,8 +23,8 @@ def exists_file(file):
     return os.path.isfile(file)
 
 
-def exists_dir(dir):
-    return os.path.exists(dir) and not os.path.isfile(dir)
+def exists_dir(dn):
+    return os.path.exists(dn) and not os.path.isfile(dn)
 
 
 def file_dir(filename):
@@ -45,17 +45,17 @@ def default_open(file, mode, encoding='utf-8', **kwargs):
 
 
 def default_read(file, **kwargs):
-    return default_open(file, 'r')
+    return default_open(file, 'r',  **kwargs)
 
 
 def default_write(file, newline='\n', **kwargs):
     return default_open(file, 'w', newline=newline, **kwargs)
 
 
-def mkdir(dir):
-    if not exists_dir(dir):
-        os.makedirs(dir)
-    return dir
+def mkdir(dn):
+    if not exists_dir(dn):
+        os.makedirs(dn)
+    return dn
 
 
 def walk_and_select(root, select_fn=None, exclude_dirs=None):
@@ -68,7 +68,7 @@ def walk_and_select(root, select_fn=None, exclude_dirs=None):
             if exists_dir(p):
                 mapped_dirs.append(p)
 
-    def _isexcluded(sd):
+    def _is_excluded(sd):
         for ed in mapped_dirs:
             if os.path.samefile(sd, ed):
                 return False
@@ -81,7 +81,7 @@ def walk_and_select(root, select_fn=None, exclude_dirs=None):
             item_path = os.path.join(current_dir, item)
             if os.path.isfile(item_path) and select_fn(item_path):
                 res_files.append(item_path)
-            elif os.path.isdir(item_path) and _isexcluded(item_path):
+            elif os.path.isdir(item_path) and _is_excluded(item_path):
                 stack.append(item_path)
     return res_files
 
