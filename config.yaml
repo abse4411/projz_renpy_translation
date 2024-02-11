@@ -41,9 +41,6 @@ projz:
       - 'resources/fonts/DejaVuSans.ttf'
     # the final languages listed in the i18n menu is determined by dirs in your_game/game/tl except "None"
     lang_map:
-      - tl_name: 'chinese'
-        font: 'resources/fonts/SourceHanSansLite.ttf'
-        title: '中文'
       - tl_name: 'indonesian'
         font: 'resources/fonts/DejaVuSans.ttf'
         title: 'Bahasa Indonesia'
