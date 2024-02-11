@@ -1,5 +1,5 @@
 You can put fonts here, then config your font paths in config.yaml.
-We have configed two default fonts, and you can download them from the following links:
+We have configed thress default fonts, and you can download them from the following links:
 
 DejaVuSans.ttf: https://github.com/renpy/renpy/blob/master/renpy/common/DejaVuSans.ttf
 SourceHanSansLite.ttf: https://github.com/renpy/renpy/blob/master/sdk-fonts/SourceHanSansLite.ttf

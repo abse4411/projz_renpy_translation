@@ -182,7 +182,7 @@ Find 1229 translated lines, and discord 91 lines
 schinese: 854 updated dialogue translations, 375 updated string translations. [use:1229, discord:0, total:1229]
 ```
 
-输入`ls`命令查看我们导入的翻译结果，输出类似：
+输入`ls`命令查看我们导入的翻译结果：
 
 ```text
 Note that: Translation Stats list translated/untranslated lines of dialogue and string for each language.
@@ -229,25 +229,25 @@ schinese: dialogue translation: using 856 and missing 84, string translation: us
 
 ## 5.注入我们的I18N插件
 
-在此之前，请手动下载字体文件到`resources/fonts`文件下，下载链接可以在`resources/fonts/readme.txt`找到，
-下载完后`resources/fonts`如下内容(请注意字体的版权问题)：
-
+为了在更改语言后让文本正确显示，我们这里附带了三款字体（下载链接可以在`resources/fonts/readme.txt`找到）：
 ```text
 projz_renpy-translator/
     |–– resources/
         |–– fonts
            –– DejaVuSans.ttf
            –– SourceHanSansLite.ttf
-           -- Roboto-Light.ttf
+           –– Roboto-Light.ttf
+           –– readme.txt
 ```
+您也可以手动添加自定义的字体到`resources/fonts`目录下(请注意字体的版权问题)，然后在[config.yaml](config.yaml)添加字体路径，这样程序会将字体拷贝到游戏目录`game/projz_fonts`中，同时I18N界面也会显示这些添加的字体配置。
 
-使用`inject`命令注入我们提供的I18N插件，其支持修改语言和字体：
+然后使用`inject`命令注入我们提供的I18N插件（支持修改语言和字体）：
 
 ```bash
 ij 1 -t I18n
 ```
 
-输入`ls`命令查看注入结果，输出类似：
+输入`ls`命令查看注入结果：
 
 ```text
 Note that: Translation Stats list translated/untranslated lines of dialogue and string for each language.
