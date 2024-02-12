@@ -482,7 +482,10 @@ def generate_translation(projz_translator, filename, language, filter, translate
             block = t.block
 
         for n in block:
-            f.write(u"    # " + n.get_code() + "\n")
+            text_code = str(n.get_code())
+            if '\n' in text_code:
+                text_code = text_code.replace('\n', '\n    # ')
+            f.write(u"    # " + text_code + "\n")
 
         if not say_only and (identifier, str_lang) in projz_translator:
             for i, n in enumerate(projz_translator[(identifier, str_lang)]['block']):

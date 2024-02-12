@@ -16,4 +16,4 @@
 
 from .base import (ListTranslationIndexCmd, DeleteTranslationIndexCmd, ClearAllTranslationIndexCmd,
                    DiscardTranslationCmd, MergeTranslationCmd, UpdateTranslationStatsCmd, RenameLanguageCmd,
-                   ClearUntranslationIndexCmd)
+                   ClearUntranslationIndexCmd, CopyLanguageCmd, ClearTranslationIndexCmd)

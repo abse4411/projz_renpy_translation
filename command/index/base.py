@@ -87,7 +87,7 @@ class DeleteTranslationIndexCmd(BaseIndexConfirmationCmd):
 
 class DiscardTranslationCmd(BaseLangIndexConfirmationCmd):
     def __init__(self):
-        super().__init__('discard', 'Discard translations with the given language.')
+        super().__init__('discard', 'Discard translations of the given language.')
 
     @db_context
     def invoke(self):
@@ -108,6 +108,18 @@ class RenameLanguageCmd(BaseLangIndexCmd):
         index.rename_lang(self.args.lang, self.args.target)
 
 
+class CopyLanguageCmd(BaseLangIndexCmd):
+    def __init__(self):
+        super().__init__('copy', 'Copy translations of the given language.')
+        self._parser.add_argument("-t", "--target", required=True, type=str, metavar='new_lang',
+                                  help="The new name.")
+
+    @db_context
+    def invoke(self):
+        index = self.get_translation_index()
+        index.copy_translations(self.args.lang, self.args.target)
+
+
 class ClearUntranslationIndexCmd(BaseLangIndexConfirmationCmd):
     def __init__(self):
         super().__init__('mark', 'Mark all untranslated lines as translated ones.')
@@ -116,6 +128,16 @@ class ClearUntranslationIndexCmd(BaseLangIndexConfirmationCmd):
         if self.args.yes or yes(f'Are your sure to make all untranslated lines as translated ones?'):
             index = self.get_translation_index()
             index.clear_untranslated_lines(self.args.lang, say_only=self.config.say_only)
+
+
+class ClearTranslationIndexCmd(BaseLangIndexConfirmationCmd):
+    def __init__(self):
+        super().__init__('unmark', 'Mark all translated lines as untranslated ones.')
+
+    def invoke(self):
+        if self.args.yes or yes(f'Are your sure to make all translated lines as untranslated ones?'):
+            index = self.get_translation_index()
+            index.clear_translated_lines(self.args.lang, say_only=self.config.say_only)
 
 
 class UpdateTranslationStatsCmd(BaseIndexCmd):

@@ -208,7 +208,7 @@ class UpdateFromFileBaseCmd(FileBaseCmd):
         print(f'Load {self.file_type} file from {save_file}')
         tids_and_texts = self.get_translations(tid_map, save_file)
         if tids_and_texts:
-            index.update_translations(self.args.lang, tids_and_texts, say_only=self.config.say_only,
+            index.update_translations(self.args.lang, tids_and_texts, say_only=self.config.say_only, source_code=True,
                                       untranslated_only=False, discord_blank=not self.args.accept_blank)
         else:
             print('No translations to update.')

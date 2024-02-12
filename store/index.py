@@ -268,14 +268,15 @@ class TranslationIndex:
                                     _strip_fn(to_translatable_text(b['new_code']))])
                     else:
                         if not say_only:
-                            if source_code:
-                                old_text = b['code']
-                            else:
-                                _, old_text = self._get_userblock_text(b)
+                            # if source_code:
+                            #     old_text = b['new_code']
+                            # else:
+                            #     _, old_text = self._get_userblock_text(b)
+                            old_text = b['new_code']
                             if old_text is None:
                                 continue
                             res.append([self._encode_tid(self.DIALOGUE_ID_PREFIX, i, v.doc_id),
-                                        _strip_fn(to_translatable_text(old_text))])
+                                        _strip_fn(old_text)])
         for v in string_data:
             for i, b in enumerate(v['block']):
                 if b['new_code'] is not None:
@@ -412,6 +413,77 @@ class TranslationIndex:
               f'{len(updated_sdocids)} updated string translations.')
 
     @db_context
+    def clear_translated_lines(self, lang: str, say_only=True):
+        lang = strip_or_none(lang)
+        if lang is None:
+            return
+        dialogue_data, string_data = self._list_translations(lang)
+        if len(dialogue_data) == 0 and len(string_data) == 0:
+            print(f'No untranslated lines of language {lang}')
+            return
+
+        # get all translations first, mapped by tid
+        ddocid_map = dict()
+        sdocid_map = dict()
+        updated_ddocids = set()
+        updated_sdocids = set()
+        for v in dialogue_data:
+            ddocid_map[v.doc_id] = v['block']
+            for i, b in enumerate(v['block']):
+                if b['new_code'] is None:
+                    continue
+                if not self._is_say_block(b) and say_only:
+                    continue
+                b['new_code'] = None
+                updated_ddocids.add(v.doc_id)
+        for v in string_data:
+            sdocid_map[v.doc_id] = v['block']
+            for i, b in enumerate(v['block']):
+                if b['new_code'] is None:
+                    continue
+                b['new_code'] = None
+                updated_sdocids.add(v.doc_id)
+
+        if len(updated_ddocids) == 0 and len(updated_sdocids) == 0:
+            print(f'No translated lines of language {lang} to be updated')
+            return
+
+        # write updated translations to db
+        dlang, slang = self._get_table_name(lang)
+        self._update_batch(dlang, updated_ddocids, ddocid_map)
+        self._update_batch(slang, updated_sdocids, sdocid_map)
+        # update statistics when updating translation
+        if updated_ddocids or updated_sdocids:
+            self.update_translation_stats(lang, say_only=say_only)
+        print(f'{lang}: {len(updated_ddocids)} updated dialogue translations, '
+              f'{len(updated_sdocids)} updated string translations.')
+
+    def copy_translations(self, lang: str, target_name: str):
+        lang = assert_not_blank(lang, 'lang')
+        new_lang = assert_not_blank(target_name, 'target_name')
+        if not self.exists_lang(lang):
+            print(f'The language {lang} is not found!')
+            return
+        if self.exists_lang(new_lang):
+            print(f'The language {target_name} already exists!')
+            return
+        dialogue_data, string_data = self._list_translations(lang)
+        for v in dialogue_data:
+            v['language'] = new_lang
+        for v in string_data:
+            v['language'] = new_lang
+        tdlang, tslang = self._get_table_name(target_name)
+        with self._open_db() as dao:
+            dao.add_batch(tdlang, dialogue_data)
+            dao.add_batch(tslang, string_data)
+            # update translation stats
+            if lang in self._stats['dialogue']:
+                self._stats['dialogue'][target_name] = self._stats['dialogue'][lang].copy()
+            if lang in self._stats['string']:
+                self._stats['string'][target_name] = self._stats['string'][lang].copy()
+            self._update({'stats': self._stats})
+
+    @db_context
     def merge_translations_from(self, target_index: 'TranslationIndex', lang: str, say_only=True):
         assert target_index is not None, f'target_index must not be None'
         assert target_index != self, 'Cannot merge from self'
@@ -499,8 +571,8 @@ class TranslationIndex:
               f'[use:{use_cnt}, discord:{find_cnt - use_cnt}, total:{find_cnt}]')
 
     @db_context
-    def update_translations(self, lang: str, translated_lines: List[Tuple[str, str]],
-                            untranslated_only=True, discord_blank=True, say_only: bool = True):
+    def update_translations(self, lang: str, translated_lines: List[Tuple[str, str]], untranslated_only=True,
+                            discord_blank=True, say_only: bool = True, source_code: bool = False):
         '''
         update translation of the specified language
 
@@ -510,6 +582,7 @@ class TranslationIndex:
                                   Otherwise, untranslated ones only
         :param discord_blank: discord blank or empty texts
         :param say_only: only update Say statement
+        :param source_code: Update UserStatement by replacing code
         :return:
         '''
         if not translated_lines:
@@ -567,7 +640,8 @@ class TranslationIndex:
                     if discord_blank and new_code.strip() == '':
                         continue
                     if self._is_user_block(block):
-                        new_code = self._to_userblock_text(block, new_code)
+                        if not source_code:
+                            new_code = self._to_userblock_text(block, new_code)
                         block['new_code'] = new_code
                     else:
                         block['new_code'] = to_string_text(new_code)
