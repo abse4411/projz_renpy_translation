@@ -112,7 +112,7 @@ class TranslationTaskRunner:
         self._update_func = update_func
         # Distribute untranslated texts to translators
         n_texts = len(tids_and_text)
-        if self._args.limit >= 0:
+        if self._args.limit is not None and self._args.limit >= 0:
             n_texts = self._args.limit
             print(f'The max number of lines is set to {n_texts}.')
         if n_texts <= 0:
@@ -183,8 +183,8 @@ class ConcurrentTranslatorTemplate(TranslatorTemplate):
 
     def register_args(self, parser: ArgumentParser):
         super().register_args(parser)
-        parser.add_argument('--limit', type=int, default=-1,
-                            help='The max number of lines to be translated. Negative values mean no limit.')
+        parser.add_argument('--limit', type=int, default=None,
+                            help='The max number of lines to be translated.')
         parser.add_argument('-nw', '--num_workers', type=int, default=1,
                             help='The number of web translator instances to use. Larger value can improve the'
                                  'translation speed but use more resources (of CPU and Memory).')
@@ -192,6 +192,8 @@ class ConcurrentTranslatorTemplate(TranslatorTemplate):
     def do_init(self, args, config: ProjzConfig):
         super().do_init(args, config)
         max_workers = config['translator']['max_workers']
+        if self.args.limit is not None:
+            assert self.args.limit > 1,  'The min value of --limit should be greater than 0!'
         assert args.num_workers >= 1, 'The min value of --num_workers should be greater than 0!'
         assert args.num_workers <= max_workers, f'The --num_workers should be not greater that {max_workers}'
         self._taskrunner = None

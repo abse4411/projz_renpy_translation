@@ -84,12 +84,19 @@ class SaveFileBaseCmd(FileBaseCmd):
                                   help="Accept blank untranslated lines to write to the file.")
         self._parser.add_argument("-nw", "--no_window", action='store_true',
                                   help="Not open File Explorer to view the saved file after saving.")
+        self._parser.add_argument('--limit', type=int, default=None, help='The max number of lines to save.')
 
     def save(self, save_file: str, index: TranslationIndex, tids_and_texts: List[Tuple[str, str]]):
         raise NotImplementedError()
 
     def invoke(self):
+        limit = self.args.limit
+        if limit is not None:
+            assert limit > 1,  'The min value of --limit should be greater than 0!'
         save_file, index, tids_and_texts = self.check_untranslated_lines()
+        if limit is not None and limit >= 0:
+            tids_and_texts = tids_and_texts[:limit]
+            print(f'The max number of lines is set to {limit}.')
         if tids_and_texts:
             self.save(save_file, index, tids_and_texts)
             print(f'{len(tids_and_texts)} untranslated lines are saved to {save_file}.')

@@ -162,6 +162,7 @@ sh 1 -l schinese
 ```text
 1320 untranslated lines are saved to ./projz\html\my_game_None_schinese.html.
 ```
+如果您觉得保存到文件的翻译文本行数太多，可以指定`--limit {max_num}`参数来设置最大保存的行数。
 
 然后使用Chrome或者Microsoft
 Edge打开它，右键菜单翻译为指定语言后，Ctrl+S保存该html文件并覆盖原始的`my_game_None_schinese.html`。
