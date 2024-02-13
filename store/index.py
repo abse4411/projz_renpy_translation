@@ -244,7 +244,7 @@ class TranslationIndex:
             return res
         dialogue_data, string_data = self._list_translations(lang)
         if len(dialogue_data) == 0 and len(string_data) == 0:
-            print(f'No translated lines of language {lang}')
+            print(f'No translations of language {lang}')
             return res
 
         strip_tag = default_config['index']['strip_tag']
@@ -324,7 +324,7 @@ class TranslationIndex:
             return res
         dialogue_data, string_data = self._list_translations(lang)
         if len(dialogue_data) == 0 and len(string_data) == 0:
-            print(f'No untranslated lines of language {lang}')
+            print(f'No translations of language {lang}')
             return res
 
         strip_tag = default_config['index']['strip_tag']
@@ -370,7 +370,7 @@ class TranslationIndex:
             return
         dialogue_data, string_data = self._list_translations(lang)
         if len(dialogue_data) == 0 and len(string_data) == 0:
-            print(f'No untranslated lines of language {lang}')
+            print(f'No translations of language {lang}')
             return
 
         # get all untranslations first, mapped by tid
@@ -419,7 +419,7 @@ class TranslationIndex:
             return
         dialogue_data, string_data = self._list_translations(lang)
         if len(dialogue_data) == 0 and len(string_data) == 0:
-            print(f'No untranslated lines of language {lang}')
+            print(f'No translations of language {lang}')
             return
 
         # get all translations first, mapped by tid
