@@ -1,4 +1,5 @@
 <div align="center">
+  <h1>Projz - RenyPy Translation Toolkit</h1>
   <img src="imgs/projz_icon.ico" />
   <br />
 
@@ -13,11 +14,10 @@
 
 </div>
 
-
 # 👀Before getting started
 
-Note that, this tool is not a one-button translation for RenPy games, and it still requires a few steps to translate. It is mainly used to manage translations among RenPy games, and to translate texts. The main functions are as follows：
-- Import and generation translations without the RenPy SDK.
+Note that, this tool is not a one-button translator for RenPy games, and it still requires a few steps to translate. It is mainly used to manage translations among RenPy games, and to translate texts. The main functions are as follows：
+- Import and generate translations without the RenPy SDK.
 - Manage translations of various languages among RenPy games.
 - Translate texts with free resources.
 - Inspect translated texts for finding lost variables, style tags, and escape characters. Learn more: [What's new 3](#whats-new).
@@ -45,11 +45,11 @@ For the above translation rpy, only `a "translated text"` will be extracted. To 
 
 # ✨What's new
 
-1. [Wen Translation](#use-web-translation), only supports google translation: `translate {index_or_name} -t web -n google -l {lang}`
+1. [Web Translation](#use-web-translation), only supports google translation: `translate {index_or_name} -t web -n google -l {lang}`
 2. [AI Translation](#use-ai-translation): `translate {index_or_name} -t ai -n mbart50 -l {lang}`
 3. Inspect translated texts:
   Use `inspect` command to find lost variables, style tags, and escape characters in translated texts (e.g., [var], {font}): `inspect {index_or_name} -l {lang}`. After you fix them in the generated Excel file, use `updateexcel` command to update these texts: `updateexcel {index_or_name} -l {lang}`
-4. [0.4.1] Reuse pre-translated string texts: You can place some rpy files containing pre-translated string texts of language {lang} under `resources/tl/{lang}`. String texts are like this:
+4. [0.4.1] Reuse pre-translated string texts: You can place some rpy files containing pre-translated string texts of language {lang} under `resources/tl/{lang}`. String texts are like:
    ```text
    translate schinese strings:
    
@@ -90,8 +90,8 @@ n D:\games\renpy_game_demo -n my_game
 - `D:\games\renpy_game_demo` is the root dir of your RenPy game.
 - `-n my_game` is optional，which enables you to take a nickname for the TranslationIndex. You can use this nickname to specify the TranslationIndex instead of an index when running a command. If no nickname is specified, it will be randomly generated. 
  
-  In addition, you can define an optional tag by specifying the `-t` arg (e.g., `-t 1.0`). If no tag is specified, the default one is `None`.
-- `n` is short name of `new` command. We have defined many short names for common commands, and you can run the command `help -u` to print the details of all commands (including their short names).
+  In addition, you can define an optional tag by providing the `-t` arg (e.g., `-t 1.0`). If no tag is provided, the default one is `None`.
+- `n` is short name of `new` command. We have defined many short names for common commands. And you can run the command `help -u` to print the details of all commands (including their short names).
 > **🚨Note🚨**<br />
 > If the path of RenPy game contains spaces, please use double quotes (or single quotes) to enclose the path. For example: `new "D:\games\renpy game_demo" -n my_game`
 
@@ -123,7 +123,7 @@ i my_game -l schinese
 ```
 
 - `my_game` specifies the nickname of the TranslationIndex to import into, which can also use the Index: `1`, or a combination of nickname and tag: `my_game:None`.
-- `-l schinese` creates the translations called `schinese`.
+- `-l schinese` names the translations as `schinese`.
 - This command will read both translated and untranslated texts in `D:\games\renpy_game_demo\game\tl\schinese`.
 
 Enter `ls` command to see translations we imported:
@@ -159,7 +159,7 @@ It outputs like:
 ```text
 1320 untranslated lines are saved to ./projz\html\my_game_None_schinese.html.
 ```
-If you think that the number of lines is too large, you can specify `--limit {max_num}` to set the maximum number of lines to save.
+If you think that the number of lines is too large, you can specify `--limit {max_num}` to set the max number of lines to save.
 
 Then, open the HTML file with Chrome or Microsoft Edge. Right click to open context menu, and select the translation option to translate this page. After translating, please press Ctrl+S to save and overwrite the original html file. For more instructions, please refer to [⚡Fast translating⚡ with `savehtml` and `loadhtml`](#fast-translating-with-savehtml-and-loadhtml).
 
@@ -195,7 +195,7 @@ Note that: Translation Stats list translated/untranslated lines of dialogue and 
 > 
 > 1. saveexcel and loadexcel (semi-automatically): Manually upload the excel file to Google Translate, and save the translated file to overwrite the original one.
 > 
-> 2. savehtml and loadexcel (semi-automatically): Use the translation function from Microsoft Edge or Chrome (You need to scroll the page from up and down to make all text get translated), and save the translated file to overwrite the original one.
+> 2. savehtml and loadexcel (semi-automatically): Use the translation function from Microsoft Edge or Chrome (You need to scroll the page from top to bottom to make all text get translated), and save the translated file to overwrite the original one.
 > 
 > 3. Web translation (automatically): `translate 1 -t web -n google -l {lang}` Use the automation tool to enter text into the input box in the translation website, and automatically extract the translation result.
 > 
@@ -232,7 +232,7 @@ projz_renpy-translator/
            –– Roboto-Light.ttf
            –– readme.txt
 ```
-You can manually add custom fonts to the `resources/fonts` dir (please pay attention to the copyright issue of fonts). And add font paths in [config.yaml](config.yaml), so that the program will copy these fonts to the game dir. You can find these added font configs in I18N interface.
+You can manually place custom fonts in `resources/fonts` dir (please pay attention to the copyright issue of fonts). And add font paths in [config.yaml](config.yaml), so that the program will copy these fonts to the game dir. You can find these added font configs in I18N interface.
 
 Run `inject` command to inject the I18N plugin (which enables you to chainge language or font):
 
@@ -288,10 +288,10 @@ This will print the detailed usage of `new` command:
 > We're glad to you integrate your translation implementation into our tool, or help us translate the documentation.
 
 ## Other helpful tips
-1. Changes in [config.yaml](config.yaml) required restart the main program to apply.
-2. If you want to ignore the translations of certain rpy files when importing and generating translations, please add these files to `index.ignore` in [config.yaml](config.yaml). Note that, the path splitter in Windows OS is "\", that means that if you want to ignore translations of `script/demo.rpy`, you should rewrite it path to `script\demo.rpy`. If there exists space in these 
+1. Changes in [config.yaml](config.yaml) required restarting the main program to apply.
+2. If you want to ignore the translations of certain rpy files when importing and generating translations, please add these files to `index.ignore` in [config.yaml](config.yaml). Note that, the path splitter in Windows OS is "\\", that means that if you want to ignore translations of `script/demo.rpy`, you should rewrite its path to `script\demo.rpy`. If there exists space in the path, just keep it.
 3. The tool will  automatically download models in local dir if `translator.ai.model_path` is empty in [config.yaml](config.yaml).
-4. You can use`de {index_or_name} -l {lang}` to export translation data (including translated and untranslated texts) of a given TranslationIndex to a Excel file, then update translations (`ue {index_or_name} -l {lang}`) from it after you modify. In this way, you can alter translations or translate them manually.
+4. You can use`de {index_or_name} -l {lang}` to export translation data (including translated and untranslated texts) of a given TranslationIndex to a Excel file, then update translations (`ue {index_or_name} -l {lang}`) from it after you modify them. In this way, you can alter translations or translate them manually.
 5. You can strip style tags before translating by setting `index.strip_tag` to `True` in [config.yaml](config.yaml).
 6. You can mark all untranslated texts as translated ones by `mark` command: `mark {index_or_name} -l {lang}`
 7. You can rename a name of translations by `rename` command: `rename {index_or_name} -l {lang} t {new_lang}`, where `{new_lang}` is new one.
@@ -329,7 +329,7 @@ Then update translations from the translated file.
 ---
 ## Use web translation
 ### Install Chrome driver
-Download and install [Chrome浏览器](https://www.google.com/chrome/). Find your Chrome version in Settings->About Chrome, then download the corresponding Chrome driver from following link:
+Download and install [Chrome浏览器](https://www.google.com/chrome/). Find your Chrome version in Settings->About Chrome, then download the corresponding Chrome driver from following links:
 * [Chrome Ver 116.x.xxxx.xxx below](https://registry.npmmirror.com/binary.html?path=chromedriver/) 
 * [Chrome Ver 116.x.xxxx.xxx or higher🆕](https://googlechromelabs.github.io/chrome-for-testing/#stable)
 
@@ -353,7 +353,7 @@ projz:
   
 ### Install suitable Pytorch (Optional)
 If you want to use AI translation with CPU, please skip this step.
-These instruction guide you to install suitable Pytorch that compatible with your NVIDIA GPU. It suggests that your GPU memory is not less than 4 GB.
+These following instructions guide you to install suitable Pytorch that compatible with your NVIDIA GPU. It suggests that your GPU memory is not less than 4 GB.
 1. Open a CMD, and run the following command to see your CUDA version:
     ```bash
     nvidia-smi
@@ -397,7 +397,7 @@ These instruction guide you to install suitable Pytorch that compatible with you
     # CPU only
     pip install torch==2.0.1+cpu torchvision==0.15.2+cpu torchaudio==2.0.2 --index-url https://download.pytorch.org/whl/cpu
     ```
-3. Once you have completed the above step, reinstall the appropriate "transformers" library:
+3. Reinstall the appropriate "transformers" library:
     ```bash
     pip install transformers
     ```

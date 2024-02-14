@@ -1,4 +1,5 @@
 <div align="center">
+  <h1>Projz - RenyPy Translation Toolkit</h1>
   <img src="imgs/projz_icon.ico" />
   <br />
 
@@ -523,7 +524,7 @@ except Exception as e:
 
 # 🗒Todo List:
 
-1. [ ] 添加英语文档
+1. [x] 添加英语文档
 2. [ ] GUI支持
 3. [ ] 翻译时检查
 
