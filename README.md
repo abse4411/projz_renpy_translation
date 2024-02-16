@@ -447,7 +447,7 @@ The following instructions guide you to download models manually:
 ---
 
 # 💪Customize your translation API
-You can integrate your translation API easily to this tool. Create a py file in [translator](translator), and let your translation class inherits one of template classes. `CachedTranslatorTemplate` class has a translation buffer which allows to write translations into TranslationIndex when reaching a certain number. The cache size can be configed by `translator.write_cache_size` in [config.yaml](config.yaml). `TranslatorTemplate` class provides basic implementation for write all translations into TranslationIndex at once.  
+You can integrate your translation API easily to this tool. Create a py file in [translator](translator), and let your translation class inherits one of template classes. `CachedTranslatorTemplate` class has a translation buffer which allows to write translations into TranslationIndex when reaching a certain number. The cache size can be configed by `translator.write_cache_size` in [config.yaml](config.yaml). `TranslatorTemplate` class provides basic implementation that writes all translations into TranslationIndex at once.  
 
 ```python
 from argparse import ArgumentParser
@@ -527,13 +527,14 @@ To see complete implementation of DlTranslator, please see [translator/ai/impl.p
 
 1. [x] Add English document
 2. [ ] GUI support
-3. [ ] Check when translating
+3. [ ] Text check when translating
 
 # 🔗Acknowledgement
 
-The codes or libs we use or refer to：
+The codes or libs we use or refer to:
 
-* Previous code of Web translation: [Maooookai(Mirage)](https://github.com/Maooookai/WebTranslator), [DrDRR](https://github.com/DrDRR/RenPy-WebTranslator/commits?author=DrDRR "View all commits by DrDRR")
-* AI translation: [dl-translate](https://github.com/xhluca/dl-translate)
+* Previous code of Web translation: [Maooookai(Mirage)](https://github.com/Maooookai/WebTranslator), [DrDRR](https://github.com/drdrr/RenPy-WebTranslator)
+* AI translation: [dl-translate](https://github.com/xhluca/dl-translate), [MIT License](https://github.com/xhluca/dl-translate?tab=MIT-1-ov-file)
+* Pre-translated RPY file: [RenPy](https://github.com/renpy/renpy/tree/master/launcher/game/tl), [MIT License for these rpy files](https://www.renpy.org/doc/html/license.html)
+* [resources/codes/projz_injection.py](resources/codes/projz_injection.py): [RenPy](https://github.com/renpy/renpy/blob/master/renpy/translation/generation.py), [MIT License for the code file](https://www.renpy.org/doc/html/license.html)
 * Other python libs：[requirements.txt](./requirements.txt)
-* Pre-translated RPY file: [RenPy](https://github.com/renpy/renpy/tree/master/launcher/game/tl)

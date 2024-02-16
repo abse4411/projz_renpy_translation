@@ -24,31 +24,39 @@ __VERSION__ = '0.4.1'
 
 
 def print_banner():
-    print(fr'''
+    print(fr'''----------Projz - RenyPy Translation Toolkit----------
 ________  ________  ________        ___  ________     
 |\   __  \|\   __  \|\   __  \      |\  \|\_____  \    
 \ \  \|\  \ \  \|\  \ \  \|\  \     \ \  \\|___/  /|   
  \ \   ____\ \   _  _\ \  \\\  \  __ \ \  \   /  / /   
   \ \  \___|\ \  \\  \\ \  \\\  \|\  \\_\  \ /  /_/__  
    \ \__\    \ \__\\ _\\ \_______\ \________\\________\
-    \|__|     \|__|\|__|\|_______|\|________|\|_______|   V{__VERSION__}''')
-    print("RenPy机翻工具 - A translator for RenPy games. This project is under the GPL-3.0 license.")
-    print(f"By abse4411. Link: https://github.com/abse4411/projz_renpy_translation")
+    \|__|     \|__|\|__|\|_______|\|________|\|_______|   V{__VERSION__}
+RenPy机翻工具 - A translator for RenPy games. This project is under the GPL-3.0 license.
+By abse4411.  Source code: https://github.com/abse4411/projz_renpy_translation, License: https://github.com/abse4411/projz_renpy_translation?tab=GPL-3.0-1-ov-file
+# 🔗Acknowledgement
+The codes or libs we use or refer to:
+* Previous code of Web translation: [Maooookai(Mirage)](https://github.com/Maooookai/WebTranslator), [DrDRR](https://github.com/drdrr/RenPy-WebTranslator)
+* AI translation: [dl-translate](https://github.com/xhluca/dl-translate), [MIT License](https://github.com/xhluca/dl-translate?tab=MIT-1-ov-file)
+* Pre-translated RPY file: [RenPy](https://github.com/renpy/renpy/tree/master/launcher/game/tl), [MIT License for these rpy files](https://www.renpy.org/doc/html/license.html)
+* [resources/codes/projz_injection.py](resources/codes/projz_injection.py): [RenPy](https://github.com/renpy/renpy/blob/master/renpy/translation/generation.py), [MIT License for the code file](https://www.renpy.org/doc/html/license.html)
+* Other python libs：[requirements.txt](./requirements.txt)
+''')
 
 
-class PrintBannerCmd(BaseCmd):
+class AboutCmd(BaseCmd):
     def __init__(self):
-        super().__init__('foo', 'Print our banner just for fun.')
+        super().__init__('about', 'About me.')
 
     def invoke(self):
         print_banner()
 
 
-register(PrintBannerCmd())
+register(AboutCmd())
 
 
 def main():
-    print_banner()
+    # print_banner()
     execute_cmd('help', '')
     while True:
         cmd_line = my_input('What is your next step? (Enter a command (case insensitive) or Q/q to exit): ')
