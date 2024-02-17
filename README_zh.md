@@ -49,7 +49,7 @@ translate chinese scene_01_5f0ee2360:
 1. [Web翻译](#使用web翻译)，仅限google: `translate {index_or_name} -t web -n google -l {lang}`
 2. [AI翻译](#使用AI翻译): `translate {index_or_name} -t ai -n mbart50 -l {lang}`
 3. 翻译文本潜在错误检查:
-  使用`inspect`命令检查已翻译文本中缺失的变量名(如[var])或者样式化标签(如{font})或者转义字符: `inspect {index_or_name} -l {lang}`。
+  使用`inspect`命令检查已翻译文本中缺失的变量名(如\[var\])或者样式化标签(如{font})或者转义字符: `inspect {index_or_name} -l {lang}`。
   在生成的excel文件完成修复后，使用`updateexcel`命令导入修复的文本：`updateexcel {index_or_name} -l {lang}`
 4. [0.4.1] String翻译复用: 您可以将某个语言`{lang}`已经翻译好的rpy文件在`resources/tl/{lang}`下。注意：仅支持像以下string类型翻译文本：
    ```text
@@ -63,7 +63,9 @@ translate chinese scene_01_5f0ee2360:
        old "Clipboard voicing enabled. "
        new "剪贴板朗读已启用。"
    ```
-   此外，我们也预置许多语言的预翻译rpy文件（这些文件来源于[Renpy](https://github.com/renpy/renpy/tree/master/launcher/game/tl)）。当您使用`import`命令, 如：`i {projrct} -l {lang}`时，如果指定的lang参数与`resources/tl`目录下的某个目录名一致时，将自动复用`resources/tl/{lang}`中rpy存在的string翻译。如果您不想复用这些翻译，请在使用`import`命令后面添加`-nr`选项。
+   此外，我们也预置许多语言的预翻译rpy文件（这些文件来源于[RenPy](https://github.com/renpy/renpy/tree/master/launcher/game/tl)）。当您使用`import`命令, 如：`i {projrct} -l {lang}`时，如果指定的lang参数与`resources/tl`目录下的某个目录名一致时，将自动复用`resources/tl/{lang}`中rpy存在的string翻译。如果您不想复用这些翻译，请在使用`import`命令后面添加`-nr`选项。
+
+    需要注意的是，代码提供的rpy文件源语言是英语(English)，即提供英语其他语言的翻译文件。复用rpy文件的根目录可以通过[config.yaml](config.yaml)中的`index.recycle_dir`配置。
 5. [0.4.1] 打开RenPy游戏、保存文件的所在位置（仅限Windows平台）：新命令`open`可以打开与TranslationIndex关联的游戏可执行文件所在位置：`o {peoject}`。一些保存文件的命令（如`savehtml`、`saveexcel`、`dumpexcel`等）在保存文件后会自动打开文件所在位置，如果要阻止这种行为请在相应命令后面添加`-nw`选项。
 
 # 🛫快速开始

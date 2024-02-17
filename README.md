@@ -48,7 +48,7 @@ For the above translation rpy, only `a "translated text"` will be extracted. To 
 1. [Web Translation](#use-web-translation), only supports google translation: `translate {index_or_name} -t web -n google -l {lang}`
 2. [AI Translation](#use-ai-translation): `translate {index_or_name} -t ai -n mbart50 -l {lang}`
 3. Inspect translated texts:
-  Use `inspect` command to find lost variables, style tags, and escape characters in translated texts (e.g., [var], {font}): `inspect {index_or_name} -l {lang}`. After you fix them in the generated Excel file, use `updateexcel` command to update these texts: `updateexcel {index_or_name} -l {lang}`
+  Use `inspect` command to find lost variables, style tags, and escape characters in translated texts (e.g., \[var\], {font}): `inspect {index_or_name} -l {lang}`. After you fix them in the generated Excel file, use `updateexcel` command to update these texts: `updateexcel {index_or_name} -l {lang}`
 4. [0.4.1] Reuse pre-translated string texts: You can place some rpy files containing pre-translated string texts of language {lang} under `resources/tl/{lang}`. String texts are like:
    ```text
    translate schinese strings:
@@ -62,6 +62,8 @@ For the above translation rpy, only `a "translated text"` will be extracted. To 
        new "剪贴板朗读已启用。"
    ```
    In addition, we also have placed many rpy files with pre-translated string texts (These files are copied from [RenPy](https://github.com/renpy/renpy/tree/master/launcher/game/tl)). After executing `import` command (e.g., `i {projrct} -l {lang}`), the pre-translated string texts will be used to update imported string texts if the specified {lang} parameter matches the name of the subdirectory in `resources/tl`. If you don't want to reuse these translations, please append the `-nr` option to `import` command: `i {projrct} -l {lang} -nr`
+
+    Note that, the source langauge of these provided rpy files is English. It means that there rpy files provide translations from English to other languages. The root dir of these files can be configed by `index.recycle_dir` in [config.yaml](config.yaml).
 5. [0.4.1] Open the location of RenPy game or save file (Windows OS Only): Use the new `open` command to pen the location of a RenPy game associated the TranslationIndex. Some commands for saving file (e.g., `savehtml`, `saveexcel`, `dumpexcel`), will automatically open the saved file's location after the file is saved. To prevent the behavior, please append the `-nw` option to these command.
 
 # 🛫Get started
