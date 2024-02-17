@@ -27,7 +27,7 @@ from injection.base import BaseInjector
 from injection.base.base import UndoOnFailedCallInjector
 from injection.default import RENPY_DIRS, PYTHON_LINUX64_EXE, PYTHON_WIN64_EXE, PYTHON_WIN32_EXE, PYTHON_LINUX32_EXE, \
     RENPY_LIB_DIR, ProjzI18nInjection, ProjzCmdInjection, try_running, RENPY_GAME_DIR, RENPY_TL_DIR
-from util import exists_dir, file_name_ext, exists_file, default_read, default_write
+from util import exists_dir, file_name_ext, exists_file, default_read, default_write, file_dir
 from util import is_windows, is_x64
 
 
@@ -60,16 +60,10 @@ def check_project_name(abs_path):
 def check_python_exe(abs_path):
     executable_path = None
     lib_path = os.path.join(abs_path, RENPY_LIB_DIR)
-    if is_x64():
-        if is_windows():
-            pyexe_files = PYTHON_WIN64_EXE
-        else:
-            pyexe_files = PYTHON_LINUX64_EXE
+    if is_windows():
+        pyexe_files = PYTHON_WIN64_EXE + PYTHON_WIN32_EXE
     else:
-        if is_windows():
-            pyexe_files = PYTHON_WIN32_EXE
-        else:
-            pyexe_files = PYTHON_LINUX32_EXE
+        pyexe_files = PYTHON_LINUX64_EXE + PYTHON_LINUX32_EXE
     pyexe_files = [os.path.join(lib_path, exe) for exe in pyexe_files]
     for pyexe in pyexe_files:
         if exists_file(pyexe):
@@ -171,9 +165,14 @@ class Project:
         return [self._injection_state.keys()]
 
     def launch(self, cmd, args: List[str], verbose=False, wait=False):
-        # Put the command and args together.
-        cmd_args = [self.executable_path, os.path.join(self.project_path, f'{self.project_name}.py'),
-                    self.project_path, cmd] + args
+        if 'i686' in self.executable_path:
+            new_ext = '.exe' if is_windows() else ''
+            new_exe = os.path.join(file_dir(self.executable_path), self.project_name+new_ext)
+            cmd_args = [new_exe, self.project_path, cmd] + args
+        else:
+            # Put the command and args together.
+            cmd_args = [self.executable_path, os.path.join(self.project_path, f'{self.project_name}.py'),
+                        self.project_path, cmd] + args
         new_args = []
         for c in cmd_args:
             if ' ' in c:
@@ -213,9 +212,6 @@ class Project:
                 else:
                     raise RuntimeError(f'Bad output: {data}')
             raise RuntimeError(f'Failed in Launching the task with return code {code}.')
-        except Exception as e:
-            logging.exception(e)
-            raise
         finally:
             if clear_cache and exists_file(json_file):
                 try_running(try_fn=lambda: os.remove(json_file), return_try=False)
@@ -237,10 +233,16 @@ class Project:
         tmp_instance = cls(abs_path, executable_path, project_name)
         print('Injecting our code...')
         # check and inject
-        if tmp_instance.get_base_injection()():
+        base_injection = tmp_instance.get_base_injection()
+        if base_injection():
             print(f'Trying to launch the game...')
-            # test injection
-            data = tmp_instance.launch_task(None, args=['--test-only'])
+            try:
+                # test injection
+                data = tmp_instance.launch_task(None, args=['--test-only'])
+            except Exception as e:
+                logging.exception(e)
+                base_injection.undo()
+                raise
             tmp_instance.set_game_info(data['game_info'])
             print(f'All done! We have detected the game info: {tmp_instance.game_info}')
             return tmp_instance

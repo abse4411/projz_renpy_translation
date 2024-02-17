@@ -54,8 +54,14 @@ from __future__ import division, absolute_import, with_statement, print_function
 import os
 import shutil
 import time
-
-from renpy.compat import *
+import sys
+_PY3_OR_LATER = sys.version_info >= (3, 0)
+if not _PY3_OR_LATER:
+    from io import open
+try:
+    from renpy.compat import *
+except Exception as e:
+    pass
 
 import renpy.translation
 import json
