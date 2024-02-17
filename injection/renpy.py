@@ -175,19 +175,12 @@ class Project:
             # Put the command and args together.
             cmd_args = [self.executable_path, os.path.join(self.project_path, f'{self.project_name}.py'),
                         self.project_path, cmd] + args
-        new_args = []
-        for c in cmd_args:
-            if ' ' in c:
-                new_args.append(f'"{c}"')
-            else:
-                new_args.append(c)
-        cmd_line = ' '.join(new_args)
         if verbose:
-            logging.info(f'Launching: {cmd_line}')
+            logging.info(f'Launching: {" ".join(cmd_args)}')
         # raise RuntimeError()
         # print(cmd_line)
         # we don't send any input to subprocess
-        p = subprocess.Popen(cmd_line, shell=True, stdin=subprocess.PIPE)
+        p = subprocess.Popen(cmd_args, shell=True, stdin=subprocess.PIPE)
         if wait:
             return_code = p.wait()
             if verbose:
