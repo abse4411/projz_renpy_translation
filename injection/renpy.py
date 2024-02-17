@@ -165,11 +165,13 @@ class Project:
         return [self._injection_state.keys()]
 
     def launch(self, cmd, args: List[str], verbose=False, wait=False):
+        cmd_args = None
         if 'i686' in self.executable_path:
             new_ext = '.exe' if is_windows() else ''
             new_exe = os.path.join(file_dir(self.executable_path), self.project_name+new_ext)
-            cmd_args = [new_exe, self.project_path, cmd] + args
-        else:
+            if exists_file(new_exe):
+                cmd_args = [new_exe, self.project_path, cmd] + args
+        if cmd_args is None:
             # Put the command and args together.
             cmd_args = [self.executable_path, os.path.join(self.project_path, f'{self.project_name}.py'),
                         self.project_path, cmd] + args
