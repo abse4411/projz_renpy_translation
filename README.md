@@ -456,11 +456,11 @@ The following instructions guide you to download models manually:
     ```bash
    t {index_or_name} -t ts -n {API_name} -l {lang}
    ```
-    - `-n`specifies the API service to use. You can run the command `t -t ts -h` to show available API services. Default as `bing` 。
+    - `-n` specifies the API service to use. You can run the command `t -t ts -h` to show available API services. Default as `bing`.
 2. Set the translation target. This is similar to step 2 in AI translation.
 3. Then, the tool starts automatically translating.
 
-Note, args of `translate_text` and `preaccelerate` method using in this command, can be configed at `translator.translators` in [config.yaml](config.yaml).
+Note, args of `translate_text` and `preaccelerate` method using in this command, can be configed at `translator.translators` in [config.yaml](config.yaml). Learn more: [UlionTse/translators](https://github.com/UlionTse/translators?tab=readme-ov-file#getting-started)
 
 ---
 

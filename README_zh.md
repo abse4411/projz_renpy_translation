@@ -459,11 +459,11 @@ projz:
     ```bash
    t {index_or_name} -t ts -n {API_name} -l {lang}
    ```
-    - `-n`指定使用的API，可以使用`t -t ts -h`查看所有选的API, 默认为`bing` 。
+    - `-n`指定使用的API服务，可以使用`t -t ts -h`查看所有选的API服务, 默认为`bing` 。
 2. 设置翻译目标,这和AI翻译第二步类似。
 3. 完成以上步骤，程序会开始自动翻译。
 
-注意,有关于该命令调用的`translate_text`和`preaccelerate`方法参数可以在[config.yaml](config.yaml)中的`translator.translators`分别配置。
+注意,有关于该命令调用的`translate_text`和`preaccelerate`方法参数可以在[config.yaml](config.yaml)中的`translator.translators`分别配置。详情见: [UlionTse/translators](https://github.com/UlionTse/translators?tab=readme-ov-file#getting-started)
 
 ---
 
