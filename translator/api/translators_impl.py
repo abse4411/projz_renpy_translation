@@ -44,6 +44,15 @@ class TranslatorsLibTranslator(CachedTranslatorTemplate):
     def do_init(self, args, config: ProjzConfig):
         super().do_init(args, config)
         self.translator = args.name
+        self.trans_kwargs = self.config['translator']['translators'].get('translate_text', {})
+        self.trans_kwargs.pop('query_text', None)
+        self.trans_kwargs.pop('translator', None)
+        self.trans_kwargs.pop('from_language', None)
+        self.trans_kwargs.pop('to_language', None)
+        use_preacceleration = self.trans_kwargs.pop('if_use_preacceleration', False)
+        kwargs = self.config['translator']['translators'].get('preaccelerate', {})
+        if use_preacceleration:
+            _ = preaccelerate(kwargs)
 
     def determine_translation_target(self):
         ava_langs = sorted(list(ts.get_languages(self.translator).keys())) + ['auto']
@@ -89,21 +98,9 @@ class TranslatorsLibTranslator(CachedTranslatorTemplate):
     def invoke(self, tids_and_text: List[Tuple[str, str]], update_func):
         done = self.determine_translation_target()
         if done:
-            self.trans_kwargs = self.config['translator']['translators'].get('translate_text', {})
-            self.trans_kwargs.pop('query_text', None)
-            self.trans_kwargs.pop('translator', None)
-            self.trans_kwargs.pop('from_language', None)
-            self.trans_kwargs.pop('to_language', None)
-            use_preacceleration = self.trans_kwargs.pop('if_use_preacceleration', False)
-            kwargs = self.config['translator']['translators'].get('preaccelerate', {})
-            if use_preacceleration:
-                _ = preaccelerate(kwargs)
-            if len(tids_and_text) <= 0:
-                print('No untranslated lines to translate.')
-                return
             super().invoke(tids_and_text, update_func)
         else:
-            print('Translation tasks completed.')
+            print('Translation tasks canceled.')
 
     def translate(self, text: str):
         res = ts.translate_text(text, from_language=self._source, to_language=self._target,
