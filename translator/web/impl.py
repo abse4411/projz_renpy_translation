@@ -26,7 +26,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 
-from translator.web import BaseWebTranslator
+from translator.base import CachedTranslatorTemplate
 from translator.web.base import register_translator
 
 
@@ -48,7 +48,7 @@ def _init_chrome(config: ProjzConfig):
     return browser
 
 
-class BaseChromeTranslator(BaseWebTranslator):
+class BaseChromeTranslator(CachedTranslatorTemplate):
     def __init__(self):
         super().__init__()
         self._browser = None
@@ -56,6 +56,7 @@ class BaseChromeTranslator(BaseWebTranslator):
     def do_init(self, args, config: ProjzConfig):
         super().do_init(args, config)
         self._browser = _init_chrome(config)
+        return True
 
     def close(self):
         try:
@@ -79,9 +80,6 @@ class BaseChromeTranslator(BaseWebTranslator):
         self.clear()
         return new_text
 
-    def invoke(self, tids_and_text: List[Tuple[str, str]], update_func):
-        super().invoke(tids_and_text, update_func)
-
 
 class GoogleTranslator(BaseChromeTranslator):
     def __init__(self):
@@ -100,6 +98,7 @@ class GoogleTranslator(BaseChromeTranslator):
             pass
         self.inputArea = self._browser.find_element(By.XPATH,
                                                     '/html/body/c-wiz/div/div[2]/c-wiz/div[2]/c-wiz/div[1]/div[2]/div[2]/c-wiz[1]/span/span/div/textarea')
+        return True
 
     def set_input(self, rawtext):
         self.inputArea.send_keys(rawtext)

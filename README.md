@@ -480,6 +480,7 @@ from config.base import ProjzConfig
 # 2. Create a new instance of DlTranslator, then call register_args method.（Note that, your class should use a non-parameter constructor）
 # 3. If there exists '-h' or '--help' in user input, print help and goto 7.
 # 4. Call do_init method (Put your init code in the method. The passed args and config are ready at this moment).
+# If do_init() returned False, goto 7.
 # 5. Call invoke method (The Base class CachedTranslatorTemplate or TranslatorTemplate has implemented it.)
 # 6. The default implementation of invoke calls translate_batch method. And the default implementation of translate_batch calls translate method within a for-loop.
 # 7.Done
@@ -500,6 +501,7 @@ class DlTranslator(CachedTranslatorTemplate):
       self._model_name = args.name
       self._model_path = config['translator']['ai']['model_path']
       self._load_model()
+      return True # Return True if everything is OK.
 
    def translate(self, text: str):
       # Your implementation for translating.

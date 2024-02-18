@@ -24,22 +24,6 @@ from translator.base.template import CachedTranslatorTemplate
 _WEB_APIS = dict()
 
 
-class BaseWebTranslator(CachedTranslatorTemplate):
-    def __init__(self):
-        super().__init__()
-
-    def register_args(self, parser: ArgumentParser):
-        '''
-        Don't call this in subclass
-        :param parser:
-        :return:
-        '''
-        raise NotImplementedError()
-
-    def do_init(self, args, config: ProjzConfig):
-        super().do_init(args, config)
-
-
 def register_translator(name: str, translator):
     assert name not in _WEB_APIS, f'The {name} translator has already registered!'
     _WEB_APIS[name] = translator
@@ -65,9 +49,7 @@ class WebConcurrentTranslator(ConcurrentTranslatorTemplate):
         super().create_taskrunner(_WEB_APIS[args.name], count_on_batch=False, wait_for_init=True,
                                   wait_prompt='Now you can do any operation on these opened browsers, '
                                               'like setting your translation setting: English -> Chinese.')
-
-    def invoke(self, tids_and_text: List[Tuple[str, str]], update_func):
-        super().invoke(tids_and_text, update_func)
+        return True
 
 
 register_cmd_translator('web', WebConcurrentTranslator)

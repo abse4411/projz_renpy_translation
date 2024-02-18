@@ -14,5 +14,5 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from .base import BaseWebTranslator, WebConcurrentTranslator
+from .base import WebConcurrentTranslator
 import translator.web.impl

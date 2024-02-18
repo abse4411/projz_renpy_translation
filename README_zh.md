@@ -482,7 +482,8 @@ from config.base import ProjzConfig
 # 1.用户输入:translate 1 -l chinese -t ai --name mbart50
 # 2.创建DlTranslator实例，并调用register_args方法（注意DlTranslator必须使用无参数的构造函数）
 # 3.如果用户输入的参数含有'-h'或'--help'，则打印DlTranslator的命令帮助，然后跳转到7.结束。
-# 4.调用do_init方法(在这里开始翻译API的初始化应该在这里开始，这里可以使用转换好的args和config)
+# 4.调用do_init方法(在这里开始翻译API的初始化应该在这里开始，这里可以使用转换好的args和config),
+#   如果do_init()返回False，则跳转到7.结束
 # 5.调用invoke方法(基类CachedTranslatorTemplate或者TranslatorTemplate已经实现，DlTranslator无需实现)
 # 6.invoke方法默认实现调用translate_batch方法，而translate_batch循环调用translate方法
 # 7.结束
@@ -503,6 +504,7 @@ class DlTranslator(CachedTranslatorTemplate):
       self._model_name = args.name
       self._model_path = config['translator']['ai']['model_path']
       self._load_model()
+      return True # 如果初始话没问题，返回True
 
    def translate(self, text: str):
       # 您的API翻译方法，接受一个字符串返回一个翻译的字符串

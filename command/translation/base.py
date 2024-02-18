@@ -44,7 +44,7 @@ class TranslateCmd(BaseLangIndexCmd):
         self._parser.add_argument("-ab", "--accept_blank", action='store_true',
                                   help="Accept blank translated lines from the translator when updating translations.")
         self._parser.add_argument('--limit', type=int, default=-1,
-                                 help='The max number of lines to be translated. Negative values mean no limit.')
+                                  help='The max number of lines to be translated. Negative values mean no limit.')
         self._translator = None
 
     def get_untranslated_lines(self):
@@ -94,9 +94,12 @@ class TranslateCmd(BaseLangIndexCmd):
         self._translator.register_args(self._parser)
         self.args = self._parser.parse_args(args_list)
         self._index, self._nick_name = self.parse_index_or_name(self.args.index_or_name)
-        self._translator.do_init(self.args, default_config)
 
     def invoke(self):
+        done = self._translator.do_init(self.args, default_config)
+        if not done:
+            print('Translation task is canceled.')
+            return
         tids_and_texts, index = self.get_untranslated_lines()
 
         if tids_and_texts:

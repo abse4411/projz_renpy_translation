@@ -115,7 +115,7 @@ class TranslationTaskRunner:
         if n_texts <= 0:
             return
         batches = []
-        batch_size = max(n_texts // self._args.num_workers + 2, 1)
+        batch_size = (n_texts // self._args.num_workers) + 2
         if batch_size == 1:
             batches.append(tids_and_text)
         else:
@@ -164,11 +164,11 @@ class TranslationTaskRunner:
                 if cnt > last_cnt:
                     pbar.update(cnt - last_cnt)
                     last_cnt = cnt
-            print('Translation tasks completed.')
+            print('Translation task is completed.')
         else:
             self._stop_flag = True
             self._event.set()
-            print('Translation tasks canceled.')
+            print('Translation task is canceled.')
         executor.shutdown()
 
 
@@ -189,6 +189,7 @@ class ConcurrentTranslatorTemplate(TranslatorTemplate):
         assert args.num_workers >= 1, 'The min value of --num_workers should be greater than 0!'
         assert args.num_workers <= max_workers, f'The --num_workers should be not greater that {max_workers}'
         self._taskrunner = None
+        return True
 
     def create_taskrunner(self, template_cls, count_on_batch: bool,
                           wait_for_init=True, wait_prompt: str = None):

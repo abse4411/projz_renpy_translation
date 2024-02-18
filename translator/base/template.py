@@ -35,6 +35,7 @@ class TranslatorTemplate(Translator):
     def do_init(self, args, config: ProjzConfig):
         self.args = args
         self.config = config
+        return True
 
     def close(self):
         pass
@@ -62,6 +63,7 @@ class CachedTranslatorTemplate(TranslatorTemplate):
             logging.warning(f'Low write_cache_size({cache_size}) means more frequent disk I/O operations,'
                             f' it may cause a high system load.')
         self._cache_size = max(cache_size, 100)
+        return True
 
     def invoke(self, tids_and_text: List[Tuple[str, str]], update_func):
         texts = [t[1] for t in tids_and_text]

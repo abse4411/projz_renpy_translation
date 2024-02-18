@@ -53,6 +53,7 @@ class TranslatorsLibTranslator(CachedTranslatorTemplate):
         kwargs = self.config['translator']['translators'].get('preaccelerate', {})
         if use_preacceleration:
             _ = preaccelerate(kwargs)
+        return self.determine_translation_target()
 
     def determine_translation_target(self):
         ava_langs = sorted(list(ts.get_languages(self.translator).keys())) + ['auto']
@@ -94,13 +95,6 @@ class TranslatorsLibTranslator(CachedTranslatorTemplate):
                         return True
                     except Exception as e:
                         logging.exception(e)
-
-    def invoke(self, tids_and_text: List[Tuple[str, str]], update_func):
-        done = self.determine_translation_target()
-        if done:
-            super().invoke(tids_and_text, update_func)
-        else:
-            print('Translation tasks canceled.')
 
     def translate(self, text: str):
         res = ts.translate_text(text, from_language=self._source, to_language=self._target,

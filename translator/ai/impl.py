@@ -107,14 +107,7 @@ class DlTranslator(CachedTranslatorTemplate):
         self._model_path = strip_or_none(config['translator']['ai']['model_path'])
         self._model_name = args.name
         self._load_model()
-
-    def invoke(self, tids_and_text: List[Tuple[str, str]], update_func):
-        done = self.determine_translation_target()
-        if done:
-            super().invoke(tids_and_text, update_func)
-            print('Translation tasks completed.')
-        else:
-            print('Translation tasks canceled.')
+        return self.determine_translation_target()
 
     def close(self):
         del self.mt
@@ -122,7 +115,7 @@ class DlTranslator(CachedTranslatorTemplate):
             torch.cuda.empty_cache()
 
     def translate(self, text: str):
-        return self.mt.translate(text, self._source, self._source, batch_size=1, verbose=True)
+        return self.mt.translate(text, self._source, self._source, batch_size=1, verbose=False)
 
     def translate_batch(self, texts: List[str]):
         return self.mt.translate(texts, self._source, self._source, batch_size=self._batch_size, verbose=True)
