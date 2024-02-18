@@ -47,8 +47,6 @@ class DlTranslator(CachedTranslatorTemplate):
         parser.add_argument('-b', '--batch_size', type=int, default=4,
                             help='The batch size for translating. Lager value may bring faster translation speed '
                                  'but consumes more GPU memory')
-        parser.add_argument('--limit', type=int, default=-1,
-                            help='The max number of lines to be translated. Negative values mean no limit.')
 
     def _load_model(self):
         print(f'Start loading the {self._model_name} model')
@@ -63,7 +61,7 @@ class DlTranslator(CachedTranslatorTemplate):
         print(f'The model is loaded in {time.time() - st_time:.1f}s')
 
     def determine_translation_target(self):
-        ava_langs = list(self.mt.available_languages())
+        ava_langs = sorted(list(self.mt.available_languages()))
         ava_indexes = list(range(len(ava_langs)))
 
         cols = 4
@@ -113,12 +111,6 @@ class DlTranslator(CachedTranslatorTemplate):
     def invoke(self, tids_and_text: List[Tuple[str, str]], update_func):
         done = self.determine_translation_target()
         if done:
-            if self.args.limit >= 0:
-                tids_and_text = tids_and_text[:self.args.limit]
-                print(f'The max number of lines is set to {self.args.limit}.')
-            if len(tids_and_text) <= 0:
-                print('No untranslated lines to translate.')
-                return
             super().invoke(tids_and_text, update_func)
             print('Translation tasks completed.')
         else:

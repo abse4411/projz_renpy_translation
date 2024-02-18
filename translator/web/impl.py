@@ -99,14 +99,14 @@ class GoogleTranslator(BaseChromeTranslator):
         except:
             pass
         self.inputArea = self._browser.find_element(By.XPATH,
-                                                    '//*[@id="yDmH0d"]/c-wiz/div/div[2]/c-wiz/div[2]/c-wiz/div[1]/div[2]/div[3]/c-wiz[1]/span/span/div/textarea')
+                                                    '/html/body/c-wiz/div/div[2]/c-wiz/div[2]/c-wiz/div[1]/div[2]/div[2]/c-wiz[1]/span/span/div/textarea')
 
     def set_input(self, rawtext):
         self.inputArea.send_keys(rawtext)
         time.sleep(random.uniform(0.2, 1))
 
     def get_output(self, rawtext) -> Optional[str]:
-        xpath = '/html/body/c-wiz/div/div[2]/c-wiz/div[2]/c-wiz/div[1]/div[2]/div[3]/c-wiz[2]/div/div[7]/div/div[1]'
+        xpath = '/html/body/c-wiz/div/div[2]/c-wiz/div[2]/c-wiz/div[1]/div[2]/div[2]/c-wiz[2]/div/div[6]/div/div[1]'
         WebDriverWait(self._browser, 10).until(
             lambda broswer: self._browser.find_element(By.XPATH, xpath))
         time.sleep(random.uniform(0.2, 1))

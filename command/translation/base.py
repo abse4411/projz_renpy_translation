@@ -43,11 +43,16 @@ class TranslateCmd(BaseLangIndexCmd):
                                   help="The translator to use.")
         self._parser.add_argument("-ab", "--accept_blank", action='store_true',
                                   help="Accept blank translated lines from the translator when updating translations.")
+        self._parser.add_argument('--limit', type=int, default=-1,
+                                 help='The max number of lines to be translated. Negative values mean no limit.')
         self._translator = None
 
     def get_untranslated_lines(self):
         index = self.get_translation_index()
         tids_and_texts = index.get_untranslated_lines(self.args.lang, say_only=self.config.say_only)
+        if self.args.limit >= 0:
+            tids_and_texts = tids_and_texts[:self.args.limit]
+            print(f'The max number of lines is set to {self.args.limit}.')
         if not tids_and_texts:
             print('No untranslated lines to update.')
         else:

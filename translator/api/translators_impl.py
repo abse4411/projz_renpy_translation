@@ -40,8 +40,6 @@ class TranslatorsLibTranslator(CachedTranslatorTemplate):
         super().register_args(parser)
         parser.add_argument('-n', '--name', choices=ts.translators_pool, default='bing',
                             help='The name of translation services.')
-        parser.add_argument('--limit', type=int, default=-1,
-                            help='The max number of lines to be translated. Negative values mean no limit.')
 
     def do_init(self, args, config: ProjzConfig):
         super().do_init(args, config)
@@ -100,9 +98,6 @@ class TranslatorsLibTranslator(CachedTranslatorTemplate):
             kwargs = self.config['translator']['translators'].get('preaccelerate', {})
             if use_preacceleration:
                 _ = preaccelerate(kwargs)
-            if self.args.limit >= 0:
-                tids_and_text = tids_and_text[:self.args.limit]
-                print(f'The max number of lines is set to {self.args.limit}.')
             if len(tids_and_text) <= 0:
                 print('No untranslated lines to translate.')
                 return
