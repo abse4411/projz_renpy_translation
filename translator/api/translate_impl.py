@@ -14,56 +14,41 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import logging
-import os
-import time
 from argparse import ArgumentParser
-from typing import List, Tuple
+from typing import Tuple, List
 
-import torch.cuda
+import tqdm
+import translators as ts
 from prettytable import PrettyTable
+from translators.server import preaccelerate
 
 from command.translation.base import register_cmd_translator
 from config.base import ProjzConfig
 from translator.base import CachedTranslatorTemplate
-from util import exists_dir, strip_or_none, my_input, line_to_args
-import dl_translate as dlt
-
-AVAILABLE_MODELS = ['m2m100', 'mbart50', 'nllb200']
+from util import my_input, line_to_args
 
 
-class DlTranslator(CachedTranslatorTemplate):
+class TranslatorsLibTranslator(CachedTranslatorTemplate):
     def __init__(self):
         super().__init__()
-        self._batch_size = None
-        self._target = None
+        self.trans_kwargs = None
+        self.translator = None
         self._source = None
-        self._model_path = None
-        self._model_name = None
+        self._target = None
 
     def register_args(self, parser: ArgumentParser):
         super().register_args(parser)
-        parser.add_argument('-n', '--name', choices=AVAILABLE_MODELS, default='mbart50',
-                            help='The name of deep learning translation model.')
-        parser.add_argument('-b', '--batch_size', type=int, default=4,
-                            help='The batch size for translating. Lager value may bring faster translation speed '
-                                 'but consumes more GPU memory')
+        parser.add_argument('-n', '--name', choices=ts.translators_pool, default='bing',
+                            help='The name of translation services.')
         parser.add_argument('--limit', type=int, default=-1,
                             help='The max number of lines to be translated. Negative values mean no limit.')
 
-    def _load_model(self):
-        print(f'Start loading the {self._model_name} model')
-        st_time = time.time()
-        if self._model_path:
-            model_path = os.path.join(self._model_path, self._model_name)
-            assert exists_dir(model_path), f'Invalid model path: {model_path}'
-            print(f'Loading the model from: {model_path}')
-            self.mt = dlt.TranslationModel(model_path, model_family=self._model_name)
-        else:
-            self.mt = dlt.TranslationModel(self._model_name)
-        print(f'The model is loaded in {time.time() - st_time:.1f}s')
+    def do_init(self, args, config: ProjzConfig):
+        super().do_init(args, config)
+        self.translator = args.name
 
     def determine_translation_target(self):
-        ava_langs = list(self.mt.available_languages())
+        ava_langs = sorted(list(ts.get_languages(self.translator).keys())) + ['auto']
         ava_indexes = list(range(len(ava_langs)))
 
         cols = 4
@@ -83,6 +68,7 @@ class DlTranslator(CachedTranslatorTemplate):
             table.add_row(r)
         while True:
             print(table)
+            print('The "auto" is only for the source language!')
             args = my_input(
                 'Please set the translation target (enter two language indexes from above table, '
                 'like "0 1" which means that translating text from '
@@ -102,17 +88,18 @@ class DlTranslator(CachedTranslatorTemplate):
                     except Exception as e:
                         logging.exception(e)
 
-    def do_init(self, args, config: ProjzConfig):
-        super().do_init(args, config)
-        assert args.batch_size > 0, f'The batch_size must be greater than 0!'
-        self._batch_size = args.batch_size
-        self._model_path = strip_or_none(config['translator']['ai']['model_path'])
-        self._model_name = args.name
-        self._load_model()
-
     def invoke(self, tids_and_text: List[Tuple[str, str]], update_func):
         done = self.determine_translation_target()
         if done:
+            self.trans_kwargs = self.config['translator']['translators'].get('translate_text', {})
+            self.trans_kwargs.pop('query_text', None)
+            self.trans_kwargs.pop('translator', None)
+            self.trans_kwargs.pop('from_language', None)
+            self.trans_kwargs.pop('to_language', None)
+            use_preacceleration = self.trans_kwargs.pop('if_use_preacceleration', False)
+            kwargs = self.config['translator']['translators'].get('preaccelerate', {})
+            if use_preacceleration:
+                _ = preaccelerate(kwargs)
             if self.args.limit >= 0:
                 tids_and_text = tids_and_text[:self.args.limit]
                 print(f'The max number of lines is set to {self.args.limit}.')
@@ -120,20 +107,20 @@ class DlTranslator(CachedTranslatorTemplate):
                 print('No untranslated lines to translate.')
                 return
             super().invoke(tids_and_text, update_func)
-            print('Translation tasks completed.')
         else:
-            print('Translation tasks canceled.')
-
-    def close(self):
-        del self.mt
-        if torch.cuda.is_available():
-            torch.cuda.empty_cache()
+            print('Translation tasks completed.')
 
     def translate(self, text: str):
-        return self.mt.translate(text, self._source, self._source, batch_size=1, verbose=True)
+        res = ts.translate_text(text, from_language=self._source, to_language=self._target,
+                                translator=self.translator, **self.trans_kwargs)
+        # print(res)
+        return res
 
     def translate_batch(self, texts: List[str]):
-        return self.mt.translate(texts, self._source, self._source, batch_size=self._batch_size, verbose=True)
+        new_text = []
+        for t in tqdm.tqdm(texts, desc='Translating'):
+            new_text.append(self.translate(t))
+        return new_text
 
 
-register_cmd_translator('ai', DlTranslator)
+register_cmd_translator('ts', TranslatorsLibTranslator)

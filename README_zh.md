@@ -65,8 +65,9 @@ translate chinese scene_01_5f0ee2360:
    ```
    此外，我们也预置许多语言的预翻译rpy文件（这些文件来源于[RenPy](https://github.com/renpy/renpy/tree/master/launcher/game/tl)）。当您使用`import`命令, 如：`i {projrct} -l {lang}`时，如果指定的lang参数与`resources/tl`目录下的某个目录名一致时，将自动复用`resources/tl/{lang}`中rpy存在的string翻译。如果您不想复用这些翻译，请在使用`import`命令后面添加`-nr`选项。
 
-    需要注意的是，代码提供的rpy文件源语言是英语(English)，即提供英语其他语言的翻译文件。复用rpy文件的根目录可以通过[config.yaml](config.yaml)中的`index.recycle_dir`配置。
+    需要注意的是，代码提供的rpy文件源语言是英语(English)，即提供英语其他语言的翻译文件。复用rpy文件的根目录可以通过`index.recycle_dir`配置。
 5. [0.4.1] 打开RenPy游戏、保存文件的所在位置（仅限Windows平台）：新命令`open`可以打开与TranslationIndex关联的游戏可执行文件所在位置：`o {peoject}`。一些保存文件的命令（如`savehtml`、`saveexcel`、`dumpexcel`等）在保存文件后会自动打开文件所在位置，如果要阻止这种行为请在相应命令后面添加`-nw`选项。
+6. [0.4.1] [UlionTse/translators](#使用uliontse-translators翻译)翻译：`translate {index_or_name} -t ts -n bing -l {lang}`
 
 # 🛫快速开始
 
@@ -150,7 +151,7 @@ Note that: Translation Stats list translated/untranslated lines of dialogue and 
 
 ## 3.使用翻译命令进行翻译
 
-为方便这里使用`savehtml`和`loadhtml`命令进行快速翻译。其他翻译命令见：[Web翻译](#使用web翻译), [AI翻译](#使用AI翻译)，[使用saveexcel和loadexcel⚡快速⚡翻译](#使用saveexcel和loadexcel快速翻译)
+为方便这里使用`savehtml`和`loadhtml`命令进行快速翻译。其他翻译命令见：[Web翻译](#使用web翻译), [AI翻译](#使用AI翻译)，[使用saveexcel和loadexcel⚡快速⚡翻译](#使用saveexcel和loadexcel快速翻译), [使用uliontse-translators翻译](#使用uliontse-translators翻译)
 
 现在我们用`savehtml`和`loadhtml`命令来翻译：
 
@@ -203,9 +204,11 @@ Note that: Translation Stats list translated/untranslated lines of dialogue and 
 > 
 > 2. savehtml和loadexcel（半自动化）：使用Microsoft Edge或Chrome的网页翻译功能（需要手动滚动网页），并覆盖原始文件后导入
 > 
-> 3.Web翻译（自动化）：`translate 1 -t web -n google -l {lang}` 利用自动化工具自动输入文本到翻译网站的输入框，并自动提取翻译结果
+> 3. Uliontse/translators翻译（自动化）：`translate {index_or_name} -t ts -n bing -l {lang}`
 > 
-> 4. AI翻译（自动化）: `translate 1 -t ai -n mbart50 -l {lang}` 利用深度网络模型翻译，需要消耗GPU资源
+> 4. Web翻译（自动化）：`translate 1 -t web -n google -l {lang}` 利用自动化工具自动输入文本到翻译网站的输入框，并自动提取翻译结果
+> 
+> 5. AI翻译（自动化）: `translate 1 -t ai -n mbart50 -l {lang}` 利用深度网络模型翻译，需要消耗GPU资源
 > 
 > 各个翻译命令的翻译文本质量目前无法评估。
 
@@ -447,18 +450,33 @@ projz:
     - `-n`指定使用的模型，可选的模型有：`m2m100`，`mbart50`，`nllb200`，这里我们选择`m2m100`。
     - `-b`可以指定模型的batch size，其表示模型的一次翻译迭代中的文本数量，越大的batch size消耗越多的显存，因此可以根据您的显存大小决定。
 2. 设置翻译目标，例如您想从英语(English)翻译到中文(Chinese)，分别输入英语和中文对应索引号就行，例如：`19 109`
-    ![dlt_settarget.png](imgs%2Fdlt_settarget.png)
+    ![dlt_settarget.png](imgs/dlt_settarget.png)
 3. 完成以上步骤，程序会开始自动翻译。
+---
+## 使用UlionTse-translators翻译
+### 开始使用
+1. 输入以下命令：
+    ```bash
+   t {index_or_name} -t ts -n {API_name} -l {lang}
+   ```
+    - `-n`指定使用的API，可以使用`t -t ts -h`查看所有选的API, 默认为`bing` 。
+2. 设置翻译目标,这和AI翻译第二步类似。
+3. 完成以上步骤，程序会开始自动翻译。
+
+注意,有关于该命令调用的`translate_text`和`preaccelerate`方法参数可以在[config.yaml](config.yaml)中的`translator.translators`分别配置。
+
 ---
 
 # 💪自定义翻译API
 如果想要实现自己的翻译API非常简单，在[translator](translator)文件夹下新建一个py文件，然后继承`CachedTranslatorTemplate`类或者`TranslatorTemplate`类（`CachedTranslatorTemplate`类实现了翻译缓存机制，当翻译文本达到一定数量后就写入到TranslationIndex，可在[config.yaml](config.yaml)中配置`translator.write_cache_size`来决定翻译写入缓存大小，而`TranslatorTemplate`类则一次性给出所有未翻译文本，并调用`translate_batch`方法）：
+
 ```python
 from argparse import ArgumentParser
 from translator.base import CachedTranslatorTemplate
-from command.translation.base import register
+from command.translation.base import register_cmd_translator
 from typing import List, Tuple
 from config.base import ProjzConfig
+
 
 # 翻译API调用流程，以DlTranslator为例：
 # 1.用户输入:translate 1 -l chinese -t ai --name mbart50
@@ -470,38 +488,39 @@ from config.base import ProjzConfig
 # 7.结束
 
 class DlTranslator(CachedTranslatorTemplate):
-    def register_args(self, parser: ArgumentParser):
+   def register_args(self, parser: ArgumentParser):
       super().register_args(parser)
       # 这里注册您要接受的命令行参数
       # 注意：在这里请不要做任何初始化工作，因为很可能用户只是想知道该翻译API有哪些参数。
       # 初始化工作请放在do_init方法
       parser.add_argument('-n', '--name', choices=['m2m100', 'mbart50', 'nllb200'], default='mbart50',
                           help='The name of deep learning translation  model.')
-        
-    def do_init(self, args, config: ProjzConfig):
-        super().do_init(args, config)
-        # 当用户决定使用这个翻译API时会调用这个方法
-        # 请在这里做初始化工作，您现在可以使用已经转换好的args和config
-        self._model_name = args.name
-        self._model_path = config['translator']['ai']['model_path']
-        self._load_model()
 
-    def translate(self, text: str):
-        # 您的API翻译方法，接受一个字符串返回一个翻译的字符串
-        return self.mt.translate(text, self._source, self._source, batch_size=1, verbose=True)
+   def do_init(self, args, config: ProjzConfig):
+      super().do_init(args, config)
+      # 当用户决定使用这个翻译API时会调用这个方法
+      # 请在这里做初始化工作，您现在可以使用已经转换好的args和config
+      self._model_name = args.name
+      self._model_path = config['translator']['ai']['model_path']
+      self._load_model()
 
-    def translate_batch(self, texts: List[str]):
-        # 如果您的API支持批量翻译，您可以实现该方法。注意返回翻译结果的list长度应该和传入texts的长度一致。
-        # 如果没有实现该方法，基类实现默认会循环调用translate方法。
-        # CachedTranslatorTemplate每调用一次translate_batch后，就把翻译后的文本写入到TranslationIndex
-        # texts数组最大长度取决于config.yaml中的translator.write_cache_size配置的大小
-        return self.mt.translate(texts, self._source, self._source, batch_size=self._batch_size, verbose=True)
+   def translate(self, text: str):
+      # 您的API翻译方法，接受一个字符串返回一个翻译的字符串
+      return self.mt.translate(text, self._source, self._source, batch_size=1, verbose=True)
+
+   def translate_batch(self, texts: List[str]):
+      # 如果您的API支持批量翻译，您可以实现该方法。注意返回翻译结果的list长度应该和传入texts的长度一致。
+      # 如果没有实现该方法，基类实现默认会循环调用translate方法。
+      # CachedTranslatorTemplate每调用一次translate_batch后，就把翻译后的文本写入到TranslationIndex
+      # texts数组最大长度取决于config.yaml中的translator.write_cache_size配置的大小
+      return self.mt.translate(texts, self._source, self._source, batch_size=self._batch_size, verbose=True)
+
 
 # 将您的翻译API注册到translate命令
 # 用户可以这样使用：translate 1 -l chinese -t ai --name mbart50
 # 其中-t ai为register指定您的翻译API名称
 # 注意：DlTranslator应该使用无参数的构造函数，一旦实现无参数的构造函数请记得调用基类构造函数
-register('ai', DlTranslator)
+register_cmd_translator('ai', DlTranslator)
 ```
 最后在[translator/__init __.py](translator/__init__.py)导入您的翻译API：
 ```python
@@ -536,6 +555,7 @@ except Exception as e:
 
 * 早期项目代码（Web翻译）参考：[Maooookai(Mirage)](https://github.com/Maooookai/WebTranslator), [DrDRR](https://github.com/drdrr/RenPy-WebTranslator)
 * 使用的AI翻译库：[dl-translate](https://github.com/xhluca/dl-translate), [MIT License](https://github.com/xhluca/dl-translate?tab=MIT-1-ov-file)
+* [UlionTse/translators](https://github.com/UlionTse/translators), [GPL-3.0 License](https://github.com/UlionTse/translators?tab=GPL-3.0-1-ov-file)
 * 预翻译RPY文件来源：[RenPy](https://github.com/renpy/renpy/tree/master/launcher/game/tl), [MIT License for these rpy files](https://www.renpy.org/doc/html/license.html)
 * [resources/codes/projz_injection.py](resources/codes/projz_injection.py): [RenPy](https://github.com/renpy/renpy/blob/master/renpy/translation/generation.py), [MIT License for the code file](https://www.renpy.org/doc/html/license.html)
 * 其他使用的python库见：[requirements.txt](./requirements.txt)

@@ -16,7 +16,7 @@
 from argparse import ArgumentParser
 from typing import List, Tuple
 
-from command.translation.base import register
+from command.translation.base import register_cmd_translator
 from config.base import ProjzConfig
 from translator.base import ConcurrentTranslatorTemplate
 from translator.base.template import CachedTranslatorTemplate
@@ -70,4 +70,4 @@ class WebConcurrentTranslator(ConcurrentTranslatorTemplate):
         super().invoke(tids_and_text, update_func)
 
 
-register('web', WebConcurrentTranslator)
+register_cmd_translator('web', WebConcurrentTranslator)

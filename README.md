@@ -65,6 +65,7 @@ For the above translation rpy, only `a "translated text"` will be extracted. To 
 
     Note that, the source langauge of these provided rpy files is English. It means that there rpy files provide translations from English to other languages. The root dir of these files can be configed by `index.recycle_dir` in [config.yaml](config.yaml).
 5. [0.4.1] Open the location of RenPy game or save file (Windows OS Only): Use the new `open` command to pen the location of a RenPy game associated the TranslationIndex. Some commands for saving file (e.g., `savehtml`, `saveexcel`, `dumpexcel`), will automatically open the saved file's location after the file is saved. To prevent the behavior, please append the `-nw` option to these command.
+6. [0.4.1] [UlionTse/translators](#use-uliontse-translators): `translate {index_or_name} -t ts -n bing -l {lang}`
 
 # 🛫Get started
 
@@ -148,7 +149,7 @@ Note that: Translation Stats list translated/untranslated lines of dialogue and 
 
 ## 3.Translate with the translation command
 
-For convenience, we use `savehtml` and `loadhtml` to perform quick translation. Other Translate commands are available at: [Web Translation](#use-web-translation), [AI Translation](#use-ai-translation), [⚡Fast translating⚡ with `saveexcel` and `loadexcel`](#fast-translating-with-saveexcel-and-loadexcel)
+For convenience, we use `savehtml` and `loadhtml` to perform quick translation. Other Translate commands are available at: [Web Translation](#use-web-translation), [AI Translation](#use-ai-translation), [⚡Fast translating⚡ with `saveexcel` and `loadexcel`](#fast-translating-with-saveexcel-and-loadexcel), [Use Uliontse-translators](#use-uliontse-translators)
 
 Now let's translate with `savehtml` and `loadhtml` command:
 
@@ -199,9 +200,11 @@ Note that: Translation Stats list translated/untranslated lines of dialogue and 
 > 
 > 2. savehtml and loadexcel (semi-automatically): Use the translation function from Microsoft Edge or Chrome (You need to scroll the page from top to bottom to make all text get translated), and save the translated file to overwrite the original one.
 > 
-> 3. Web translation (automatically): `translate 1 -t web -n google -l {lang}` Use the automation tool to enter text into the input box in the translation website, and automatically extract the translation result.
+> 3. Uliontse/translators (automatically): `translate {index_or_name} -t ts -n bing -l {lang}`
 > 
-> 4. AI Translation (automatically): `translate 1 -t ai -n mbart50 -l {lang}` Use deep network models to translate (with GPU resources).
+> 4. Web translation (automatically): `translate 1 -t web -n google -l {lang}` Use the automation tool to enter text into the input box in the translation website, and automatically extract the translation result.
+> 
+> 5. AI Translation (automatically): `translate 1 -t ai -n mbart50 -l {lang}` Use deep network models to translate (with GPU resources).
 > 
 > It's still difficult to assess the translation quality of each translation command.
 
@@ -444,19 +447,33 @@ The following instructions guide you to download models manually:
    - `-n` specifies the model to use. Available models are :`m2m100`,`mbart50`,`nllb200`. I use the `m2m100` model here.
    - `-b` specifies the batch size during translating. It determines how many lines of untranslated text feed into the model. The bigger the value is, the more GPU memory it uses.
 2. Set the translation target. If you want to translate text from English into Chinese, just enter their indexes:`19 109`
-    ![dlt_settarget.png](imgs%2Fdlt_settarget.png)
+    ![dlt_settarget.png](imgs/dlt_settarget.png)
 3. Then, the tool starts automatically translating.
+---
+## Use UlionTse-translators
+### Get started
+1. Run the command:
+    ```bash
+   t {index_or_name} -t ts -n {API_name} -l {lang}
+   ```
+    - `-n`specifies the API service to use. You can run the command `t -t ts -h` to show available API services. Default as `bing` 。
+2. Set the translation target. This is similar to step 2 in AI translation.
+3. Then, the tool starts automatically translating.
+
+Note, args of `translate_text` and `preaccelerate` method using in this command, can be configed at `translator.translators` in [config.yaml](config.yaml).
+
 ---
 
 # 💪Customize your translation API
-You can integrate your translation API easily to this tool. Create a py file in [translator](translator), and let your translation class inherits one of template classes. `CachedTranslatorTemplate` class has a translation buffer which allows to write translations into TranslationIndex when reaching a certain number. The cache size can be configed by `translator.write_cache_size` in [config.yaml](config.yaml). `TranslatorTemplate` class provides basic implementation that writes all translations into TranslationIndex at once.  
+You can integrate your translation API easily to this tool. Create a py file in [translator](translator), and let your translation class inherits one of template classes. `CachedTranslatorTemplate` class has a translation buffer which allows to write translations into TranslationIndex when reaching a certain number. The cache size can be configed by `translator.write_cache_size` in [config.yaml](config.yaml). `TranslatorTemplate` class provides basic implementation that writes all translations into TranslationIndex at once.
 
 ```python
 from argparse import ArgumentParser
 from translator.base import CachedTranslatorTemplate
-from command.translation.base import register
+from command.translation.base import register_cmd_translator
 from typing import List, Tuple
 from config.base import ProjzConfig
+
 
 # The pipeline of a translator. The following code provide a simple version of DlTranslator
 # 1. The users enter: translate 1 -l chinese -t ai --name mbart50
@@ -468,41 +485,42 @@ from config.base import ProjzConfig
 # 7.Done
 
 class DlTranslator(CachedTranslatorTemplate):
-    def register_args(self, parser: ArgumentParser):
+   def register_args(self, parser: ArgumentParser):
       super().register_args(parser)
       # Register your args
       # Note that, any init code shouldn't place here as user may want to print help instead of using it.
       # You should put your init code in do_init()
       parser.add_argument('-n', '--name', choices=['m2m100', 'mbart50', 'nllb200'], default='mbart50',
                           help='The name of deep learning translation  model.')
-        
-    def do_init(self, args, config: ProjzConfig):
-        super().do_init(args, config)
-        # The method will be called when the user decides to use this translation API.
-        # Put your init code here. The rgs and config are ready.
-        self._model_name = args.name
-        self._model_path = config['translator']['ai']['model_path']
-        self._load_model()
 
-    def translate(self, text: str):
-        # Your implementation for translating.
-        # The method take a text and return a translated text.
-        return self.mt.translate(text, self._source, self._source, batch_size=1, verbose=True)
+   def do_init(self, args, config: ProjzConfig):
+      super().do_init(args, config)
+      # The method will be called when the user decides to use this translation API.
+      # Put your init code here. The rgs and config are ready.
+      self._model_name = args.name
+      self._model_path = config['translator']['ai']['model_path']
+      self._load_model()
 
-    def translate_batch(self, texts: List[str]):
-        # If your translation API supports to translate a batch of texts,
-        # you can implement this method. The length of `texts` and that of returned texts should be the same.
-        # The default implementation will call translate method within a for-loop if you don't override this method.
-        # CachedTranslatorTemplate class writes translations into TranslationIndex after each call of translate_batch.
-        # The max length of texts can be configed by translator.write_cache_size in config.yaml.
-        return self.mt.translate(texts, self._source, self._source, batch_size=self._batch_size, verbose=True)
+   def translate(self, text: str):
+      # Your implementation for translating.
+      # The method take a text and return a translated text.
+      return self.mt.translate(text, self._source, self._source, batch_size=1, verbose=True)
+
+   def translate_batch(self, texts: List[str]):
+      # If your translation API supports to translate a batch of texts,
+      # you can implement this method. The length of `texts` and that of returned texts should be the same.
+      # The default implementation will call translate method within a for-loop if you don't override this method.
+      # CachedTranslatorTemplate class writes translations into TranslationIndex after each call of translate_batch.
+      # The max length of texts can be configed by translator.write_cache_size in config.yaml.
+      return self.mt.translate(texts, self._source, self._source, batch_size=self._batch_size, verbose=True)
+
 
 # Register your translation API to translation command
 # User can run the command: translate 1 -l chinese -t ai --name mbart50
 # where -t ai is the name of your translation API you register
 # Note that, DlTranslator use a non-parameter constructor.
 # Don't forget to add the call of  __init__ of super class to your non-parameter constructor if you have it.
-register('ai', DlTranslator)
+register_cmd_translator('ai', DlTranslator)
 ```
 Finally, import your translation API in [translator/__init __.py](translator/__init__.py):
 ```python
@@ -537,6 +555,7 @@ The codes or libs we use or refer to:
 
 * Previous code of Web translation: [Maooookai(Mirage)](https://github.com/Maooookai/WebTranslator), [DrDRR](https://github.com/drdrr/RenPy-WebTranslator)
 * AI translation: [dl-translate](https://github.com/xhluca/dl-translate), [MIT License](https://github.com/xhluca/dl-translate?tab=MIT-1-ov-file)
+* [UlionTse/translators](https://github.com/UlionTse/translators), [GPL-3.0 License](https://github.com/UlionTse/translators?tab=GPL-3.0-1-ov-file)
 * Pre-translated RPY file: [RenPy](https://github.com/renpy/renpy/tree/master/launcher/game/tl), [MIT License for these rpy files](https://www.renpy.org/doc/html/license.html)
 * [resources/codes/projz_injection.py](resources/codes/projz_injection.py): [RenPy](https://github.com/renpy/renpy/blob/master/renpy/translation/generation.py), [MIT License for the code file](https://www.renpy.org/doc/html/license.html)
 * Other python libs：[requirements.txt](./requirements.txt)

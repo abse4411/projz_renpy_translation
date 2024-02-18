@@ -22,12 +22,12 @@ from util import line_to_args
 _TRANSLATOR = dict()
 
 
-def register(name: str, translator):
+def register_cmd_translator(name: str, translator):
     assert name not in _TRANSLATOR, f'The {name} translator has already registered!'
     _TRANSLATOR[name] = translator
 
 
-def unregister(name):
+def unregister_cmd_translator(name):
     if name in _TRANSLATOR:
         return _TRANSLATOR.pop(name)
 

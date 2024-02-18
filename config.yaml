@@ -10,6 +10,16 @@ projz:
     ai:
       # available models: 'm2m100', 'mbart50', 'nllb200'
       model_path: ''
+    translators:
+      # Translators is a library that aims to bring free, multiple, enjoyable translations to individuals and students in Python.
+      preaccelerate:
+        # kwargs for preaccelerate
+        timeout: 2
+      translate_text:
+        # kwargs for translate_text, see https://github.com/UlionTse/translators/tree/master?tab=readme-ov-file#getting-started
+        # Args of query_text, translator, from_language, and to_language, should not present here
+        if_use_preacceleration: True
+        sleep_seconds: 1
   log:
     enable: False # enable logging
     console: True # log to console

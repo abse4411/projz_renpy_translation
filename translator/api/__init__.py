@@ -13,18 +13,5 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-import logging
-import translator.base
 
-try:
-    import translator.web
-except Exception as e:
-    logging.exception(e)
-try:
-    import translator.ai
-except Exception as e:
-    logging.exception(e)
-try:
-    import translator.api
-except Exception as e:
-    logging.exception(e)
+import translator.api.translate_impl
