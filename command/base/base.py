@@ -17,6 +17,7 @@ import argparse
 
 from config import default_config
 from store import TranslationIndex
+from store.file_index import FileTranslationIndex
 from util import line_to_args
 
 
@@ -62,6 +63,9 @@ class BaseIndexCmd(BaseCmd):
         assert res is not None, \
             (f'Could\'n load this TranslationIndex with "{self.args.index_or_name}". '
              f'Please check whether the entered index or nickname is correct')
+        if len(res.game_info) == 0:
+            # It's a FileTranslationIndex
+            return FileTranslationIndex.from_index(res)
         return res
 
 

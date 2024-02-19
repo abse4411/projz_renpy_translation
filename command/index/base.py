@@ -21,6 +21,7 @@ from command import BaseConfirmationCmd, BaseIndexConfirmationCmd, BaseLangIndex
 from command.base import BaseCmd, BaseIndexCmd
 from store import TranslationIndex
 from store.database.base import db_context
+from store.file_index import FileTranslationIndex
 from util import yes, quick_prettytable
 
 
@@ -53,6 +54,9 @@ class ListTranslationIndexCmd(BaseCmd):
 
         for i in res:
             index = i[1]
+            if len(index.game_info) == 0:
+                # It's a FileTranslationIndex
+                index = FileTranslationIndex.from_index(index)
             injection_table = quick_prettytable([[k, v] for k, v in index.injection_state.items()])
             injection_table.vrules = prettytable.NONE
             injection_table.hrules = prettytable.NONE

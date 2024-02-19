@@ -789,10 +789,7 @@ class TranslationIndex:
 
     @classmethod
     def from_dict(cls, data: dict):
-        pdata = data['project']
-        project = Project(project_path=pdata['project_path'], executable_path=pdata['executable_path'],
-                          project_name=pdata['project_name'], game_info=pdata['game_info'],
-                          injection_state=pdata['injection_state'])
+        project = Project(**data['project'])
         new_inst = cls(
             project=project,
             nickname=data['nickname'],

@@ -112,6 +112,7 @@ class HelpCmd(BaseCmd):
 
 # Interacting with RenPy
 register(NewTranslationIndexCmd(), short_name='n')
+register(NewFileTranslationIndexCmd(), short_name='nf')
 register(ImportTranslationCmd(), short_name='i')
 register(GenerateTranslationCmd(), short_name='g')
 register(CountTranslationCmd(), short_name='c')

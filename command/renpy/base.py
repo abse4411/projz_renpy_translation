@@ -25,6 +25,7 @@ from injection.cmd import lang_project
 from injection.default import RENPY_GAME_DIR, RENPY_TL_DIR
 from store import TranslationIndex
 from store.database.base import db_context
+from store.file_index import available_convertors, convertors_info, FileTranslationIndex
 from store.scanstrings import update_string
 from util import walk_and_select, open_and_select, line_to_args
 
@@ -42,6 +43,47 @@ class NewTranslationIndexCmd(BaseCmd):
 
     def invoke(self):
         index = TranslationIndex.from_dir(self.args.game_path, self.args.name, self.args.tag)
+        index.save()
+
+
+def _print_convertors_types():
+    table = PrettyTable(['Tool', 'Description'])
+    table.hrules = prettytable.ALL
+    table.align = 'l'
+    for k, v in convertors_info():
+        table.add_row([k, v])
+    print(table)
+
+
+class NewFileTranslationIndexCmd(BaseCmd):
+    def __init__(self):
+        super().__init__('new_file', 'Create a TranslationIndex from the given game path.')
+        self._parser.add_argument('file_path', type=str, help='The file path to import translation.')
+        self._parser.add_argument("-n", "--name", required=False, type=str, metavar='nickname',
+                                  help="A nickname for this TranslationIndex. "
+                                       "You can use it to specify a TranslationIndex. We will generate a random one "
+                                       "if this args is not presented.")
+        self._parser.add_argument("-t", "--tag", required=False, type=str, metavar='tag',
+                                  help="A tag for for this TranslationIndex.")
+        self._parser.add_argument("-s", "--source", required=True, type=str, metavar='tool',
+                                  choices=available_convertors(),
+                                  help="Which tool has generated this file.")
+        self._parser.add_argument("-l", "--list", action='store_true',
+                                  help="List all available files to import.")
+
+    def parse_args(self, text: str):
+        args = line_to_args(text)
+        # we don't change the text if '--help' arg found in it
+        if not ('-h' in args or '--help' in args) and ('-l' in args or '--list' in args):
+            # if '--list' found, we pass a valid but useless text to suppress possible parsing error
+            text = 'foo --list --source mt'
+        super().parse_args(text)
+
+    def invoke(self):
+        if self.args.list:
+            _print_convertors_types()
+            return
+        index = FileTranslationIndex.from_file(self.args.file_path, self.args.source, self.args.name, self.args.tag)
         index.save()
 
 
