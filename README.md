@@ -41,7 +41,7 @@ For the above translation rpy, only `a "translated text"` will be extracted. To 
 
 ## 🚨Note🚨
 - It is currently under development, and the stored data of this version is not compatible with that before V0.4.0. To use the old version, please go [here](https://github.com/abse4411/projz_renpy_translation/tree/9e257770e9b30011b1053da28634c41d958d0fc5).
-- We DO NOT provide any RenPy game files, the program is designed only for the convenience of developers to manage translations. The user shall be held responsible for all the consequences arising from using this program.
+- We DO NOT provide any RenPy game files, and the program is designed only for the convenience of developers to manage translations. The user shall be held responsible for all the consequences arising from using this program.
 
 # ✨What's new
 
@@ -296,10 +296,11 @@ This will print the detailed usage of `new` command:
 1. Changes in [config.yaml](config.yaml) required restarting the main program to apply.
 2. If you want to ignore the translations of certain rpy files when importing and generating translations, please add these files to `index.ignore` in [config.yaml](config.yaml). Note that, the path splitter in Windows OS is "\\", that means that if you want to ignore translations of `script/demo.rpy`, you should rewrite its path to `script\demo.rpy`. If there exists space in the path, just keep it.
 3. The tool will  automatically download models in local dir if `translator.ai.model_path` is empty in [config.yaml](config.yaml).
-4. You can use`de {index_or_name} -l {lang}` to export translation data (including translated and untranslated texts) of a given TranslationIndex to a Excel file, then update translations (`ue {index_or_name} -l {lang}`) from it after you modify them. In this way, you can alter translations or translate them manually.
+4. You can use`de {index_or_name} -l {lang}` to export translation data (including translated and untranslated texts) of a given TranslationIndex to an Excel file, then update translations (`ue {index_or_name} -l {lang}`) from it after you modify them. In this way, you can alter translations or translate them manually.
 5. You can strip style tags before translating by setting `index.strip_tag` to `True` in [config.yaml](config.yaml).
 6. You can mark all untranslated texts as translated ones by `mark` command: `mark {index_or_name} -l {lang}`
-7. You can rename a name of translations by `rename` command: `rename {index_or_name} -l {lang} t {new_lang}`, where `{new_lang}` is new one.
+7. You can rename a name of translations by `rename` command: `rename {index_or_name} -l {lang} -t {new_lang}`, where `{new_lang}` is new one.
+8. To merge translations from another TranslationIndex into current TranslationIndex, use `merge` command: `merge {index_or_name} -l {lang} -s {source_index}`, where `{source_index}` is the source index to merge from. This enables you to use translations of old game to that of new game when new one is released.
 
 ---
 ## ⚡Fast translating⚡ with `saveexcel` and `loadexcel`
@@ -315,7 +316,7 @@ Then update translations from the translated file.
 3. Run the command `le {index_or_name} -l {lang}` to update translations in TranslationIndex.
 
 > **😕Translation website doesn't support uploading Excel files?**<br />
-> You can paste content of generated Excel file into a doc file, then upload it. After completion, copy content from translated doc file to the Excel file.
+> You can paste content of the generated Excel file into a doc file, then upload it. After completion, copy content from translated doc file to the Excel file.
 ---
 
 ## ⚡Fast translating⚡ with `savehtml` and `loadhtml`
@@ -323,7 +324,7 @@ By saving translations to an HTML file, use Microsoft Edge or Chrome to translat
 Then update translations from the translated file.
 
 ### Instructions
-1. Run the command `sh {index_or_name} -l {lang}`to export untranslated texts to a HTML file. Open it with Microsoft Edge or Chrome.
+1. Run the command `sh {index_or_name} -l {lang}`to export untranslated texts to an HTML file. Open it with Microsoft Edge or Chrome.
 2. Click translation option in context menu or at address bar:
 
     ![](imgs/trans_menu.png)
