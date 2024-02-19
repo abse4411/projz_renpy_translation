@@ -15,17 +15,17 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import logging
 from argparse import ArgumentParser
-from typing import Tuple, List
+from typing import List
 
 import tqdm
-import translators as ts
 from prettytable import PrettyTable
-from translators.server import preaccelerate
 
 from command.translation.base import register_cmd_translator
 from config.base import ProjzConfig
 from translator.base import CachedTranslatorTemplate
 from util import my_input, line_to_args
+
+ts = None
 
 
 class TranslatorsLibTranslator(CachedTranslatorTemplate):
@@ -38,6 +38,8 @@ class TranslatorsLibTranslator(CachedTranslatorTemplate):
 
     def register_args(self, parser: ArgumentParser):
         super().register_args(parser)
+        global ts
+        import translators as ts
         parser.add_argument('-n', '--name', choices=ts.translators_pool, default='bing',
                             help='The name of translation services.')
 
@@ -52,6 +54,7 @@ class TranslatorsLibTranslator(CachedTranslatorTemplate):
         use_preacceleration = self.trans_kwargs.pop('if_use_preacceleration', False)
         kwargs = self.config['translator']['translators'].get('preaccelerate', {})
         if use_preacceleration:
+            from translators.server import preaccelerate
             _ = preaccelerate(kwargs)
         return self.determine_translation_target()
 
