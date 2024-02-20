@@ -20,7 +20,7 @@ def strip_or_none(string: str):
         if string == '':
             return None
         return string
-    return string
+    return None
 
 
 def assert_not_blank(string: str, name=None):
