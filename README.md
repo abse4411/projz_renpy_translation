@@ -5,6 +5,7 @@
 
 [![](https://img.shields.io/badge/projz_renpy_translation-0.4.2-brightgreen.svg)](https://github.com/abse4411/projz_renpy_translation)
 [![](https://img.shields.io/badge/license-GPLv3-blue)](https://github.com/abse4411/projz_renpy_translation/blob/devp/LICENSE)
+[![Package](https://github.com/abse4411/projz_renpy_translation/actions/workflows/main.yml/badge.svg)](https://github.com/abse4411/projz_renpy_translation/actions/workflows/main.yml)
 
 [📘Document](#get-started) |
 [🛠Install](#1startup-we-use-python-38) |
