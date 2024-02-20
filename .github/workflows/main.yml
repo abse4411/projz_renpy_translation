@@ -18,16 +18,18 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Package Application
-      uses: JackMcKew/pyinstaller-action-windows@main
+      uses: JackMcKew/pyinstaller-action-windows@python3-10-pyinstaller-5-3
       with:
         path: .
+        pypi_index_url: https://pypi.tuna.tsinghua.edu.cn/simple
         
     - name: Copy Files
       run: |
         cp config.yaml LICENSE README.md README_zh.md dist/windows
         cp -r imgs dist/windows
-    
-    - uses: actions/upload-artifact@v2
+
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v4.3.1
       with:
-        name: projz-Winndows_${{ inputs.tags }} 
+        name: projz-Winndows_${{ inputs.tags }}
         path: dist/windows
