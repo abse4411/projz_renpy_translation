@@ -66,5 +66,9 @@ def count_translations(p: Project, payload: Any, lang: str, **kwargs):
     return p.launch_task(payload, args=args, **kwargs)
 
 
-def lang_project(p: Project, **kwargs):
+def launch_project(p: Project, **kwargs):
     return p.launch('', args=[], **kwargs)
+
+
+def lint_for_script(p: Project, file: str, **kwargs):
+    return p.launch('lint', args=[file], wait=True, **kwargs)

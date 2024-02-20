@@ -21,13 +21,13 @@ from prettytable import PrettyTable
 from command import BaseCmd, BaseLangIndexCmd
 from command.base import BaseIndexCmd
 from injection import Project
-from injection.cmd import lang_project
+from injection.cmd import lint_for_script
 from injection.default import RENPY_GAME_DIR, RENPY_TL_DIR
 from store import TranslationIndex
 from store.database.base import db_context
 from store.file_index import available_convertors, convertors_info, FileTranslationIndex
 from store.scanstrings import update_string
-from util import walk_and_select, open_and_select, line_to_args, open_item
+from util import walk_and_select, open_and_select, line_to_args, open_item, exists_file
 
 
 class NewTranslationIndexCmd(BaseCmd):
@@ -153,6 +153,22 @@ class LaunchProjectCmd(BaseIndexCmd):
             open_item(index.project_path)
         else:
             open_item(os.path.join(index.project_path, f'{index.project.project_name}.exe'))
+
+
+class LintProjectCmd(BaseIndexCmd):
+    def __init__(self):
+        super().__init__('lint', 'Run lint for checking script.')
+        self._parser.add_argument("-o", "--output", type=str, default=None,
+                                  help="Output lint result to the given file.")
+
+    def invoke(self):
+        index = self.get_translation_index()
+        if isinstance(index, FileTranslationIndex):
+            raise RuntimeError(f'Invalid command for FileTranslationIndex.')
+        else:
+            lint_for_script(index.project, self.args.output)
+            if self.args.output and exists_file(self.args.output):
+                open_and_select(self.args.output)
 
 
 class OpenProjectCmd(BaseIndexCmd):

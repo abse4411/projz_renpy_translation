@@ -117,6 +117,7 @@ register(ImportTranslationCmd(), short_name='i')
 register(GenerateTranslationCmd(), short_name='g')
 register(CountTranslationCmd(), short_name='c')
 register(OpenProjectCmd(), short_name='o')
+register(LintProjectCmd())
 register(LaunchProjectCmd())
 register(InjectionCmd(), short_name='ij')
 

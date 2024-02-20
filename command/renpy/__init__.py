@@ -15,4 +15,4 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from .base import (NewTranslationIndexCmd, NewFileTranslationIndexCmd, ImportTranslationCmd, GenerateTranslationCmd,
-                   CountTranslationCmd, LaunchProjectCmd, OpenProjectCmd, InjectionCmd)
+                   CountTranslationCmd, LaunchProjectCmd, LintProjectCmd, OpenProjectCmd, InjectionCmd)
