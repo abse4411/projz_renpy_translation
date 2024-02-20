@@ -57,7 +57,7 @@ def _print_convertors_types():
 
 class NewFileTranslationIndexCmd(BaseCmd):
     def __init__(self):
-        super().__init__('new_file', 'Create a TranslationIndex from the given game path.')
+        super().__init__('new_file', 'Create a FileTranslationIndex from the given file path.')
         self._parser.add_argument('file_path', type=str, help='The file path to import translation.')
         self._parser.add_argument("-n", "--name", required=False, type=str, metavar='nickname',
                                   help="A nickname for this TranslationIndex. "
@@ -135,8 +135,11 @@ class CountTranslationCmd(BaseLangIndexCmd):
                                   help="Print each missed translation.")
 
     def invoke(self):
-        self.get_translation_index().count_translations(self.args.lang, show_detail=self.args.verbose,
-                                                        say_only=self.config.say_only)
+        index = self.get_translation_index()
+        if isinstance(index, FileTranslationIndex):
+            raise RuntimeError(f'Invalid command for FileTranslationIndex.')
+        index.count_translations(self.args.lang, show_detail=self.args.verbose,
+                                 say_only=self.config.say_only)
 
 
 class LaunchProjectCmd(BaseIndexCmd):
@@ -154,7 +157,7 @@ class LaunchProjectCmd(BaseIndexCmd):
 
 class OpenProjectCmd(BaseIndexCmd):
     def __init__(self):
-        super().__init__('open', 'Open the location of the RenPy gameassociated with the '
+        super().__init__('open', 'Open the location of the RenPy game associated with the '
                                  'TranslationIndex.\n(Windows OS Only)')
 
     def invoke(self):
@@ -212,6 +215,8 @@ class InjectionCmd(BaseIndexCmd):
             return
         injection_type = self.args.type
         index = self.get_translation_index()
+        if isinstance(index, FileTranslationIndex):
+            raise RuntimeError(f'Invalid command for FileTranslationIndex.')
         if injection_type == Project.BASE_INJECTION:
             injection = index.project.get_base_injection()
         elif injection_type == Project.I18N_INJECTION:
