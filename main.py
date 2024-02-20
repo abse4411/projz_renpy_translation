@@ -20,7 +20,7 @@ from command.manage import exists_cmd, execute_cmd, all_cmds, register
 from util import my_input, line_to_args
 import translator
 
-__VERSION__ = '0.4.1'
+__VERSION__ = '0.4.2'
 
 
 def print_banner():
