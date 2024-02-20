@@ -75,7 +75,7 @@ For the above translation rpy, only `a "translated text"` will be extracted. To 
 
 After installing python 3.8, use pip to install the dependencies:
 ```bash
-pip install -r requirements.txt
+pip install -r requirements_full.txt
 ```
 Once installed, launch the main program:
 ```bash
@@ -388,7 +388,7 @@ These following instructions guide you to install suitable Pytorch that compatib
     |  No running processes found                                                 |
     +-----------------------------------------------------------------------------+
     ```
-   It is shown that the CUDA version is 11.7. If you have run the command `pip install -r requirements.txt` before, you can skip the following step and goto Get started part. That version is what we use in `requirements.txt`.
+   It is shown that the CUDA version is 11.7. If you have run the command `pip install -r requirements_full.txt` before, you can skip the following step and goto Get started part. That version is what we use in `requirements_full.txt`.
 2. Next, uninstall some libraries:
     ```bash
     pip uninstall torch torchaudio torchvision transformers
@@ -563,4 +563,4 @@ The codes or libs we use or refer to:
 * [UlionTse/translators](https://github.com/UlionTse/translators), [GPL-3.0 License](https://github.com/UlionTse/translators?tab=GPL-3.0-1-ov-file)
 * Pre-translated RPY file: [RenPy](https://github.com/renpy/renpy/tree/master/launcher/game/tl), [MIT License for these rpy files](https://www.renpy.org/doc/html/license.html)
 * [resources/codes/projz_injection.py](resources/codes/projz_injection.py): [RenPy](https://github.com/renpy/renpy/blob/master/renpy/translation/generation.py), [MIT License for the code file](https://www.renpy.org/doc/html/license.html)
-* Other python libs：[requirements.txt](./requirements.txt)
+* Other python libs：[requirements_full.txt](./requirements_full.txt)

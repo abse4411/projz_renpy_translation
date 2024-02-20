@@ -77,7 +77,7 @@ translate chinese scene_01_5f0ee2360:
 
 安装python3.8后，使用pip安装依赖：
 ```bash
-pip install -r requirements.txt
+pip install -r requirements_full.txt
 ```
 安装完后，启动主程序：
 ```bash
@@ -394,7 +394,7 @@ projz:
     |  No running processes found                                                 |
     +-----------------------------------------------------------------------------+
     ```
-    我们可以看到现在的CUDA版本为: 11.7(如果您的CUDA版本也是11.7，且使用了`pip install -r requirements.txt`成功地安装我们的环境，那么可以跳过以下步骤，因为`requirements.txt`中的指定的pytorch版本就是它)
+    我们可以看到现在的CUDA版本为: 11.7(如果您的CUDA版本也是11.7，且使用了`pip install -r requirements_full.txt`成功地安装我们的环境，那么可以跳过以下步骤，因为`requirements_full.txt`中的指定的pytorch版本就是它)
 2. 为了确保安装指定版本的Pytorch，在安装新版本前使用以下命令卸载旧版本Pytorch和transformers库：
     ```bash
     pip uninstall torch torchaudio torchvision transformers
@@ -563,4 +563,4 @@ except Exception as e:
 * [UlionTse/translators](https://github.com/UlionTse/translators), [GPL-3.0 License](https://github.com/UlionTse/translators?tab=GPL-3.0-1-ov-file)
 * 预翻译RPY文件来源：[RenPy](https://github.com/renpy/renpy/tree/master/launcher/game/tl), [MIT License for these rpy files](https://www.renpy.org/doc/html/license.html)
 * [resources/codes/projz_injection.py](resources/codes/projz_injection.py): [RenPy](https://github.com/renpy/renpy/blob/master/renpy/translation/generation.py), [MIT License for the code file](https://www.renpy.org/doc/html/license.html)
-* 其他使用的python库见：[requirements.txt](./requirements.txt)
+* 其他使用的python库见：[requirements_full.txt](./requirements_full.txt)
