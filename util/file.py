@@ -45,7 +45,7 @@ def default_open(file, mode, encoding='utf-8', **kwargs):
 
 
 def default_read(file, **kwargs):
-    return default_open(file, 'r',  **kwargs)
+    return default_open(file, 'r', **kwargs)
 
 
 def default_write(file, newline='\n', **kwargs):
@@ -84,6 +84,17 @@ def walk_and_select(root, select_fn=None, exclude_dirs=None):
             elif os.path.isdir(item_path) and _is_excluded(item_path):
                 stack.append(item_path)
     return res_files
+
+
+def open_item(fn: str):
+    if (not exists_file(fn)) and (not exists_dir(fn)):
+        return
+    try:
+        if is_windows():
+            fn = fn.replace('/', '\\')
+            os.system(f'explorer {fn}')
+    except Exception as e:
+        logging.exception(e)
 
 
 def open_and_select(fn: str):

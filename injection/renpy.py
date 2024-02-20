@@ -27,7 +27,7 @@ from injection.base import BaseInjector
 from injection.base.base import UndoOnFailedCallInjector
 from injection.default import RENPY_DIRS, PYTHON_LINUX64_EXE, PYTHON_WIN64_EXE, PYTHON_WIN32_EXE, PYTHON_LINUX32_EXE, \
     RENPY_LIB_DIR, ProjzI18nInjection, ProjzCmdInjection, try_running, RENPY_GAME_DIR, RENPY_TL_DIR
-from util import exists_dir, file_name_ext, exists_file, default_read, default_write, file_dir
+from util import exists_dir, file_name_ext, exists_file, default_read, default_write, file_dir, strip_or_none
 from util import is_windows, is_x64
 
 
@@ -168,7 +168,7 @@ class Project:
         cmd_args = None
         if 'i686' in self.executable_path:
             new_ext = '.exe' if is_windows() else ''
-            new_exe = os.path.join(file_dir(self.executable_path), self.project_name+new_ext)
+            new_exe = os.path.join(file_dir(self.executable_path), self.project_name + new_ext)
             if exists_file(new_exe):
                 cmd_args = [new_exe, self.project_path, cmd] + args
         if cmd_args is None:
@@ -177,6 +177,7 @@ class Project:
                         self.project_path, cmd] + args
         if verbose:
             logging.info(f'Launching: {" ".join(cmd_args)}')
+        cmd_args = list(filter(lambda x: strip_or_none(x), cmd_args))
         # raise RuntimeError()
         # print(cmd_line)
         # we don't send any input to subprocess

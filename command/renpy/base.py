@@ -27,7 +27,7 @@ from store import TranslationIndex
 from store.database.base import db_context
 from store.file_index import available_convertors, convertors_info, FileTranslationIndex
 from store.scanstrings import update_string
-from util import walk_and_select, open_and_select, line_to_args
+from util import walk_and_select, open_and_select, line_to_args, open_item
 
 
 class NewTranslationIndexCmd(BaseCmd):
@@ -141,10 +141,15 @@ class CountTranslationCmd(BaseLangIndexCmd):
 
 class LaunchProjectCmd(BaseIndexCmd):
     def __init__(self):
-        super().__init__('launch', 'Launch the RenPy game associated with the TranslationIndex.')
+        super().__init__('launch', 'Launch the RenPy game associated with the TranslationIndex.'
+                                   '\n(Windows OS Only)')
 
     def invoke(self):
-        lang_project(self.get_translation_index().project, wait=False)
+        index = self.get_translation_index()
+        if isinstance(index, FileTranslationIndex):
+            open_item(index.project_path)
+        else:
+            open_item(os.path.join(index.project_path, f'{index.project.project_name}.exe'))
 
 
 class OpenProjectCmd(BaseIndexCmd):
@@ -154,7 +159,11 @@ class OpenProjectCmd(BaseIndexCmd):
 
     def invoke(self):
         index = self.get_translation_index()
-        exe = os.path.join(index.project_path, f'{index.project.project_name}.exe')
+        if isinstance(index, FileTranslationIndex):
+            # It's a FileTranslationIndex
+            exe = index.project_path
+        else:
+            exe = os.path.join(index.project_path, f'{index.project.project_name}.exe')
         open_and_select(exe)
 
 
