@@ -56,7 +56,7 @@ class LoadExcelCmd(LoadFileBaseCmd):
     def get_translated_texts(self, tid_map: Dict[str, str], save_file: str):
         global COL_NAMES, TID_STR, RAW_TEXT_STR
         df = pd.read_excel(save_file, na_filter=False, header=None, skiprows=[0],
-                           usecols=[0, 1], names=[TID_STR, RAW_TEXT_STR])
+                           usecols=[0, 1], names=[TID_STR, RAW_TEXT_STR], dtype=str)
         use_cnt = 0
         discord_cnt = 0
         tids_and_texts = []
@@ -191,7 +191,7 @@ class UpdateExcelCmd(UpdateFromFileBaseCmd):
         tids_and_texts = []
         accept_blank = self.args.accept_blank
         verbose = self.args.verbose
-        df = pd.read_excel(save_file, sheet_name=None, na_filter=False)
+        df = pd.read_excel(save_file, sheet_name=None, na_filter=False, dtype=str)
         for sheet in tqdm.tqdm(df.keys(), total=len(df), desc='Reading from excel...'):
             sheet_data = df[sheet]
             for i, (tid, new_text) in enumerate(zip(sheet_data['tid'], sheet_data['new_text']), 1):
