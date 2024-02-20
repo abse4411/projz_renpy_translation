@@ -242,4 +242,5 @@ class Project:
             tmp_instance.set_game_info(data['game_info'])
             print(f'All done! We have detected the game info: {tmp_instance.game_info}')
             return tmp_instance
-        return None
+        else:
+            raise RuntimeError('Injection failed')
