@@ -13,6 +13,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
+import sys
 from io import StringIO
 from typing import Any
 
@@ -77,7 +78,7 @@ def execute_cmd(name: str, cmd_line: str):
     cmd.invoke()
     # this can be set by QuitCmd
     if EXIT:
-        exit(0)
+        sys.exit(0)
 
 
 def all_cmds():
