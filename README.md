@@ -4,7 +4,10 @@
   <br />
 
 [![](https://img.shields.io/badge/projz_renpy_translation-0.4.2-brightgreen.svg)](https://github.com/abse4411/projz_renpy_translation)
+![Github Stars](https://img.shields.io/github/stars/abse4411/projz_renpy_translation)
 [![](https://img.shields.io/badge/license-GPLv3-blue)](https://github.com/abse4411/projz_renpy_translation/blob/devp/LICENSE)
+![](https://img.shields.io/badge/python-3.8-blue)
+![Github Release](https://img.shields.io/github/v/release/abse4411/projz_renpy_translation?color=brightgreen)
 [![Package](https://github.com/abse4411/projz_renpy_translation/actions/workflows/main.yml/badge.svg)](https://github.com/abse4411/projz_renpy_translation/actions/workflows/main.yml)
 
 [📘Document](#get-started) |
@@ -568,3 +571,13 @@ The codes or libs we use or refer to:
 * Pre-translated RPY file: [RenPy](https://github.com/renpy/renpy/tree/master/launcher/game/tl), [MIT License for these rpy files](https://www.renpy.org/doc/html/license.html)
 * [resources/codes/projz_injection.py](resources/codes/projz_injection.py): [RenPy](https://github.com/renpy/renpy/blob/master/renpy/translation/generation.py), [MIT License for the code file](https://www.renpy.org/doc/html/license.html)
 * Other python libs：[requirements_full.txt](./requirements_full.txt)
+
+## Star History
+
+<a href="https://star-history.com/#abse4411/projz_renpy_translation&Date">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=abse4411/projz_renpy_translation&type=Date&theme=dark" />
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=abse4411/projz_renpy_translation&type=Date" />
+    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=abse4411/projz_renpy_translation&type=Date" />
+  </picture>
+</a>
