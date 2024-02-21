@@ -45,6 +45,9 @@ For the above translation rpy, only `a "translated text"` will be extracted. To 
 - It is currently under development, and the stored data of this version is not compatible with that before V0.4.0. To use the old version, please go [here](https://github.com/abse4411/projz_renpy_translation/tree/9e257770e9b30011b1053da28634c41d958d0fc5).
 - We DO NOT provide any RenPy game files, and the program is designed only for the convenience of developers to manage translations. The user shall be held responsible for all the consequences arising from using this program.
 
+# ✨Standalone EXE for Windows
+You can download a packaged exe file for windows to run this tool without installation of Python, see [Release](https://github.com/abse4411/projz_renpy_translation/releases). To use AI translation, the [installation](#1startup-we-use-python-38) for Python is still needed.
+
 # ✨What's new
 
 1. [Web Translation](#use-web-translation), only supports google translation: `translate {index_or_name} -t web -n google -l {lang}`

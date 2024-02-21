@@ -46,6 +46,9 @@ translate chinese scene_01_5f0ee2360:
 - 现在正在开发中,该版本不兼容V0.4.0之前的数据，要使用旧版本请到[这里](https://github.com/abse4411/projz_renpy_translation/tree/9e257770e9b30011b1053da28634c41d958d0fc5)。
 - 我们不提供任何RenPy游戏文件，该程序仅为方便开发人员管理翻译文件。任何因使用本程序产生的后果由使用者负责。
 
+# ✨针对Windows独立的EXE
+现在您可使用打包好的exe运行此工具，免去按照Python环境，见：[Release](https://github.com/abse4411/projz_renpy_translation/releases)。要使用AI翻译仍需[安装Python环境](#1启动注意我们使用python38的环境)。
+
 # ✨新增功能：
 
 1. [Web翻译](#使用web翻译)，仅限google: `translate {index_or_name} -t web -n google -l {lang}`
@@ -276,7 +279,7 @@ Note that: Translation Stats list translated/untranslated lines of dialogue and 
 ![i18n.png](imgs/i18n_1.png)
 
 > **💡额外内容💡**<br />
-> 你可以在[config.yaml](config.yaml)文件配置生成I18N插件语言设置和字体内容，`inject`命令
+> 您可以在[config.yaml](config.yaml)文件配置生成I18N插件语言设置和字体内容，`inject`命令
 > 生成的语言取决于`game/tl`下的非`None`文件夹与[config.yaml](config.yaml)的`lang_map`配置的语言交集
 > 
 > 字体可以在[config.yaml](config.yaml)的`fonts`添加
@@ -303,17 +306,17 @@ new -h
 这将打印`new`命令的详细用法。
 
 > **🍻最后🍻**<br />
-> 我们欢迎你集成您的翻译实现到我们的项目中，或者帮助我们翻译文档页面。
+> 我们欢迎您集成您的翻译实现到我们的项目中，或者帮助我们翻译文档页面。
 
 ## 其他说明
 1. 修改配置文件[config.yaml](config.yaml)的内容，需要重新启动程序才能生效。
-2. 如果你想导入和导出过程忽略某些rpy文件的翻译，请在[config.yaml](config.yaml)中设置`index.ignore`。注意，在window下目录分割符为`\`。假设您要屏蔽游戏`game`目录下的`script/demo.rpy`文件的翻译,这时添加的到`index.ignore`的文件路径应该是：`script\demo.rpy`。如果文件路径中含有空格，请保持原样即可，无需处理。
+2. 如果您想导入和导出过程忽略某些rpy文件的翻译，请在[config.yaml](config.yaml)中设置`index.ignore`。注意，在window下目录分割符为`\`。假设您要屏蔽游戏`game`目录下的`script/demo.rpy`文件的翻译,这时添加的到`index.ignore`的文件路径应该是：`script\demo.rpy`。如果文件路径中含有空格，请保持原样即可，无需处理。
 3. 在[config.yaml](config.yaml)中把`translator.ai.model_path`设置为空，则会自动下载模型到本地。
 4. 您可以使用`de {index_or_name} -l {lang}`和`ue {index_or_name} -l {lang}`将指定TranslationIndex的数据（包括翻译和未翻译文本）分别导出到excel和从excel导入，这样您就可以修改已经翻译过的文本或者手动翻译某些文本。
 5. 如果您想在翻译前去除文本的样式标签（如{font}），请在[config.yaml](config.yaml)中把`index.strip_tag`设置为`True`。
 6. 如果您发现导出未翻译文本都是不需要翻译的，可以使用`mark`命令将这些文本变为已翻译文本：`mark {index_or_name} -l {lang}`。
 7. 如果您想重命名一个语言的翻译（即{lang}名字），可以使用`rename`命令：`rename {index_or_name} -l {lang} -t {new_lang}`，其中`{new_lang}`为新的名称。
-8. 要把其他TranslationIndex的翻译合并到当前的TranslationIndex，可以用`merge`命令： `merge {index_or_name} -l {lang} -s {source_index}`， 其中`{source_index}`是要合并翻译源的TranslationIndex。这样你可以在某个游戏更新后，复用旧版本的翻译到新版本中。
+8. 要把其他TranslationIndex的翻译合并到当前的TranslationIndex，可以用`merge`命令： `merge {index_or_name} -l {lang} -s {source_index}`， 其中`{source_index}`是要合并翻译源的TranslationIndex。这样您可以在某个游戏更新后，复用旧版本的翻译到新版本中。
 
 ---
 ## 使用`saveexcel`和`loadexcel`⚡快速⚡翻译
