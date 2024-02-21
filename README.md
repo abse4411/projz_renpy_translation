@@ -12,7 +12,8 @@
 
 [📘Document](#get-started) |
 [🛠Install](#1startup-we-use-python-38) |
-[💡New insights](https://github.com/abse4411/projz_renpy_translation/issues)
+[💡New insights](https://github.com/abse4411/projz_renpy_translation/issues) |
+[💖Sponsor](#sponsor)
 
 [简体中文（中文版点这）](README_zh.md) | English
 
@@ -554,6 +555,18 @@ except Exception as e:
     logging.exception(e)
 ```
 To see complete implementation of DlTranslator, please see [translator/ai/impl.py](translator/ai/impl.py).
+
+# 💖Sponsor
+<div align="center">
+<img src="imgs/sponsor/thank.png" height="120px" /><br />
+
+<h3>
+
+This project is developed in my nonworking time. If you would like to support this project, just give me a star⭐, or sponsor me by [![](https://img.shields.io/badge/CN-WeChat-lightgreen)](imgs/sponsor/weixin.png), [![](https://img.shields.io/badge/Intl.-PayPal-blue)](https://www.paypal.com/paypalme/abse4411).
+
+</h3>
+
+</div>
 
 # 🗒Todo List:
 

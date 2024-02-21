@@ -12,7 +12,8 @@
 
 [📘文档](#快速开始) |
 [🛠安装](#1启动注意我们使用python38的环境) |
-[💡建议](https://github.com/abse4411/projz_renpy_translation/issues)
+[💡建议](https://github.com/abse4411/projz_renpy_translation/issues) |
+[💖赞助](#赞助)
 
 简体中文 | [English](README.md)
 
@@ -554,6 +555,18 @@ except Exception as e:
     logging.exception(e)
 ```
 具体示例可以参考[translator/ai/impl.py](translator/ai/impl.py)中`DlTranslator`类的实现。
+
+# 💖赞助
+<div align="center">
+<img src="imgs/sponsor/thank.png" height="120px" /><br />
+
+<h3>
+
+该项目在个人的业余时间开发。如果你想要支持这个项目，可以点亮star⭐，或者请我一杯蜜雪冰城：[![](https://img.shields.io/badge/CN-微信-lightgreen)](imgs/sponsor/weixin.png), [![](https://img.shields.io/badge/Intl.-PayPal-blue)](https://www.paypal.com/paypalme/abse4411)
+
+</h3>
+
+</div>
 
 # 🗒Todo List:
 
