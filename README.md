@@ -11,7 +11,7 @@
 [![Package](https://github.com/abse4411/projz_renpy_translation/actions/workflows/main.yml/badge.svg)](https://github.com/abse4411/projz_renpy_translation/actions/workflows/main.yml)
 
 [📘Document](#get-started) |
-[🛠Install](#1startup-we-use-python-38) |
+[🛠Install](#1startup-optional) |
 [💡New insights](https://github.com/abse4411/projz_renpy_translation/issues) |
 [💖Sponsor](#sponsor)
 
@@ -50,7 +50,7 @@ For the above translation rpy, only `a "translated text"` will be extracted. To 
 - We DO NOT provide any RenPy game files, and the program is designed only for the convenience of developers to manage translations. The user shall be held responsible for all the consequences arising from using this program.
 
 # ✨Standalone EXE for Windows
-You can download a packaged exe file for windows to run this tool without installation of Python, see [Release](https://github.com/abse4411/projz_renpy_translation/releases). To use AI translation, the [installation](#1startup-we-use-python-38) for Python is still needed.
+You can download a packaged exe file for Windows to run this tool without installation of Python, see [Release](https://github.com/abse4411/projz_renpy_translation/releases). To use AI translation, the [installation](#1startup-we-use-python-38) for Python is still needed.
 
 # ✨What's new
 
@@ -79,7 +79,9 @@ You can download a packaged exe file for windows to run this tool without instal
 
 # 🛫Get started
 
-## 1.Startup (We use Python 3.8)
+## 1.Startup (Optional)
+> **🚨Note🚨**<br />
+> Yon can get an EXE file from projz-Winndows_VX.X.X.zip in [Release](https://github.com/abse4411/projz_renpy_translation/releases). It only works on Windows OS.
 
 After installing python 3.8, use pip to install the dependencies:
 ```bash
