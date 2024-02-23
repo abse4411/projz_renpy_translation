@@ -313,7 +313,26 @@ This will print the detailed usage of `new` command:
 6. You can mark all untranslated texts as translated ones by `mark` command: `mark {index_or_name} -l {lang}`
 7. You can rename a name of translations by `rename` command: `rename {index_or_name} -l {lang} -t {new_lang}`, where `{new_lang}` is new one.
 8. To merge translations from another TranslationIndex into current TranslationIndex, use `merge` command: `merge {index_or_name} -l {lang} -s {source_index}`, where `{source_index}` is the source index to merge from. This enables you to use translations of old game to that of new game when new one is released.
+9. You can use `-a` option to enable [AI translation](#use-ai-translation) and [UlionTse/translators](#使用uliontse-translators翻译) translation to load translation settings from the config file automatically. It reduces some args to enter for these commands.
 
+   Auto [UlionTse/translators](#使用uliontse-translators翻译) translation: `t {index_or_name} -t ts -l {lang} -a`. Default args in [config.yaml](config.yaml):
+   ```yaml
+   translators:
+      api_name: 'bing'
+      # Language code can be found at: resources/translation/translators_langcode.txt
+      from_language: 'auto'
+      to_language: 'zh-Hans'
+   ```
+   Auto [AI translation](#use-uliontse-translators): `t {index_or_name} -t ai -l {lang} -a`. Default args in [config.yaml](config.yaml):
+   ```yaml
+    ai:
+      # available models: 'm2m100', 'mbart50', 'nllb200'
+      model_name: 'mbart50'
+      batch_size: 2
+      # Language code can be found at: resources/translation/dl-translate_langcode.txt
+      from_language: 'English'
+      to_language: 'Chinese'
+   ```
 ---
 ## ⚡Fast translating⚡ with `saveexcel` and `loadexcel`
 By saving translations to an Excel file, use translation website to translate.
