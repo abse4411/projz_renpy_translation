@@ -13,10 +13,16 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
+from command import BaseCmd
+from config.base import CONFIG_FILE
 
-from .base import *
-from .index import *
-from .renpy import *
-from .file import *
-from .translation import *
-from .misc import *
+
+class ReloadConfigCmd(BaseCmd):
+    def __init__(self):
+        super().__init__('reconfig', 'Reload config from disk. It takes effect for most config items.')
+        self._parser.add_argument("-f", "--file", default=CONFIG_FILE, type=str, metavar='config_path',
+                                  help=f"The path to config.yaml.")
+
+    def invoke(self):
+        print(f'Reload config file from {self.args.file}')
+        self.config.reload(self.args.file)

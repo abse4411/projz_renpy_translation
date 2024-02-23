@@ -26,7 +26,7 @@ from translator.base import CachedTranslatorTemplate
 from util import my_input, line_to_args
 
 ts = None
-
+_preacceleration_done = False
 
 class TranslatorsLibTranslator(CachedTranslatorTemplate):
     def __init__(self):
@@ -55,9 +55,11 @@ class TranslatorsLibTranslator(CachedTranslatorTemplate):
         self.trans_kwargs.pop('to_language', None)
         use_preacceleration = self.trans_kwargs.pop('if_use_preacceleration', False)
         kwargs = tconfig.get('preaccelerate', {})
-        if use_preacceleration:
+        global _preacceleration_done
+        if use_preacceleration and not _preacceleration_done:
             from translators.server import preaccelerate
             _ = preaccelerate(kwargs)
+            _preacceleration_done = True
         if self.args.auto:
             self.translator = tconfig['api_name']
             self._source = tconfig['from_language']

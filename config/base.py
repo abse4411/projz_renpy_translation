@@ -31,15 +31,21 @@ class ProjzConfig:
     PROJECT_PATH = './projz'
     TMP_PATH = './projz/tmp'
     WRITE_CACHE_SIZE = 500
-    REMOVE_MARKS = False
     REMOVE_TAGS = False
     SAY_ONLY = True
     NUM_WORKERS = 2
 
     def __init__(self, config_file):
+        self.config_file = config_file
         self.log = logging.getLogger(__name__)
+        self.cfg = None
+        self.reload()
+
+    def reload(self, config_file: str = None):
         try:
-            with default_read(CONFIG_FILE) as f:
+            if config_file is None:
+                config_file = self.config_file
+            with default_read(config_file) as f:
                 cfg = yaml.safe_load(f)
             self.cfg = cfg
         except Exception as e:
@@ -97,12 +103,6 @@ class ProjzConfig:
         if self.cfg:
             return self['index']['write_cache_size']
         return self.WRITE_CACHE_SIZE
-
-    @property
-    def remove_marks(self):
-        if self.cfg:
-            return self['remove_marks']
-        return self.REMOVE_MARKS
 
     @property
     def remove_tags(self):

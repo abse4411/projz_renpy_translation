@@ -315,7 +315,7 @@ new -h
 > 我们欢迎您集成您的翻译实现到我们的项目中，或者帮助我们翻译文档页面。
 
 ## 其他说明
-1. 修改配置文件[config.yaml](config.yaml)的内容，需要重新启动程序才能生效。
+1. 在修改配置文件[config.yaml](config.yaml)后，可以使用`reconfig`命令来重新加载配置文件。这适用与大多数配置项。
 2. 如果您想导入和导出过程忽略某些rpy文件的翻译，请在[config.yaml](config.yaml)中设置`index.ignore`。注意，在window下目录分割符为`\`。假设您要屏蔽游戏`game`目录下的`script/demo.rpy`文件的翻译,这时添加的到`index.ignore`的文件路径应该是：`script\demo.rpy`。如果文件路径中含有空格，请保持原样即可，无需处理。
 3. 在[config.yaml](config.yaml)中把`translator.ai.model_path`设置为空，则会自动下载模型到本地。
 4. 您可以使用`de {index_or_name} -l {lang}`和`ue {index_or_name} -l {lang}`将指定TranslationIndex的数据（包括翻译和未翻译文本）分别导出到excel和从excel导入，这样您就可以修改已经翻译过的文本或者手动翻译某些文本。

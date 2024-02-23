@@ -14,9 +14,4 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from .base import *
-from .index import *
-from .renpy import *
-from .file import *
-from .translation import *
-from .misc import *
+from .impl import ReloadConfigCmd

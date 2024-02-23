@@ -151,3 +151,6 @@ register(LoadJsonCmd(), short_name='lj')
 # For users
 register(HelpCmd(), short_name='h')
 register(QuitCmd(), short_name='q')
+
+# Config
+register(ReloadConfigCmd())

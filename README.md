@@ -305,7 +305,7 @@ This will print the detailed usage of `new` command:
 > We're glad to you integrate your translation implementation into our tool, or help us translate the documentation.
 
 ## Other helpful tips
-1. Changes in [config.yaml](config.yaml) required restarting the main program to apply.
+1. To apply changes in [config.yaml](config.yaml), use `reconfig` command. It takes effect for most config items.
 2. If you want to ignore the translations of certain rpy files when importing and generating translations, please add these files to `index.ignore` in [config.yaml](config.yaml). Note that, the path splitter in Windows OS is "\\", that means that if you want to ignore translations of `script/demo.rpy`, you should rewrite its path to `script\demo.rpy`. If there exists space in the path, just keep it.
 3. The tool will  automatically download models in local dir if `translator.ai.model_path` is empty in [config.yaml](config.yaml).
 4. You can use`de {index_or_name} -l {lang}` to export translation data (including translated and untranslated texts) of a given TranslationIndex to an Excel file, then update translations (`ue {index_or_name} -l {lang}`) from it after you modify them. In this way, you can alter translations or translate them manually.
