@@ -42,20 +42,32 @@ class TranslatorsLibTranslator(CachedTranslatorTemplate):
         import translators as ts
         parser.add_argument('-n', '--name', choices=ts.translators_pool, default='bing',
                             help='The name of translation services.')
+        parser.add_argument("-a", "--auto", action='store_true',
+                                  help="Load translation settings form config.")
 
     def do_init(self, args, config: ProjzConfig):
         super().do_init(args, config)
-        self.translator = args.name
-        self.trans_kwargs = self.config['translator']['translators'].get('translate_text', {})
+        tconfig = self.config['translator']['translators']
+        self.trans_kwargs = tconfig.get('translate_text', {})
         self.trans_kwargs.pop('query_text', None)
         self.trans_kwargs.pop('translator', None)
         self.trans_kwargs.pop('from_language', None)
         self.trans_kwargs.pop('to_language', None)
         use_preacceleration = self.trans_kwargs.pop('if_use_preacceleration', False)
-        kwargs = self.config['translator']['translators'].get('preaccelerate', {})
+        kwargs = tconfig.get('preaccelerate', {})
         if use_preacceleration:
             from translators.server import preaccelerate
             _ = preaccelerate(kwargs)
+        if self.args.auto:
+            self.translator = tconfig['api_name']
+            self._source = tconfig['from_language']
+            self._target = tconfig['to_language']
+            print('Using config from config.yaml:')
+            print(f'translation service: {self.translator}')
+            print(f'from_language: {self._source}')
+            print(f'to_language: {self._target}')
+            return True
+        self.translator = args.name
         return self.determine_translation_target()
 
     def determine_translation_target(self):

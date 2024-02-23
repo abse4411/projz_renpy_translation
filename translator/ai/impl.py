@@ -47,6 +47,8 @@ class DlTranslator(CachedTranslatorTemplate):
         parser.add_argument('-b', '--batch_size', type=int, default=4,
                             help='The batch size for translating. Lager value may bring faster translation speed '
                                  'but consumes more GPU memory')
+        parser.add_argument("-a", "--auto", action='store_true',
+                                  help="Load translation settings form config.")
 
     def _load_model(self):
         print(f'Start loading the {self._model_name} model')
@@ -102,11 +104,25 @@ class DlTranslator(CachedTranslatorTemplate):
 
     def do_init(self, args, config: ProjzConfig):
         super().do_init(args, config)
-        assert args.batch_size > 0, f'The batch_size must be greater than 0!'
-        self._batch_size = args.batch_size
-        self._model_path = strip_or_none(config['translator']['ai']['model_path'])
-        self._model_name = args.name
+        ai_config = config['translator']['ai']
+        self._model_path = strip_or_none(ai_config['model_path'])
+        if self.args.auto:
+            self._batch_size = ai_config['batch_size']
+            self._model_name = ai_config['model_name']
+            self._source = ai_config['from_language']
+            self._target = ai_config['to_language']
+            print('Using config from config.yaml:')
+            print(f'batch_size: {self._batch_size}')
+            print(f'model_name: {self._model_name}')
+            print(f'from_language: {self._source}')
+            print(f'to_language: {self._target}')
+        else:
+            assert args.batch_size > 0, f'The batch_size must be greater than 0!'
+            self._batch_size = args.batch_size
+            self._model_name = args.name
         self._load_model()
+        if self.args.auto:
+            return True
         return self.determine_translation_target()
 
     def close(self):
@@ -115,10 +131,10 @@ class DlTranslator(CachedTranslatorTemplate):
             torch.cuda.empty_cache()
 
     def translate(self, text: str):
-        return self.mt.translate(text, self._source, self._source, batch_size=1, verbose=False)
+        return self.mt.translate(text, self._source, self._target, batch_size=1, verbose=False)
 
     def translate_batch(self, texts: List[str]):
-        return self.mt.translate(texts, self._source, self._source, batch_size=self._batch_size, verbose=True)
+        return self.mt.translate(texts, self._source, self._target, batch_size=self._batch_size, verbose=True)
 
 
 register_cmd_translator('ai', DlTranslator)

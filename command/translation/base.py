@@ -39,7 +39,7 @@ class TranslateCmd(BaseLangIndexCmd):
     def reinit(self):
         super().__init__('translate', 'Translate untranslated lines of the give language\n using '
                                       'the specified translator.')
-        self._parser.add_argument("-t", "--translator", type=str, choices=list(_TRANSLATOR.keys()),
+        self._parser.add_argument("-t", "--translator", type=str, choices=list(_TRANSLATOR.keys()), required=True,
                                   help="The translator to use.")
         self._parser.add_argument("-ab", "--accept_blank", action='store_true',
                                   help="Accept blank translated lines from the translator when updating translations.")

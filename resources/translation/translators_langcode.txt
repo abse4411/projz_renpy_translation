@@ -1,0 +1,300 @@
+Language code of each Translation Services. Learn more: https://github.com/UlionTse/translators
+
+[alibaba]
+ab | ace | af | ak | am | an | ang | ar | as | ast
+ay | az | ba | bal | be | bem | ber | bg | bho | bi
+bm | bn | bo | br | bs | byn | ca | cbk | ceb | ch
+chm | chr | cnr | co | crh | cs | csb | cv | cy | da
+de | dtp | dv | ee | el | en | eo | es | et | eu
+fa | fi | fil | fj | fo | fr | fur | fvr | fy | ga
+gd | gil | gl | gn | gos | gu | gv | ha | haw | hbs
+he | hi | hil | hmn | hsb | ht | hu | hup | hy | ia
+iba | id | ie | ig | ii | ilo | inh | io | is | it
+iu | ja | jbo | jv | ka | kab | kdx | kek | kg | kha
+kk | kl | km | kn | ko | kr | ks | ku | kw | ky
+la | lb | lg | li | ln | lo | lt | ltg | lv | mai
+mfe | mg | mh | mi | mk | ml | mn | mr | ms | mt
+mus | my | nch | nds | ne | ngu | niu | nl | no | nv
+ny | oc | oj | om | or | os | pa | pag | pap | pl
+pmn | ps | pt | qu | quc | rm | rn | ro | rom | ru
+rue | rw | sa | sco | sd | se | sg | shn | si | sk
+sl | sm | sn | so | sq | sr | st | su | sv | sw
+syr | szl | ta | te | tet | tg | th | ti | tk | tl
+tlh | toi | tpi | tr | ts | tt | tvl | tw | ty | tyv
+udm | ug | uk | umb | ur | uz | ve | vi | vo | wa
+war | wo | xh | yi | yo | yue | za | zh | zh-tw | zu
+zza | auto
+
+[apertium]
+afr | ara | arg | bel | bre | bul | cat | crh | cym | dan
+eng | epo | eus | fra | frp | glg | hbs | hin | ind | isl
+ita | kaz | mkd | mlt | nld | nno | nno_e | nob | oci | oci_aran
+oci_gascon | pol | por | ron | rus | slv | sme | spa | srd | swe
+szl | tat | tur | ukr | urd | zlm | auto
+
+[argos]
+ar | az | bg | bn | ca | cs | da | de | el | en
+eo | es | et | fa | fi | fr | ga | he | hi | hu
+id | it | ja | ko | lt | lv | ms | nb | nl | pl
+pt | ro | ru | sk | sl | sq | sr | sv | th | tl
+tr | uk | ur | vi | zh | zt | auto
+
+[baidu]
+ach | afr | aka | alb | amh | ara | arg | arm | arq | asm
+ast | auto | aym | aze | bak | bal | baq | bel | bem | ben
+ber | bho | bis | bli | bos | bre | bul | bur | cat | ceb
+chr | cht | chv | cor | cos | cre | cri | cs | dan | de
+div | el | en | eno | epo | est | fao | fil | fin | fra
+fri | frm | frn | fry | ful | geo | gla | gle | glg | glv
+gra | grn | guj | hak | hau | haw | heb | hi | hil | hkm
+hmn | hrv | ht | hu | hup | ibo | ice | id | ido | iku
+ina | ing | it | jav | jp | kab | kah | kal | kan | kas
+kau | kin | kir | kli | kok | kon | kor | kur | lag | lao
+lat | lav | lim | lin | lit | log | loj | los | ltz | lug
+mac | mah | mai | mal | mao | mar | mau | may | mg | mlt
+mot | nbl | nea | nep | nl | nno | nob | nor | nqo | nya
+oci | oji | ori | orm | oss | pam | pan | pap | ped | per
+pl | pot | pt | pus | que | ro | roh | rom | ru | ruy
+san | sco | sec | sha | sil | sin | sk | slo | sm | sme
+sna | snd | sol | som | sot | spa | src | srd | srp | sun
+swa | swe | syr | tam | tat | tel | tet | tgk | tgl | th
+tir | tr | tso | tua | tuk | twi | ukr | ups | urd | ven
+vie | wel | wln | wol | wyw | xho | yid | yor | yue | zaz
+zh | zul | auto
+
+[bing]
+af | am | ar | as | az | ba | bg | bho | bn | bo
+brx | bs | ca | cs | cy | da | de | doi | dsb | dv
+el | en | es | et | eu | fa | fi | fil | fj | fo
+fr | fr-CA | ga | gl | gom | gu | ha | he | hi | hne
+hr | hsb | ht | hu | hy | id | ig | ikt | is | it
+iu | iu-Latn | ja | ka | kk | km | kmr | kn | ko | ks
+ku | ky | ln | lo | lt | lug | lv | lzh | mai | mg
+mi | mk | ml | mn-Cyrl | mn-Mong | mr | ms | mt | mww | my
+nb | ne | nl | nso | nya | or | otq | pa | pl | prs
+ps | pt | pt-PT | ro | ru | run | rw | sd | si | sk
+sl | sm | sn | so | sq | sr-Cyrl | sr-Latn | st | sv | sw
+ta | te | th | ti | tk | tlh-Latn | tn | to | tr | tt
+ty | ug | uk | ur | uz | vi | xh | yo | yua | yue
+zh-Hans | zh-Hant | zu | auto
+
+[caiyun]
+en | es | fr | ja | ko | ru | zh | auto
+
+[cloudTranslation]
+all | ar | de | en-us | es | fa | fr | hi | id | it
+ja | km | ko | lo | ms | my | nl | pl | pt | ru
+sk | th | tl | uk | vi | yue | zh-cn | zh-tw | auto
+
+[deepl]
+ar | auto | bg | cs | da | de | el | en | es | et
+fi | fr | hu | id | it | ja | ko | lt | lv | nb
+nl | pl | pt | ro | ru | sk | sl | sv | tr | uk
+zh | auto
+
+[elia]
+ca | en | es | eu | fr | gl | auto
+
+[google]
+af | ak | am | ar | as | auto | ay | az | be | bg
+bho | bm | bn | bs | ca | ceb | ckb | co | cs | cy
+da | de | doi | dv | ee | el | en | en-US | eo | es
+et | eu | fa | fi | fr | fy | ga | gd | gl | gn
+gom | gu | ha | haw | hi | hmn | hr | ht | hu | hy
+id | ig | ilo | is | it | iw | ja | jw | ka | kk
+km | kn | ko | kri | ku | ky | la | lb | lg | ln
+lo | lt | lus | lv | mai | mg | mi | mk | ml | mn
+mni-Mtei | mr | ms | mt | my | ne | nl | no | nso | ny
+om | or | pa | pl | ps | pt | qu | ro | ru | rw
+sa | sd | si | sk | sl | sm | sn | so | sq | sr
+st | su | sv | sw | ta | te | tg | th | ti | tk
+tl | tr | ts | tt | ug | uk | ur | uz | vi | xh
+yi | yo | zh-CN | zh-TW | zu | auto
+
+[iciba]
+Failed
+
+[iflytek]
+Failed
+
+[iflyrec]
+ar | de | en | es | fr | it | ja | ko | ru | vi
+yue | zh | auto
+
+[itranslate]
+af | ar-AE | ar-EG | ar-SA | auto | az | be | bg | bn | bs
+ca | ceb | cs | cy | da | de | el | en | en-AU | en-UK
+en-US | eo | es-ES | es-MX | es-US | et | eu | fa | fi | fr-CA
+fr-FR | ga | gl | gu | ha | he | hi | hmn | hr | ht
+hu | hy | id | ig | is | it | ja | jw | ka | kk
+km | kn | ko | la | lo | lt | lv | mg | mi | mk
+ml | mn | mr | ms | mt | my | ne | nl | no | ny
+pa | pl | pt-BR | pt-PT | ro | ru | si | sk | sl | so
+sq | sr | st | su | sv | sw | ta | te | tg | th
+tl | tr | uk | ur | uz | vi | yi | yo | zh-CN | zh-HK
+zh-TW | zu | auto
+
+[judic]
+Failed
+
+[languageWire]
+da | de | en | es | fr | nb | nl | sv | auto
+
+[lingvanex]
+af_ZA | am_ET | ar_EG | ar_SA | as_IN | az_AZ | be_BY | bg_BG | bn_BD | bs_BA
+ca_ES | ceb_PH | co_FR | cs_CZ | cy_GB | da_DK | de_DE | el_GR | en_GB | eo_WORLD
+es_ES | et_EE | eu_ES | fa_IR | fi_FI | fr_CA | fr_FR | fy_NL | ga_IE | gd_GB
+gl_ES | gu_IN | ha_NE | haw_US | he_IL | hi_IN | hmn_CN | hr_HR | ht_HT | hu_HU
+hy_AM | id_ID | ig_NG | is_IS | it_IT | ja_JP | jv_ID | ka_GE | kk_KZ | km_KH
+kn_IN | ko_KR | ku_IR | ky_KG | la_VAT | lb_LU | lo_LA | lt_LT | lv_LV | mg_MG
+mi_NZ | mk_MK | ml_IN | mn_MN | mr_IN | ms_MY | mt_MT | my_MM | ne_NP | nl_NL
+no_NO | ny_MW | or_OR | pa_PK | pl_PL | ps_AF | pt_PT | ro_RO | ru_RU | rw_RW
+sd_PK | si_LK | sk_SK | sl_SI | sm_WS | sn_ZW | so_SO | sq_AL | sr-Cyrl_RS | st_LS
+su_ID | sv_SE | sw_TZ | ta_IN | te_IN | tg_TJ | th_TH | tk_TM | tl_PH | tr_TR
+tt_TT | ug_CN | uk_UA | ur_PK | uz_UZ | vi_VN | xh_ZA | yi_IL | yo_NG | zh-Hans_CN
+zh-Hant_TW | zu_ZA | auto
+
+[niutrans]
+Failed
+
+[mglip]
+mon | xle | zh | auto
+
+[mirai]
+Failed
+
+[modernMt]
+ace | af | ak | als | am | ar | as | ast | awa | ayr
+az | azb | azj | ba | ban | be | bem | bg | bho | bjn
+bm | bn | bo | bs | bug | ca | ceb | cjk | ckb | crh
+cs | cy | da | de | dik | diq | dyu | dz | ee | el
+en | eo | es-419 | es-ES | et | fi | fj | fo | fon | fr
+fur | fuv | ga | gaz | gd | gl | gn | gu | ha | he
+hi | hne | hr | ht | hu | hy | id | ig | ilo | is
+it | ja | jv | ka | kab | kac | kam | kas | kbp | kea
+kg | khk | ki | kk | km | kmb | kmr | kn | knc | ko
+ks | ky | la | lb | lg | li | lij | lmo | ln | lo
+lt | ltg | lua | luo | lus | lv | lvs | mag | mai | mg
+mi | min | mk | ml | mn | mni | mos | mr | ms | mt
+my | nb | ne | nl | nn | nso | nus | ny | oc | or
+pa | pag | pap | pbt | pes | pl | plt | prs | ps | pt-BR
+pt-PT | quy | rn | ro | ru | rw | sa | sat | sc | scn
+sd | sg | shn | si | sk | sl | sm | sn | so | sq
+sr-Cyrl | sr-Latn | ss | st | su | sv | sw | szl | ta | taq
+te | tg | th | ti | tk | tl | tn | tpi | tr | ts
+tt | tum | tw | tzm | ug | uk | umb | ur | uzn | vec
+vi | war | wo | xh | ydd | yo | zh-CN | zh-TW | zsm | zu
+auto
+
+[myMemory]
+ace-ID | acf-LC | af-ZA | aig-AG | ak-GH | als-AL | am-ET | an-ES | ar-EG | ar-MA
+ar-SA | as-IN | ast-ES | awa-IN | ayr-BO | az-AZ | azb-AZ | azj-AZ | ba-RU | bah-BS
+ban-ID | be-BY | bem-ZM | bg-BG | bh-IN | bho-IN | bi-VU | bjn-ID | bjs-BB | bm-ML
+bn-IN | bo-CN | br-FR | bs-BA | bs-Cyrl-BA | bug-ID | ca-ES | cac-GT | cav-ES | ceb-PH
+ch-GU | chr-US | cjk-AO | ckb-IQ | cop-EG | crh-RU | crs-SC | cs-CZ | ctg-BD | cy-GB
+da-DK | de-AT | de-CH | de-DE | dik-SS | diq-TR | dv-MV | dyu-CI | dz-BT | ee-GH
+el-GR | en-AU | en-CA | en-GB | en-IE | en-IN | en-NZ | en-SG | en-US | en-ZA
+eo-EU | es-419 | es-AR | es-CO | es-ES | es-MX | es-US | et-EE | eu-ES | fa-IR
+ff-FUL | fi-FI | fil-PH | fj-FJ | fn-FNG | fo-FO | fon-BJ | fr-BE | fr-CA | fr-CH
+fr-FR | fur-IT | fuv-NG | ga-IE | gax-KE | gaz-ET | gcl-GD | gd-GB | gil-KI | gl-ES
+glw-NG | gn-PY | grc-GR | grt-IN | gu-IN | guz-KE | gv-IM | gyn-GY | ha-NE | haw-US
+he-IL | hi-IN | hig-NG | hil-PH | hmn-CN | hne-IN | hoc-IN | hr-HR | ht-HT | hu-HU
+hy-AM | ibo-NG | id-ID | ig-NG | ilo-PH | is-IS | it-CH | it-IT | ja-JP | jam-JM
+jv-ID | ka-GE | kab-DZ | kac-MM | kam-KE | kar-MM | kas-IN | kbp-TG | kea-CV | kg-CG
+kha-IN | khk-MN | ki-KE | kik-KE | kjb-GT | kk-KZ | kl-GL | kln-KE | km-KH | km-KM
+kmb-AO | kmr-TR | kn-IN | knc-NG | ko-KR | kok-IN | kr-KAU | ks-IN | ku-TR | ky-KG
+la-VA | la-XN | lb-LU | lg-UG | li-NL | lij-IT | lmo-IT | ln-LIN | lo-LA | lt-LT
+ltg-LV | lua-CD | luo-KE | lus-IN | luy-KE | lv-LV | lvs-LV | mag-IN | mai-IN | mam-GT
+mas-KE | men-SL | mer-KE | mfe-MU | mfi-CM | mfi-NG | mg-MG | mh-MH | mhr-RU | mi-NZ
+min-ID | mk-MK | ml-IN | mn-MN | mni-IN | mos-BF | mr-IN | mrj-RU | mrt-NG | ms-MY
+mt-MT | my-MM | nb-NO | nd-ZW | ndc-MZ | ne-NP | niu-NU | nl-BE | nl-NL | nn-NO
+no-NO | nr-ZA | nso-ZA | nus-SS | ny-MW | nyf-KE | oc-ES | oc-FR | or-IN | ory-IN
+pa-IN | pag-PH | pap-CW | pau-PW | pbt-PK | pes-IR | pi-IN | pis-SB | pl-PL | plt-MG
+pnb-PK | pot-US | pov-GW | ppk-ID | prs-AF | ps-PK | pt-BR | pt-PT | qu-PE | quc-GT
+quy-PE | rhg-MM | rhl-MM | rm-RO | rmn-BG | rn-BI | ro-RO | roh-CH | ru-RU | run-BI
+rw-RW | sa-IN | sat-IN | sc-IT | scn-IT | sd-PK | seh-ZW | sg-CF | shn-MM | shu-TD
+si-LK | sk-SK | sl-SI | sm-WS | sn-ZW | snd-PK | so-SO | sq-AL | sr-Cyrl-RS | sr-Latn-RS
+sr-ME | sr-RS | srn-SR | ss-SZ | st-LS | st-ST | su-ID | sv-SE | svc-VC | sw-KE
+sw-SZ | syc-TR | szl-PL | ta-IN | ta-LK | taq-ML | te-IN | tet-TL | tg-TJ | th-TH
+ti-ET | ti-TI | tk-TM | tkl-TK | tl-PH | tmh-DZ | tn-BW | tn-ZA | to-TO | tpi-PG
+tr-TR | trv-TW | ts-ZA | tsc-MZ | tt-RU | tum-MW | tvl-TV | tw-GH | ty-PF | tzm-MA
+udm-RU | ug-CN | uig-CN | uk-UA | umb-AO | ur-PK | uz-UZ | uzn-UZ | vec-IT | vi-VN
+vic-US | vmw-MZ | war-PH | wls-WF | wo-SN | xh-ZA | ydd-US | yi-YD | yo-NG | zdj-KM
+zh-CN | zh-HK | zh-MO | zh-TW | zsm-MY | zu-ZA | auto
+
+[papago]
+ar | de | en | es | fr | hi | id | it | ja | ko
+pt | ru | th | vi | zh-CN | zh-TW | auto
+
+[qqFanyi]
+ar | auto | de | en | es | fr | hi | id | it | jp
+kr | ms | pt | ru | th | tr | vi | zh | auto
+
+[qqTranSmart]
+ach | af | ak | am | an | ar | arn | ast | ay | az
+be | bg | bn | bo | br | bs | ca | cgg | cnr | cs
+csb | cy | da | de | dev | dz | el | en | eo | es
+et | eu | fa | fi | fil | fo | fr | fur | fy | ga
+gd | gl | gu | gun | ha | he | hi | hr | ht | hu
+hy | ia | id | is | it | iw | ja | jbo | jv | ka
+kk | km | kn | ko | ku | kw | ky | lb | ln | lo
+lt | lv | mai | mfe | mg | mi | mk | ml | mn | mnk
+mr | ms | mt | nah | nap | nb | ne | nl | nn | no
+nso | oc | or | pa | pap | pl | pms | ps | pt | pt-BR
+pt-PT | rm | ro | ru | sah | sco | se | si | sk | sl
+so | son | sq | sr | su | sv | sw | ta | te | tg
+th | ti | tk | tl | tr | tt | ug | uk | ur | uz
+vi | wa | wo | yo | zh | auto
+
+[reverso]
+af | ar | bg | bn | cs | da | de | el | en | es
+et | fa | fi | fr | ha | he | hi | hu | id | it
+ja | ko | lt | nl | no | pe | pl | ps | pt | ptb
+ro | ru | sk | sl | so | sr | sv | th | tr | uk
+ur | vi | zh | auto
+
+[sogou]
+ar | cs | da | de | en | es | fi | fr | hu | it
+ja | ko | nl | pl | pt | ru | sv | th | vi | zh-CHS
+auto
+
+[sysTran]
+Failed
+
+[tilde]
+Failed
+
+[translateCom]
+ar | de | en | en-gb | es | es-la | fa | fr | fr-ca | it
+ja | ko | nl | pl | pt | pt-br | ro | ru | uk | zh
+zh-TW | auto
+
+[translateMe]
+Failed
+
+[utibet]
+ti | zh | auto
+
+[volcEngine]
+Failed
+
+[yandex]
+af | am | ar | az | ba | be | bg | bn | bs | ca
+ceb | cs | cv | cy | da | de | el | emj | en | eo
+es | et | eu | fa | fi | fr | ga | gd | gl | gu
+he | hi | hr | ht | hu | hy | id | is | it | ja
+jv | ka | kazlat | kk | km | kn | ko | ky | la | lb
+lo | lt | lv | mg | mhr | mi | mk | ml | mn | mr
+mrj | ms | mt | my | ne | nl | no | pa | pap | pl
+pt | pt-BR | ro | ru | sah | si | sjn | sk | sl | sq
+sr | sr-Latn | su | sv | sw | ta | te | tg | th | tl
+tr | tt | udm | uk | ur | uz | uzbcyr | vi | xh | yi
+zh | zu | auto
+
+[yeekit]
+Failed
+
+[youdao]
+ar | de | en | es | fr | id | ja | ko | pt | ru
+vi | zh-CHS | auto
+

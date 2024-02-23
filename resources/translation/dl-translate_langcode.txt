@@ -1,0 +1,47 @@
+Language code of each model. Learn more: https://github.com/xhluca/dl-translate
+
+[m2m100]
+Afrikaans | Albanian | Amharic | Arabic | Armenian | Asturian | Azerbaijani | Bashkir | Belarusian | Bengali
+Bosnian | Breton | Bulgarian | Burmese | Catalan | Cebuano | Central Khmer | Chinese | Croatian | Czech
+Danish | Dutch | English | Estonian | Finnish | Flemish | French | Fulah | Gaelic | Galician
+Ganda | Georgian | German | Greek | Gujarati | Haitian | Haitian Creole | Hausa | Hebrew | Hindi
+Hungarian | Icelandic | Igbo | Iloko | Indonesian | Irish | Italian | Japanese | Javanese | Kannada
+Kazakh | Khmer | Korean | Lao | Latvian | Letzeburgesch | Lingala | Lithuanian | Luxembourgish | Macedonian
+Malagasy | Malay | Malayalam | Marathi | Moldavian | Moldovan | Mongolian | Nepali | Northern Sotho | Norwegian
+Occitan | Oriya | Panjabi | Pashto | Persian | Polish | Portuguese | Punjabi | Pushto | Romanian
+Russian | Scottish Gaelic | Serbian | Sindhi | Sinhala | Sinhalese | Slovak | Slovenian | Somali | Spanish
+Sundanese | Swahili | Swati | Swedish | Tagalog | Tamil | Thai | Tswana | Turkish | Ukrainian
+Urdu | Uzbek | Valencian | Vietnamese | Welsh | Western Frisian | Wolof | Xhosa | Yiddish | Yoruba
+Zulu
+
+[mbart50]
+Afrikaans | Arabic | Azerbaijani | Bengali | Burmese | Chinese | Croatian | Czech | Dutch | English
+Estonian | Finnish | French | Galician | Georgian | German | Gujarati | Hebrew | Hindi | Indonesian
+Italian | Japanese | Kazakh | Khmer | Korean | Latvian | Lithuanian | Macedonian | Malayalam | Marathi
+Mongolian | Nepali | Pashto | Persian | Polish | Portuguese | Romanian | Russian | Sinhala | Slovene
+Spanish | Swahili | Swedish | Tagalog | Tamil | Telugu | Thai | Turkish | Ukrainian | Urdu
+Vietnamese | Xhosa
+
+[nllb200]
+Acehnese (Arabic script) | Acehnese (Latin script) | Afrikaans | Akan | Amharic | Armenian | Assamese | Asturian | Awadhi | Ayacucho Quechua
+Balinese | Bambara | Banjar (Arabic script) | Banjar (Latin script) | Bashkir | Basque | Belarusian | Bemba | Bengali | Bhojpuri
+Bosnian | Buginese | Bulgarian | Burmese | Catalan | Cebuano | Central Atlas Tamazight | Central Aymara | Central Kanuri (Arabic script) | Central Kanuri (Latin script)
+Central Kurdish | Chhattisgarhi | Chinese (Simplified) | Chinese (Traditional) | Chokwe | Crimean Tatar | Croatian | Czech | Danish | Dari
+Dutch | Dyula | Dzongkha | Eastern Panjabi | Eastern Yiddish | Egyptian Arabic | English | Esperanto | Estonian | Ewe
+Faroese | Fijian | Finnish | Fon | French | Friulian | Galician | Ganda | Georgian | German
+Greek | Guarani | Gujarati | Haitian Creole | Halh Mongolian | Hausa | Hebrew | Hindi | Hungarian | Icelandic
+Igbo | Ilocano | Indonesian | Irish | Italian | Japanese | Javanese | Jingpho | Kabiyè | Kabuverdianu
+Kabyle | Kamba | Kannada | Kashmiri (Arabic script) | Kashmiri (Devanagari script) | Kazakh | Khmer | Kikongo | Kikuyu | Kimbundu
+Kinyarwanda | Korean | Kyrgyz | Lao | Latgalian | Ligurian | Limburgish | Lingala | Lithuanian | Lombard
+Luba-Kasai | Luo | Luxembourgish | Macedonian | Magahi | Maithili | Malayalam | Maltese | Maori | Marathi
+Meitei (Bengali script) | Mesopotamian Arabic | Minangkabau (Arabic script) | Minangkabau (Latin script) | Mizo | Modern Standard Arabic | Modern Standard Arabic (Romanized) | Moroccan Arabic | Mossi | Najdi Arabic
+Nepali | Nigerian Fulfulde | North Azerbaijani | North Levantine Arabic | Northern Kurdish | Northern Sotho | Northern Uzbek | Norwegian Bokmål | Norwegian Nynorsk | Nuer
+Nyanja | Occitan | Odia | Pangasinan | Papiamento | Plateau Malagasy | Polish | Portuguese | Romanian | Rundi
+Russian | Samoan | Sango | Sanskrit | Santali | Sardinian | Scottish Gaelic | Serbian | Shan | Shona
+Sicilian | Silesian | Sindhi | Sinhala | Slovak | Slovenian | Somali | South Azerbaijani | South Levantine Arabic | Southern Pashto
+Southern Sotho | Southwestern Dinka | Spanish | Standard Latvian | Standard Malay | Standard Tibetan | Sundanese | Swahili | Swati | Swedish
+Ta'izzi-Adeni Arabic | Tagalog | Tajik | Tamasheq (Latin script) | Tamasheq (Tifinagh script) | Tamil | Tatar | Telugu | Thai | Tigrinya
+Tok Pisin | Tosk Albanian | Tsonga | Tswana | Tumbuka | Tunisian Arabic | Turkish | Turkmen | Twi | Ukrainian
+Umbundu | Urdu | Uyghur | Venetian | Vietnamese | Waray | Welsh | West Central Oromo | Western Persian | Wolof
+Xhosa | Yoruba | Yue Chinese | Zulu
+
