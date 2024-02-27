@@ -61,6 +61,7 @@ projz:
       - 'resources/fonts/Roboto-Light.ttf'
       - 'resources/fonts/SourceHanSansLite.ttf'
       - 'resources/fonts/DejaVuSans.ttf'
+    font_dir: 'projz_fonts/' # font dir in your_game/game, The dir should end with '/'.
     # the final languages listed in the i18n menu is determined by dirs in your_game/game/tl except "None"
     lang_map:
       - tl_name: 'indonesian'

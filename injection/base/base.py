@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import logging
+from typing import List
 
 
 class BaseInjector:
@@ -61,3 +62,30 @@ class UndoOnFailedCallInjector(BaseInjector):
         except Exception as e:
             logging.exception(e)
             return False
+
+
+def call_chain(injectors: List[BaseInjector]):
+    return all([i() for i in injectors])
+
+
+def undo_chain(injectors: List[BaseInjector]):
+    res = True
+    for i in injectors:
+        res = i.undo() and res
+    return res
+
+
+class BaseChainInjector(BaseInjector):
+
+    def __init__(self, injectors: List[BaseInjector] = None):
+        super().__init__()
+        self._injectors = injectors
+
+    def set_chain(self, injectors: List[BaseInjector]):
+        self._injectors = injectors
+
+    def __call__(self, *args, **kwargs):
+        return call_chain(self._injectors)
+
+    def undo(self, *args, **kwargs):
+        return undo_chain(self._injectors)

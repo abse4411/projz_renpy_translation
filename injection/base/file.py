@@ -18,7 +18,7 @@ import os
 import shutil
 
 from injection.base import BaseInjector
-from util import exists_file, file_dir, file_name, exists_dir
+from util import exists_file, file_dir, file_name, exists_dir, default_write
 
 
 class FileInjector(BaseInjector):
@@ -26,32 +26,24 @@ class FileInjector(BaseInjector):
         self.source_filename = source_filename
         self.target_filename = target_filename
 
-    def __call__(self):
+    def __call__(self, *args, **kwargs):
         logging.info(f'Copying {self.source_filename} to {self.target_filename}')
         shutil.copy(self.source_filename, self.target_filename)
         return True
 
-    def undo(self):
+    def undo(self, *args, **kwargs):
         if exists_file(self.target_filename):
             logging.info(f'Deleting {self.target_filename}')
             os.remove(self.target_filename)
         return True
 
 
-class PyFileInjector(BaseInjector):
+class PyFileInjector(FileInjector):
     def __init__(self, source_filename: str, target_filename: str):
-        self.source_filename = source_filename
-        self.target_filename = target_filename
+        super().__init__(source_filename, target_filename)
 
-    def __call__(self):
-        logging.info(f'Copying {self.source_filename} to {self.target_filename}')
-        shutil.copy(self.source_filename, self.target_filename)
-        return True
-
-    def undo(self):
-        if exists_file(self.target_filename):
-            logging.info(f'Deleting {self.target_filename}')
-            os.remove(self.target_filename)
+    def undo(self, *args, **kwargs):
+        super().undo(*args, **kwargs)
         filename, ext = os.path.splitext(self.target_filename)
         ext = ext.lower()
         if ext == '.py':
@@ -74,20 +66,12 @@ class PyFileInjector(BaseInjector):
         return True
 
 
-class RpyFileInjector(BaseInjector):
+class RpyFileInjector(FileInjector):
     def __init__(self, source_filename: str, target_filename: str):
-        self.source_filename = source_filename
-        self.target_filename = target_filename
+        super().__init__(source_filename, target_filename)
 
-    def __call__(self):
-        logging.info(f'Copying {self.source_filename} to {self.target_filename}')
-        shutil.copy(self.source_filename, self.target_filename)
-        return True
-
-    def undo(self):
-        if exists_file(self.target_filename):
-            logging.info(f'Deleting {self.target_filename}')
-            os.remove(self.target_filename)
+    def undo(self, *args, **kwargs):
+        super().undo(*args, **kwargs)
         filename, ext = os.path.splitext(self.target_filename)
         ext = ext.lower()
         if ext == '.rpy':
@@ -97,3 +81,22 @@ class RpyFileInjector(BaseInjector):
                 logging.info(f'Deleting pyo file: {rpyc_file}')
                 os.remove(rpyc_file)
         return True
+
+
+class StrFileInjector(BaseInjector):
+    def __init__(self, injector: FileInjector, content: str = None):
+        self._injector = injector
+        self.content = content
+
+    def set_content(self, content: str):
+        self.content = content
+
+    def __call__(self):
+        logging.info(f'Writing content to {self._injector.target_filename}')
+        # write injection rpy
+        with default_write(self._injector.target_filename) as f:
+            f.write(self.content)
+        return True
+
+    def undo(self, *args, **kwargs):
+        return self._injector.undo()

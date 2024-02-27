@@ -34,7 +34,7 @@ init offset = 999
 #         renpy.config.developer = True
 
 # location of fotns
-define projz_font_dir = "projz_fonts/"
+define projz_font_dir = "{projz_fonts_dir}"
 # Names for saving current selected font by our setting
 # define projz_gui_selected_font = "projz_gui_selected_font"
 init python:

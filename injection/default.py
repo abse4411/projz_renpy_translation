@@ -21,8 +21,9 @@ from typing import List
 
 from config import default_config
 from injection.base import PyCodeInjector, FileInjector, BaseInjector
+from injection.base.base import call_chain, undo_chain, BaseChainInjector
 from injection.base.code import line_strip
-from injection.base.file import PyFileInjector, RpyFileInjector
+from injection.base.file import PyFileInjector, RpyFileInjector, StrFileInjector
 from util import walk_and_select, file_name, default_read, default_write, mkdir, exists_dir
 
 PYTHON_WIN64_EXE = [
@@ -84,20 +85,43 @@ def try_running(try_fn, except_fn=None, final_fn=None, return_try=True, except_r
             final_fn()
 
 
-class ProjzCmdInjection(BaseInjector):
+class ProjzCmdInjection(BaseChainInjector):
     def __init__(self, project_path: str):
+        super().__init__()
         renpy_init_py = os.path.join(project_path, RENPY_PY_DIR, '__init__.py')
         injection_py = os.path.join(project_path, RENPY_PY_DIR, 'translation', 'projz_injection.py')
         self.pyi = PyCodeInjector(renpy_init_py,
                                   anchor_codes=['import renpy.translation.generation'],
                                   target_codes=['import renpy.translation.projz_injection'], insert_before=True)
         self.fi = PyFileInjector(source_filename=r'resources/codes/projz_injection.py', target_filename=injection_py)
+        self.set_chain([self.pyi, self.fi])
 
-    def __call__(self):
-        return self.pyi() and self.fi()
 
-    def undo(self):
-        return self.pyi.undo() and self.fi.undo()
+class FontInjection(BaseChainInjector):
+    PROJZ_FONT_DIR = 'projz_fonts'
+
+    def __init__(self, project_path, font_list: List[str]):
+        super().__init__()
+        self.font_dir = os.path.join(project_path, RENPY_GAME_DIR, default_config['renpy']['font_dir'])
+        self.valid_font_map = dict()
+        if font_list:
+            for f in set(font_list):
+                self.valid_font_map[file_name(f)] = f
+        fis = []
+        for f, path in self.valid_font_map.items():
+            fis.append(FileInjector(source_filename=path, target_filename=os.path.join(self.font_dir, f)))
+        self.set_chain(fis)
+
+    def __call__(self, *args, **kwargs):
+        mkdir(self.font_dir)
+        return super().__call__(*args, **kwargs)
+
+    def undo(self, *args, **kwargs):
+        res = True
+        if exists_dir(self.font_dir):
+            super().undo(*args, **kwargs)
+            try_running(try_fn=lambda: os.rmdir(self.font_dir), return_try=False)
+        return res
 
 
 def _list_tl_names(project_path: str):
@@ -113,7 +137,7 @@ def _list_tl_names(project_path: str):
     return languages
 
 
-class ProjzI18nInjection(BaseInjector):
+class ProjzI18nInjection(BaseChainInjector):
     NOT_FOUND_ERROR_TEXT = """
 We couldn't a file named "screens.rpy" in each place of your game dir {ganme_dir} or failed to inject our code.
 As a result, you cannot find an i18n button in the Options page of the game. Don't worry, you still 
@@ -149,7 +173,6 @@ screen preferences():
                 box_wrap True
 ```
 """
-    PROJZ_FONT_DIR = 'projz_fonts'
     ANCHOR_CODE1 = line_strip('''
                 hbox:
                     box_wrap True
@@ -169,11 +192,10 @@ screen preferences():
     TARGET_CODE = ['textbutton _("I18n settings") action Show("projz_i18n_settings")']
 
     def __init__(self, project_path: str, languages: List[str] = None):
+        super().__init__()
         self.project_path = project_path
         self.game_dir = os.path.join(project_path, RENPY_GAME_DIR)
-        self.font_dir = os.path.join(self.game_dir, self.PROJZ_FONT_DIR)
-        self.enable_console = default_config['renpy']['debug_console']
-        self.enable_developer = default_config['renpy']['developer_mode']
+        # I18n button
         self.screen_rpys = walk_and_select(os.path.join(project_path, RENPY_GAME_DIR),
                                            select_fn=lambda x: file_name(x) == 'screens.rpy',
                                            exclude_dirs=[RENPY_TL_DIR])
@@ -184,31 +206,45 @@ screen preferences():
             self.rpyis.append(PyCodeInjector(rpy, anchor_codes=self.ANCHOR_CODE2, target_codes=self.TARGET_CODE,
                                              insert_before=True))
 
-        self.injection_rpy = os.path.join(project_path, RENPY_GAME_DIR, 'projz_i18n_inject.rpy')
-        self.inpyi = RpyFileInjector(source_filename=None, target_filename=self.injection_rpy)
-
-        valid_font_map = dict()
+        # Font
+        font_list = []
         for f in default_config['renpy']['fonts']:
-            valid_font_map[file_name(f)] = f
-
+            font_list.append(f)
         valid_lang_map = dict()
+
+        # Lang
         lang_map = {i['tl_name']: i for i in default_config['renpy']['lang_map']}
         if languages is None:
             languages = _list_tl_names(project_path)
         for k, v in lang_map.items():
             if k in languages:
                 valid_lang_map[k] = v
-                valid_font_map[file_name(v['font'])] = v['font']
-        print(f'Available languages in i18n menu: {list(valid_lang_map.keys())}')
-        print(f'Available fonts in i18n menu: {list(valid_font_map.keys())}')
-        self.shortcut_key = default_config['renpy']['i18n_menu']['shortcut_key']
-        self.valid_font_map = valid_font_map
-        self.valid_lang_map = valid_lang_map
-        self.fis = []
-        for f, path in self.valid_font_map.items():
-            self.fis.append(FileInjector(source_filename=path, target_filename=os.path.join(self.font_dir, f)))
+                font_list.append(v['font'])
 
-    def __call__(self):
+        # projz_i18n_inject template
+        with default_read(r'resources/codes/projz_i18n_inject.rpy') as f:
+            rpy_template = f.read()
+        lang_content = ','.join(
+            [f'"{k}":("{v["title"]}","{file_name(v["font"])}")' for k, v in valid_lang_map.items()])
+        font_content = ','.join(f'"{file_name(f)}"' for f in set(font_list))
+        mconfig = default_config['renpy']
+        font_dir = mconfig['font_dir']
+        enable_console = mconfig['debug_console']
+        enable_developer = mconfig['developer_mode']
+        shortcut_key = mconfig['i18n_menu']['shortcut_key']
+        rpy_template = (rpy_template
+                        .replace("{projz_enable_console_content}", str(enable_console))
+                        .replace("{projz_fonts_dir}", str(font_dir))
+                        .replace("{projz_enable_developer_content}", str(enable_developer))
+                        .replace("{projz_lang_content}", lang_content)
+                        .replace("{projz_shortcut_key}", shortcut_key)
+                        .replace("{projz_font_content}", font_content))
+        injection_rpy = os.path.join(project_path, RENPY_GAME_DIR, 'projz_i18n_inject.rpy')
+        self.inpyi = StrFileInjector(RpyFileInjector(None, target_filename=injection_rpy), rpy_template)
+        self.fonts = FontInjection(project_path, font_list)
+        self.set_chain(self.rpyis+[self.fonts, self.inpyi])
+
+    def __call__(self, *args, **kwargs):
         # inject into screens.rpy
         if len(self.screen_rpys) == 0:
             print(self.NOT_FOUND_ERROR_TEXT.format(ganme_dir=self.game_dir))
@@ -222,32 +258,4 @@ screen preferences():
             if not done:
                 print(self.NOT_FOUND_ERROR_TEXT.format(ganme_dir=self.game_dir))
 
-        with default_read(r'resources/codes/projz_i18n_inject.rpy') as f:
-            rpy_template = f.read()
-        lang_content = ','.join(
-            [f'"{k}":("{v["title"]}","{file_name(v["font"])}")' for k, v in self.valid_lang_map.items()])
-        font_content = ','.join(f'"{f}"' for f in self.valid_font_map.keys())
-        rpy_template = (rpy_template
-                        .replace("{projz_enable_console_content}", str(self.enable_console))
-                        .replace("{projz_enable_developer_content}", str(self.enable_developer))
-                        .replace("{projz_lang_content}", lang_content)
-                        .replace("{projz_shortcut_key}", self.shortcut_key)
-                        .replace("{projz_font_content}", font_content))
-        # write injection rpy
-        with default_write(self.injection_rpy) as f:
-            f.write(rpy_template)
-        mkdir(self.font_dir)
-        # copy fonts into game/proj_fonts
-        done = all([f() for f in self.fis])
-        return done
-
-    def undo(self):
-        res = True
-        for rpyi in self.rpyis:
-            res = res and rpyi.undo()
-        if exists_dir(self.font_dir):
-            for f in self.fis:
-                res = res and f.undo()
-            res = res and self.inpyi.undo()
-            try_running(try_fn=lambda: os.rmdir(self.font_dir), return_try=False)
-        return res
+        return call_chain([self.fonts, self.inpyi])

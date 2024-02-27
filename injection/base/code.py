@@ -149,7 +149,7 @@ class PyCodeInjector(BaseInjector):
         self.indent_offset = indent_offset
         self.newline = newline
 
-    def __call__(self):
+    def __call__(self, *args, **kwargs):
         if not exists_file(self.filename):
             logging.error(f'{self.filename} not found')
             return False
@@ -175,7 +175,7 @@ class PyCodeInjector(BaseInjector):
             f.writelines(new_codes)
         return True
 
-    def undo(self):
+    def undo(self, *args, **kwargs):
         if not exists_file(self.filename):
             return True
         with default_read(self.filename) as f:
