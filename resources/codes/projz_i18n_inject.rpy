@@ -35,43 +35,66 @@ init offset = 999
 
 # location of fotns
 define projz_font_dir = "{projz_fonts_dir}"
-# Names for saving current selected font by our setting
-# define projz_gui_selected_font = "projz_gui_selected_font"
-init python:
-    from store import persistent
-    def projz_get(name, default_value):
-        if hasattr(persistent, name) and getattr(persistent, name) is not None:
-            return getattr(persistent, name)
-        return default_value
-
-    def projz_set(name, value):
-        setattr(persistent, name, value)
-        return value
-
-    def projz_config_get(name, default_value):
-        return projz_get("projz_config_"+name, default_value)
-
-    def projz_config_set(name, value):
-        projz_set("projz_config_"+name, value)
-
-    if projz_config_get("developer", None) is not None:
-        renpy.config.developer = projz_config_get("developer", {projz_enable_developer_content})
-    else:
-        projz_config_set("developer", {projz_enable_developer_content})
-        renpy.config.developer = {projz_enable_developer_content}
-
-    if projz_config_get("console", None) is not None:
-        renpy.config.console = projz_config_get("console", {projz_enable_console_content})
-    else:
-        projz_config_set("console", {projz_enable_console_content})
-        renpy.config.console = {projz_enable_console_content}
-
-
 # Names of gui font var for saving default font
 define projz_gui_vars = ["projz_gui_text_font","projz_gui_name_text_font","projz_gui_interface_text_font","projz_gui_button_text_font","projz_gui_choice_button_text_font","projz_gui_system_font","projz_gui_main_font"]
 # Names of gui font var for saving selected font
 define projz_sgui_vars = ["projz_sgui_text_font","projz_sgui_name_text_font","projz_sgui_interface_text_font","projz_sgui_button_text_font","projz_sgui_choice_button_text_font","projz_sgui_system_font","projz_sgui_main_font"]
 define projz_gui_names = ["Text Font","Name Text Font","Interface Text Font","Button Text Font","Choice Button Text Font","System Font","Main Font"]
+# Names for saving current selected font by our setting
+# define projz_gui_selected_font = "projz_gui_selected_font"
+init python:
+    from store import persistent
+    def projz_dget(name, dvalue=None):
+        if hasattr(persistent, name) and getattr(persistent, name) is not None:
+            return getattr(persistent, name)
+        sname = name.replace('projz_s', 'projz_')
+        if hasattr(persistent, sname) and getattr(persistent, sname) is not None:
+            return getattr(persistent, sname)
+        return dvalue
+
+    def projz_get(name, dvalue=None):
+        if hasattr(persistent, name) and getattr(persistent, name) is not None:
+            return getattr(persistent, name)
+        return dvalue
+
+    def projz_set(name, value):
+        setattr(persistent, name, value)
+        return value
+
+    def projz_dset(name, dobj, dname, dvalue=None):
+        if hasattr(persistent, name) and getattr(persistent, name) is not None:
+            return getattr(persistent, name)
+        if hasattr(dobj, dname):
+            return projz_set(name, getattr(dobj, dname))
+        return projz_set(name, dvalue)
+
+    def projz_config_get(name, dvalue=None):
+        return projz_get("projz_config_"+name, dvalue)
+
+    def projz_config_set(name, value):
+        projz_set("projz_config_"+name, value)
+        setattr(renpy.config, name, value)
+
+    if projz_config_get("developer") is not None:
+        renpy.config.developer = projz_config_get("developer")
+    else:
+        projz_config_set("developer", {projz_enable_developer_content})
+
+    if projz_config_get("console", None) is not None:
+        renpy.config.console = projz_config_get("console")
+    else:
+        projz_config_set("console", {projz_enable_console_content})
+
+    # save default fonts
+    projz_dset(projz_gui_vars[0], gui, 'text_font')
+    projz_dset(projz_gui_vars[1], gui, 'name_text_font')
+    projz_dset(projz_gui_vars[2], gui, 'interface_text_font')
+    projz_dset(projz_gui_vars[3], gui, 'button_text_font')
+    projz_dset(projz_gui_vars[4], gui, 'choice_button_text_font')
+    projz_dset(projz_gui_vars[5], gui, 'system_font')
+    projz_dset(projz_gui_vars[6], gui, 'main_font')
+
+
 ################### Make font vars dynamic since Ren’Py 6.99.14 ###################
 # define gui.text_font = gui.preference(projz_gui_vars[0], gui.text_font)
 # define gui.name_text_font = gui.preference(projz_gui_vars[1], gui.name_text_font)
@@ -80,36 +103,14 @@ define projz_gui_names = ["Text Font","Name Text Font","Interface Text Font","Bu
 # define gui.choice_button_text_font = gui.preference(projz_gui_vars[4], gui.choice_button_text_font)
 ###################################################################################
 
-# save default fonts
-if projz_get(projz_gui_vars[0], None) is None:
-    $ projz_set(projz_gui_vars[0], gui.text_font)
-if projz_get(projz_gui_vars[1], None) is None:
-    $ projz_set(projz_gui_vars[1], gui.name_text_font)
-if projz_get(projz_gui_vars[2], None) is None:
-    $ projz_set(projz_gui_vars[2], gui.interface_text_font)
-if projz_get(projz_gui_vars[3], None) is None:
-    $ projz_set(projz_gui_vars[3], gui.button_text_font)
-if projz_get(projz_gui_vars[4], None) is None:
-    $ projz_set(projz_gui_vars[4], gui.choice_button_text_font)
-if hasattr(gui, "system_font"):
-    $ projz_set(projz_gui_vars[5], gui.system_font)
-else:
-    define gui.system_font = None
-    $ projz_set(projz_gui_vars[5], None)
-if hasattr(gui, "main_font"):
-    $ projz_set(projz_gui_vars[6], gui.main_font)
-else:
-    define gui.main_font = None
-    $ projz_set(projz_gui_vars[6], None)
-
 ################### Make font vars dynamic by our implementation ###################
-define gui.text_font = projz_get(projz_sgui_vars[0], gui.text_font)
-define gui.name_text_font = projz_get(projz_sgui_vars[1], gui.name_text_font)
-define gui.interface_text_font = projz_get(projz_sgui_vars[2], gui.interface_text_font)
-define gui.button_text_font = projz_get(projz_sgui_vars[3], gui.button_text_font)
-define gui.choice_button_text_font = projz_get(projz_sgui_vars[4], gui.choice_button_text_font)
-define gui.system_font = projz_get(projz_sgui_vars[5], gui.system_font)
-define gui.main_font = projz_get(projz_sgui_vars[6], gui.main_font)
+define gui.text_font = projz_dget(projz_sgui_vars[0])
+define gui.name_text_font = projz_dget(projz_sgui_vars[1])
+define gui.interface_text_font = projz_dget(projz_sgui_vars[2])
+define gui.button_text_font = projz_dget(projz_sgui_vars[3])
+define gui.choice_button_text_font = projz_dget(projz_sgui_vars[4])
+define gui.system_font = projz_dget(projz_sgui_vars[5])
+define gui.main_font = projz_dget(projz_sgui_vars[6])
 ####################################################################################
 
 # define projz_languages = {"korean": ("한국어", "SourceHanSansLite.ttf"), "japanese": ("日本語","SourceHanSansLite.ttf"), "french":("Русский","DejaVuSans.ttf"), "chinese": ("简体中文","SourceHanSansLite.ttf")}
@@ -194,7 +195,6 @@ init python:
 
         def __call__(self):
             projz_config_set(self.name, self.value)
-            setattr(renpy.config, self.name, self.value)
 
             if self.rebuild:
                 gui.rebuild()
