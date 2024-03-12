@@ -213,7 +213,7 @@ class Project:
                 try_running(try_fn=lambda: os.remove(json_file), return_try=False)
 
     @classmethod
-    def from_dir(cls, project_path):
+    def from_dir(cls, project_path, test=True):
         print('Checking the skeleton for this RenPy game...')
         abs_path = os.path.abspath(project_path)
 
@@ -231,16 +231,17 @@ class Project:
         # check and inject
         base_injection = tmp_instance.get_base_injection()
         if base_injection():
-            print(f'Trying to launch the game...')
-            try:
-                # test injection
-                data = tmp_instance.launch_task(None, args=['--test-only'])
-            except Exception as e:
-                logging.exception(e)
-                base_injection.undo()
-                raise
-            tmp_instance.set_game_info(data['game_info'])
-            print(f'All done! We have detected the game info: {tmp_instance.game_info}')
+            if test:
+                print(f'Trying to launch the game...')
+                try:
+                    # test injection
+                    data = tmp_instance.launch_task(None, args=['--test-only'])
+                except Exception as e:
+                    logging.exception(e)
+                    base_injection.undo()
+                    raise
+                tmp_instance.set_game_info(data['game_info'])
+                print(f'All done! We have detected the game info: {tmp_instance.game_info}')
             return tmp_instance
         else:
             raise RuntimeError('Injection failed')

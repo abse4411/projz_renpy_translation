@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AboutDialogue</class>
+ <widget class="QDialog" name="AboutDialogue">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>693</width>
+    <height>669</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>About</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>../imgs/proz_icon_simple.ico</normaloff>../imgs/proz_icon_simple.ico</iconset>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QLabel" name="label_2">
+         <property name="font">
+          <font>
+           <pointsize>16</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;h2&gt;Projz - RenyPy Translation Toolkit&lt;/h2&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="pixmap">
+          <pixmap>../imgs/projz_icon.ico</pixmap>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_3">
+         <property name="font">
+          <font>
+           <pointsize>16</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Github: &lt;a href=&quot;https://github.com/abse4411/projz_renpy_translation&quot;&gt;projz_renpy_translation&lt;/a&gt;</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+         <property name="openExternalLinks">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_4">
+         <property name="font">
+          <font>
+           <pointsize>16</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Licence: &lt;a href=&quot;https://github.com/abse4411/projz_renpy_translation?tab=GPL-3.0-1-ov-file&quot;&gt;GPL-3.0&lt;/a&gt;</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_5">
+         <property name="font">
+          <font>
+           <pointsize>12</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;h2&gt;🔗Acknowledgement&lt;/h2&gt;&lt;p&gt;&lt;ul dir=&quot;auto&quot;&gt;
+&lt;li&gt;Previous code of Web translation: &lt;a href=&quot;https://github.com/Maooookai/WebTranslator&quot;&gt;Maooookai(Mirage)&lt;/a&gt;, &lt;a href=&quot;https://github.com/drdrr/RenPy-WebTranslator&quot;&gt;DrDRR&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;AI translation: &lt;a href=&quot;https://github.com/xhluca/dl-translate&quot;&gt;dl-translate&lt;/a&gt;, &lt;a href=&quot;https://github.com/xhluca/dl-translate?tab=MIT-1-ov-file&quot;&gt;MIT License&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/UlionTse/translators&quot;&gt;UlionTse/translators&lt;/a&gt;, &lt;a href=&quot;https://github.com/UlionTse/translators?tab=GPL-3.0-1-ov-file&quot;&gt;GPL-3.0 License&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Pre-translated RPY file: &lt;a href=&quot;https://github.com/renpy/renpy/tree/master/launcher/game/tl&quot;&gt;RenPy&lt;/a&gt;, &lt;a href=&quot;https://www.renpy.org/doc/html/license.html&quot; rel=&quot;nofollow&quot;&gt;MIT License for these rpy files&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;/abse4411/projz_renpy_translation/blob/devp_tmp/resources/codes/projz_injection.py&quot;&gt;resources/codes/projz_injection.py&lt;/a&gt;: &lt;a href=&quot;https://github.com/renpy/renpy/blob/master/renpy/translation/generation.py&quot;&gt;RenPy&lt;/a&gt;, &lt;a href=&quot;https://www.renpy.org/doc/html/license.html&quot; rel=&quot;nofollow&quot;&gt;MIT License for the code file&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;UI: PyQt5, it contains dual licenses: the GNU GPL v3 and the Riverbank Commercial License. See &lt;a href=&quot;https://www.riverbankcomputing.com/software/pyqt/&quot; rel=&quot;nofollow&quot;&gt;here&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;UI theme: Qt-Material, &lt;a href=&quot;https://github.com/UN-GCPDS/qt-material?tab=BSD-2-Clause-1-ov-file&quot;&gt;BSD-2-Clause license&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Other python libs：&lt;a href=&quot;/abse4411/projz_renpy_translation/blob/devp_tmp/requirements_full.txt&quot;&gt;requirements_full.txt&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+         <property name="openExternalLinks">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <spacer name="verticalSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>80</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>80</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>12</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Close</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>AboutDialogue</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>642</x>
+     <y>645</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>346</x>
+     <y>334</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

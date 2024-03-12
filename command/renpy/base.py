@@ -93,7 +93,7 @@ class ImportTranslationCmd(BaseLangIndexCmd):
                                    'TranslationIndex.\n(Base injection required)')
         self._parser.add_argument("-to", "--translated_only", action='store_true',
                                   help="Only import translated texts. The translated texts means translations "
-                                       "listed in ryp files in you_game/game/tl/{lang} dir.")
+                                       "listed in rpy files in you_game/game/tl/{lang} dir.")
         self._parser.add_argument("-nr", "--not_reuse", action='store_true', default=False,
                                   help="Don't reuse pre-translated string translations.")
 

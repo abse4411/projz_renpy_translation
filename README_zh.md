@@ -19,6 +19,52 @@
 
 </div>
 
+# ✨一键翻译功能支持(Demo)
+下载[Release](https://github.com/abse4411/projz_renpy_translation/releases)中的`projz-Winndows_V0.4.2.7z`，解压打开里面的`server_ui.exe`
+
+你可看到以下界面：
+
+![main_ui.png](imgs/main_ui.png)
+
+然后进行以下步骤来翻译RenPy游戏：
+
+1. 点击"Select"按钮选择你的RenPy游戏路径：
+
+   ![main_ui.png](imgs/ui_s1.png)
+
+2. 点击"Injection"按钮进行游戏检测和代码注入：
+
+   ![main_ui.png](imgs/ui_s2.png)
+
+3. 在以下配置你需要的翻译器和显示的字体（注意，Provider=Foo用于测试功能，没有翻译功能）：
+
+   ![main_ui.png](imgs/ui_s3_1.png)
+
+   ![main_ui.png](imgs/ui_s3_2.png)
+
+4. 点击"Start"按钮启动翻译服务器:
+
+   ![main_ui.png](imgs/ui_s4.png)
+
+5. 点击GAME页面下的"Start"按钮启动游戏，或者手动启动游戏：
+
+   ![main_ui.png](imgs/ui_s5.png)
+
+6. 在游戏运行过程中，你可能会感到卡顿，这是由于请求翻译造成的。
+
+   ![main_ui.png](imgs/ui_s6.png)
+
+您还会发现第一次进入界面，并没有显示翻译结果。这是由于目前大量翻译文本排队中，因此你需要等待Queueing的数值归零，重新进入即可。
+
+最后，你可以通过点击"Save translations to the game"按钮保存当前的翻译结果到游戏中。这样即使你关闭该翻译器后，也能从翻译缓存中加载翻译。
+这个翻译缓存文件`projz_translations.json`会保存到游戏根目录中。注意，请勿点击"Undo injection"按钮，这会使得我们翻译代码失效。
+
+   ![main_ui.png](imgs/ui_s7.png)
+
+要使用翻译缓存文件您需要重新打开游戏，并关闭我们的翻译器。此外，我们的翻译器也会自动从游戏目录加载这个翻译缓存文件（在点击"Injection"按钮后），避免重复翻译。
+
+目前这个翻译器只是个Demo，后续将与我们的翻译工具集成。
+
 # 👀开始之前
 
 注意，本工具并不是傻瓜式翻译工具，本工具主要用于管理多个RenPy游戏的翻译项目和机器翻译文本，主要功能如下：
@@ -605,6 +651,8 @@ except Exception as e:
 * [UlionTse/translators](https://github.com/UlionTse/translators), [GPL-3.0 License](https://github.com/UlionTse/translators?tab=GPL-3.0-1-ov-file)
 * 预翻译RPY文件来源：[RenPy](https://github.com/renpy/renpy/tree/master/launcher/game/tl), [MIT License for these rpy files](https://www.renpy.org/doc/html/license.html)
 * [resources/codes/projz_injection.py](resources/codes/projz_injection.py): [RenPy](https://github.com/renpy/renpy/blob/master/renpy/translation/generation.py), [MIT License for the code file](https://www.renpy.org/doc/html/license.html)
+* UI: PyQt5, 包含两个License: the GNU GPL v3 and the Riverbank Commercial License, 见[这里](https://www.riverbankcomputing.com/software/pyqt/).
+* UI 主题: Qt-Material, [BSD-2-Clause license](https://github.com/UN-GCPDS/qt-material?tab=BSD-2-Clause-1-ov-file)
 * 其他使用的python库见：[requirements_full.txt](./requirements_full.txt)
 
 ## Star History

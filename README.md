@@ -19,6 +19,52 @@
 
 </div>
 
+# ✨One-button translator (Demo)
+Download 'projz Windows V0.4.2.7z' from [Release](https://github.com/abse4411/projz_renpy_translation/releases), then unzip it. Open the `server_ui.exe`.
+You can see the following UI:
+
+![main_ui.png](imgs/main_ui.png)
+
+Then perform the following steps to translate a RenPy game:
+
+1. Click the "Select" button to select your RenPy game path:
+
+   ![main_ui.png](imgs/ui_s1.png)
+
+2. Click the "Injection" button for game detection and code injection:
+
+   ![main_ui.png](imgs/ui_s2.png)
+
+3. Configure the translator and font in the following configuration pages (Note that, Provider=Foo is used for testing and does not support translation):
+
+   ![main_ui.png](imgs/ui_s3_1.png)
+
+   ![main_ui.png](imgs/ui_s3_2.png)
+
+4. Click the "Start" button to start the translation server:
+
+   ![main_ui.png](imgs/ui_s4.png)
+
+5. Click the "Start" button under GAME page to start the game, or manually start the game:
+
+   ![main_ui.png](imgs/ui_s5.png)
+
+6. During running the game, you may feel a lag, which is caused by requesting translation.
+
+   ![main_ui.png](imgs/ui_s6.png)
+
+You will also find that the translation result is not displayed when playing game for the first time. This is because a large number of translated texts are currently in the queue, so you need to wait for the value of the queue reduced to 0 and re-enter the game scene.
+
+Finally, you can save the current translation results to the game by clicking the "Save translations to the game" button. This way, even if you close the translator, you can still load translations from the translation cache.
+
+   ![main_ui.png](imgs/ui_s7.png)
+
+This translation cache file `projz_translations.json` will be saved to the game root directory. Please note, do not click the "Undo injection" button as this will disable our translation code.
+
+To use the translation cache file, you need to reopen the game and close our translator. In addition, our translator will automatically load this translation cache file from the game directory (after clicking the "Injection" button) to avoid duplicating translations.
+
+At present, this translator is only a demo and will be integrated with our translation tools in the future.
+
 # 👀Before getting started
 
 Note that, this tool is not a one-button translator for RenPy games, and it still requires a few steps to translate. It is mainly used to manage translations among RenPy games, and to translate texts. The main functions are as follows：
@@ -603,6 +649,8 @@ The codes or libs we use or refer to:
 * [UlionTse/translators](https://github.com/UlionTse/translators), [GPL-3.0 License](https://github.com/UlionTse/translators?tab=GPL-3.0-1-ov-file)
 * Pre-translated RPY file: [RenPy](https://github.com/renpy/renpy/tree/master/launcher/game/tl), [MIT License for these rpy files](https://www.renpy.org/doc/html/license.html)
 * [resources/codes/projz_injection.py](resources/codes/projz_injection.py): [RenPy](https://github.com/renpy/renpy/blob/master/renpy/translation/generation.py), [MIT License for the code file](https://www.renpy.org/doc/html/license.html)
+* UI: PyQt5, it contains dual licenses: the GNU GPL v3 and the Riverbank Commercial License. See [here](https://www.riverbankcomputing.com/software/pyqt/).
+* UI theme: Qt-Material, [BSD-2-Clause license](https://github.com/UN-GCPDS/qt-material?tab=BSD-2-Clause-1-ov-file)
 * Other python libs：[requirements_full.txt](./requirements_full.txt)
 
 ## Star History

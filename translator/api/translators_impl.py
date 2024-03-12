@@ -28,6 +28,7 @@ from util import my_input, line_to_args
 ts = None
 _preacceleration_done = False
 
+
 class TranslatorsLibTranslator(CachedTranslatorTemplate):
     def __init__(self):
         super().__init__()
@@ -43,7 +44,7 @@ class TranslatorsLibTranslator(CachedTranslatorTemplate):
         parser.add_argument('-n', '--name', choices=ts.translators_pool, default='bing',
                             help='The name of translation services.')
         parser.add_argument("-a", "--auto", action='store_true',
-                                  help="Load translation settings form config.")
+                            help="Load translation settings form config.")
 
     def do_init(self, args, config: ProjzConfig):
         super().do_init(args, config)
