@@ -87,7 +87,7 @@ class OutputWrapper(QObject):
             sys.stderr = self
 
     def write(self, text):
-        self._stream.write(text)
+        # self._stream.write(text)
         self._queue.put((text, self._stdout))
 
     def __getattr__(self, name):
