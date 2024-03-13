@@ -297,37 +297,37 @@ class WebTranslationIndex:
 
     @classmethod
     def from_dir(cls, project_path: str, default_tl_dir: str = None):
-        p = Project.from_dir(project_path, test=True)
+        print('Injecting translation code...')
+        code_injection = UndoOnFailedCallInjector(OnlinePyInjection(project_path))
+        font_injection = UndoOnFailedCallInjector(FontInjection(project_path, default_config['renpy']['fonts']))
+        chain = [font_injection, code_injection]
+        p = Project.from_dir(project_path, test=True, injections=chain)
         if p:
             index = cls(p)
-            print('Injecting translation code...')
-            code_injection = UndoOnFailedCallInjector(OnlinePyInjection(project_path))
-            font_injection = UndoOnFailedCallInjector(FontInjection(project_path, default_config['renpy']['fonts']))
-            chain = [font_injection, code_injection]
-            if call_chain(chain):
-                print('Done!')
-                index._font_injection = font_injection
-                index._code_injection = code_injection
-                try:
-                    save_json = os.path.join(project_path, 'projz_translations.json')
-                    if exists_file(save_json):
-                        print(f'Loading stored translations from: {save_json}')
-                        with open(save_json, 'r', encoding='utf-8') as f:
-                            json_data = json.load(f)
-                        s = json_data.get('String', {})
-                        d = json_data.get('Say', {})
-                        index._strings.update(s)
-                        index._dialogue.update(d)
-                        for tid in s.keys():
-                            index._golobal_ids.add(tid)
-                        for tid in d.keys():
-                            index._golobal_ids.add(tid)
-                        print(f'Translations updated: {len(index._dialogue)} dialogue translations, '
-                              f'{len(index._strings)} string translations')
-                except Exception as e:
-                    logging.exception(e)
-                return index
-            else:
-                print('Failed!')
-                undo_chain(chain)
+            # if call_chain(chain):
+            print('Done!')
+            index._font_injection = font_injection
+            index._code_injection = code_injection
+            try:
+                save_json = os.path.join(project_path, 'projz_translations.json')
+                if exists_file(save_json):
+                    print(f'Loading stored translations from: {save_json}')
+                    with open(save_json, 'r', encoding='utf-8') as f:
+                        json_data = json.load(f)
+                    s = json_data.get('String', {})
+                    d = json_data.get('Say', {})
+                    index._strings.update(s)
+                    index._dialogue.update(d)
+                    for tid in s.keys():
+                        index._golobal_ids.add(tid)
+                    for tid in d.keys():
+                        index._golobal_ids.add(tid)
+                    print(f'Translations updated: {len(index._dialogue)} dialogue translations, '
+                          f'{len(index._strings)} string translations')
+            except Exception as e:
+                logging.exception(e)
+            return index
+        else:
+            print('Failed!')
+            undo_chain(chain)
         return None

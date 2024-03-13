@@ -32,7 +32,13 @@ import os.path
 import time
 from collections import defaultdict
 
-import requests
+_requests_ref = None
+try:
+    import requests
+    _requests_ref = requests
+except Exception as e:
+    print(e)
+
 import renpy
 import sys
 
@@ -60,19 +66,50 @@ except Exception as e:
     print(e)
     pass
 
+if _requests_ref is None:
 
-def quick_post(path, payload, timeout=1.0):
-    global _rest_time, _REQ_RETRY_TIME
-    if _rest_time < time.time():
-        try:
-            res = requests.post(_URL + path, json=payload, timeout=timeout)
-            # print('quick_post', res.json())
-            if res.status_code != 200:
-                return None
-            return res.json()
-        except Exception as e:
-            _rest_time = time.time() + _REQ_RETRY_TIME
-    return None
+    if _PY3_OR_LATER:
+        import urllib
+        from urllib.request import Request, urlopen
+        _requests_ref = urllib.request
+    else:
+        import urllib2
+        from urllib2 import Request, urlopen
+        _requests_ref = urllib2
+
+    def quick_post(path, payload, timeout=1.0):
+        global _URL, _rest_time, _REQ_RETRY_TIME
+        if _rest_time < time.time():
+            try:
+                req = Request(_URL + path, headers={'Content-Type': 'application/json'},
+                                            data=json.dumps(payload).encode('utf-8'))
+                resp = urlopen(req, timeout=timeout)
+                resp_data = resp.read()
+                resp_json = json.loads(resp_data.decode('utf-8'))
+                if _PY3_OR_LATER:
+                    code = resp.status
+                else:
+                    code = resp.getcode()
+                if code != 200:
+                    return None
+                return resp_json
+            except Exception as e:
+                _rest_time = time.time() + _REQ_RETRY_TIME
+        return None
+else:
+    def quick_post(path, payload, timeout=1.0):
+        global _requests_ref
+        global _URL, _rest_time, _REQ_RETRY_TIME
+        if _rest_time < time.time():
+            try:
+                res = _requests_ref.post(_URL + path, json=payload, timeout=timeout)
+                # print('quick_post', res.json())
+                if res.status_code != 200:
+                    return None
+                return res.json()
+            except Exception as e:
+                _rest_time = time.time() + _REQ_RETRY_TIME
+        return None
 
 
 def ok(res):
@@ -185,11 +222,28 @@ def projz_set_text(self, text, scope=None, substitute=False, update=True):
     return res
 
 
+def projz_do_display(self, who, what, **display_args):
+    new_what = translation_post(renpy.game.context().translate_identifier, renpy.game.preferences.language, 'Say',
+                                what,
+                                what)
+    new_who = translation_post(who, renpy.game.preferences.language, 'String', who, who)
+    if new_who is not None:
+        who = new_who
+    if new_what is not None:
+        what = new_what
+    old_do_display(self, who, what, **display_args)
+
+
 try:
     old_prefix_suffix = renpy.character.ADVCharacter.prefix_suffix
     renpy.character.ADVCharacter.prefix_suffix = projz_prefix_suffix
 except Exception as e:
     print(e)
+    try:
+        old_do_display = renpy.character.ADVCharacter.do_display
+        renpy.character.ADVCharacter.do_display = projz_do_display
+    except Exception as e:
+        print(e)
 
 try:
     old_set_text = renpy.text.text.Text.set_text

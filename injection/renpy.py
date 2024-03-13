@@ -24,7 +24,7 @@ from typing import List, Dict
 
 from config import default_config
 from injection.base import BaseInjector
-from injection.base.base import UndoOnFailedCallInjector
+from injection.base.base import UndoOnFailedCallInjector, call_chain, undo_chain
 from injection.default import RENPY_DIRS, PYTHON_LINUX64_EXE, PYTHON_WIN64_EXE, PYTHON_WIN32_EXE, PYTHON_LINUX32_EXE, \
     RENPY_LIB_DIR, ProjzI18nInjection, ProjzCmdInjection, try_running, RENPY_GAME_DIR, RENPY_TL_DIR
 from util import exists_dir, file_name_ext, exists_file, default_read, default_write, file_dir, strip_or_none
@@ -213,7 +213,7 @@ class Project:
                 try_running(try_fn=lambda: os.remove(json_file), return_try=False)
 
     @classmethod
-    def from_dir(cls, project_path, test=True):
+    def from_dir(cls, project_path, test: bool = True, injections: List[BaseInjector] = None):
         print('Checking the skeleton for this RenPy game...')
         abs_path = os.path.abspath(project_path)
 
@@ -228,9 +228,11 @@ class Project:
 
         tmp_instance = cls(abs_path, executable_path, project_name)
         print('Injecting our code...')
+        injection_chain = [tmp_instance.get_base_injection()]
+        if isinstance(injections, list):
+            injection_chain += injections
         # check and inject
-        base_injection = tmp_instance.get_base_injection()
-        if base_injection():
+        if call_chain(injection_chain):
             if test:
                 print(f'Trying to launch the game...')
                 try:
@@ -238,7 +240,7 @@ class Project:
                     data = tmp_instance.launch_task(None, args=['--test-only'])
                 except Exception as e:
                     logging.exception(e)
-                    base_injection.undo()
+                    undo_chain(injection_chain)
                     raise
                 tmp_instance.set_game_info(data['game_info'])
                 print(f'All done! We have detected the game info: {tmp_instance.game_info}')

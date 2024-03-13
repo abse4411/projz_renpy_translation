@@ -77,7 +77,7 @@ def main():
     pass
 
 
-# package cmd: pyinstaller -i imgs/proz_icon.ico -F main.py --copy-metadata tqdm --copy-metadata regex \
+# package cmd: pyinstaller -i imgs/proz_icon_simple.ico -F main.py --copy-metadata tqdm --copy-metadata regex \
 # --copy-metadata requests --copy-metadata packaging --copy-metadata filelock --copy-metadata numpy \
 # --copy-metadata tokenizers --copy-metadata huggingface-hub --copy-metadata safetensors --copy-metadata accelerate \
 # --copy-metadata pyyaml --copy-metadata sentencepiece

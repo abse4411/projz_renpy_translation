@@ -109,9 +109,9 @@ def injectionGame(app, win: Ui_MainWindow):
             app.index.set(index)
             showInfoMsg(app, 'Injection succeed!')
             game_info = index.project.game_info
-            win.gamename_text.setText(game_info.get('game_name', None))
-            win.gameversion_text.setText(game_info.get('game_version', None))
-            win.renpyversion_text.setText(game_info.get('renpy_version', None))
+            win.gamename_text.setText(str(game_info.get('game_name', '')))
+            win.gameversion_text.setText(str(game_info.get('game_version', '')))
+            win.renpyversion_text.setText(str(game_info.get('renpy_version', '')))
             win.start_button.setEnabled(True)
             win.uninject_button.setEnabled(True)
             win.startgame_button.setEnabled(True)
