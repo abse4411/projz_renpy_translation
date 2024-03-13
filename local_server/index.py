@@ -102,7 +102,7 @@ class OnlinePyInjection(BaseInjector):
         renpy_init_py = os.path.join(project_path, RENPY_PY_DIR, '__init__.py')
         self.import_injection = UndoOnFailedCallInjector(
             PyCodeInjector(renpy_init_py,
-                           anchor_codes=['import renpy.main'],
+                           anchor_codes=['post_import()'],
                            target_codes=['import renpy.translation.projz_translation'],
                            insert_before=True))
         injection_py = os.path.join(project_path, RENPY_PY_DIR, 'translation', 'projz_translation.py')

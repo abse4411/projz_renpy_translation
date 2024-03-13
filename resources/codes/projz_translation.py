@@ -30,7 +30,10 @@
 import json
 import os.path
 import time
-from collections import defaultdict
+try:
+    from renpy.compat import basestring
+except Exception as e:
+    print(e)
 
 _requests_ref = None
 try:
