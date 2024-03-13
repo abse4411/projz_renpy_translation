@@ -409,13 +409,13 @@
                   <item>
                    <layout class="QHBoxLayout" name="horizontalLayout_5">
                     <property name="spacing">
-                     <number>2</number>
+                     <number>6</number>
                     </property>
                     <property name="topMargin">
-                     <number>6</number>
+                     <number>0</number>
                     </property>
                     <property name="bottomMargin">
-                     <number>6</number>
+                     <number>0</number>
                     </property>
                     <item>
                      <widget class="QLabel" name="label_16">
@@ -533,7 +533,7 @@
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_6">
                 <item>
-                 <layout class="QGridLayout" name="gridLayout_6" columnstretch="6,0">
+                 <layout class="QGridLayout" name="gridLayout_6" columnstretch="6,4">
                   <property name="sizeConstraint">
                    <enum>QLayout::SetNoConstraint</enum>
                   </property>
