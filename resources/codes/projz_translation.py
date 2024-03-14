@@ -242,9 +242,23 @@ def projz_do_display(self, who, what, **display_args):
         who = new_who
     if new_what is not None:
         what = new_what
+    old_dtt = display_args.get('dtt', None)
+    new_dtt = None
+    if _DialogueTextTags_ref and isinstance(old_dtt, _DialogueTextTags_ref):
+        new_dtt = _DialogueTextTags_ref(what)
+        display_args['dtt'] = new_dtt
     old_do_display(self, who, what, **display_args)
+    if old_dtt is not None:
+        for k, v in vars(new_dtt).items():
+            setattr(old_dtt, k, v)
+        display_args['dtt'] = old_dtt
 
 
+_DialogueTextTags_ref = None
+try:
+    _DialogueTextTags_ref = renpy.character.DialogueTextTags
+except Exception as e:
+    print(e)
 try:
     old_prefix_suffix = renpy.character.ADVCharacter.prefix_suffix
     renpy.character.ADVCharacter.prefix_suffix = projz_prefix_suffix
