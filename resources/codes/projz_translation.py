@@ -85,7 +85,7 @@ if _requests_ref is None:
         if _rest_time < time.time():
             try:
                 req = Request(_URL + path, headers={'Content-Type': 'application/json'},
-                                            data=json.dumps(payload).encode('utf-8'))
+                                            data=json.dumps(payload, ensure_ascii=False).encode('utf-8'))
                 resp = urlopen(req, timeout=timeout)
                 resp_data = resp.read()
                 resp_json = json.loads(resp_data.decode('utf-8'))
@@ -154,18 +154,21 @@ _string_set = {}
 
 def build_string_set():
     global _string_set_build, _string_set
-    from renpy.parser import elide_filename
-    if renpy.config.translate_launcher:
-        max_priority = 499
-    else:
-        max_priority = 299
-    strings = renpy.translation.scanstrings.scan(0, max_priority, False)
-    for s in strings:
-        # print(elide_filename(s.filename))
-        short_name = elide_filename(s.filename)
-        _string_set[s.text] = short_name
-    # print('_string_set', len(_string_set))
-    _string_set_build = True
+    try:
+        from renpy.parser import elide_filename
+        if renpy.config.translate_launcher:
+            max_priority = 499
+        else:
+            max_priority = 299
+        strings = renpy.translation.scanstrings.scan(0, max_priority, False)
+        for s in strings:
+            # print(elide_filename(s.filename))
+            short_name = elide_filename(s.filename)
+            _string_set[s.text] = short_name
+        # print('_string_set', len(_string_set))
+        _string_set_build = True
+    except Exception as e:
+        print(e)
 
 
 def _should_translate(string):
@@ -186,6 +189,8 @@ def projz_prefix_suffix(self, thing, prefix, body, suffix):
     # if thing != 'what':
     #     return old_prefix_suffix(self, thing, prefix, body, suffix)
     res = old_prefix_suffix(self, thing, prefix, body, suffix)
+    if body is None or body.strip() == '':
+        return res
     new_text = None
     if thing == 'what':
         new_text = translation_post(renpy.game.context().translate_identifier, renpy.game.preferences.language, 'Say',
@@ -210,8 +215,7 @@ def projz_set_text(self, text, scope=None, substitute=False, update=True):
         return res
     old_text = text[0]
     striped_text = old_text.strip()
-    if (not _should_translate(old_text)) or (striped_text.startswith('[') and striped_text.endswith(']')) or len(
-            striped_text) <= 1:
+    if len(striped_text) <= 1 or (not _should_translate(old_text)) or (striped_text.startswith('[') and striped_text.endswith(']')):
         return res
     if substitute is None and '{#' in striped_text:
         return res
@@ -226,10 +230,14 @@ def projz_set_text(self, text, scope=None, substitute=False, update=True):
 
 
 def projz_do_display(self, who, what, **display_args):
-    new_what = translation_post(renpy.game.context().translate_identifier, renpy.game.preferences.language, 'Say',
-                                what,
-                                what)
-    new_who = translation_post(who, renpy.game.preferences.language, 'String', who, who)
+    new_what = None
+    if what is not None and what.strip() != '':
+        new_what = translation_post(renpy.game.context().translate_identifier, renpy.game.preferences.language, 'Say',
+                                    what,
+                                    what)
+    new_who = None
+    if who is not None and who.strip() != '':
+        new_who = translation_post(who, renpy.game.preferences.language, 'String', who, who)
     if new_who is not None:
         who = new_who
     if new_what is not None:
