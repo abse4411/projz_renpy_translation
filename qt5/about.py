@@ -109,6 +109,6 @@ class Ui_AboutDialogue(object):
 "<li><a href=\"/abse4411/projz_renpy_translation/blob/devp_tmp/resources/codes/projz_injection.py\">resources/codes/projz_injection.py</a>: <a href=\"https://github.com/renpy/renpy/blob/master/renpy/translation/generation.py\">RenPy</a>, <a href=\"https://www.renpy.org/doc/html/license.html\" rel=\"nofollow\">MIT License for the code file</a></li>\n"
 "<li>UI: PyQt5, it contains dual licenses: the GNU GPL v3 and the Riverbank Commercial License. See <a href=\"https://www.riverbankcomputing.com/software/pyqt/\" rel=\"nofollow\">here</a>.</li>\n"
 "<li>UI theme: Qt-Material, <a href=\"https://github.com/UN-GCPDS/qt-material?tab=BSD-2-Clause-1-ov-file\">BSD-2-Clause license</a></li>\n"
-"<li>Other python libs：<a href=\"/abse4411/projz_renpy_translation/blob/devp_tmp/requirements_full.txt\">requirements_full.txt</a></li>\n"
+"<li>Other python libs：<a href=\"https://github.com/abse4411/projz_renpy_translation/blob/devp/requirements_full.txt\">requirements_full.txt</a></li>\n"
 "</ul></p></body></html>"))
         self.pushButton.setText(_translate("AboutDialogue", "Close"))

@@ -110,7 +110,7 @@
 &lt;li&gt;&lt;a href=&quot;/abse4411/projz_renpy_translation/blob/devp_tmp/resources/codes/projz_injection.py&quot;&gt;resources/codes/projz_injection.py&lt;/a&gt;: &lt;a href=&quot;https://github.com/renpy/renpy/blob/master/renpy/translation/generation.py&quot;&gt;RenPy&lt;/a&gt;, &lt;a href=&quot;https://www.renpy.org/doc/html/license.html&quot; rel=&quot;nofollow&quot;&gt;MIT License for the code file&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;UI: PyQt5, it contains dual licenses: the GNU GPL v3 and the Riverbank Commercial License. See &lt;a href=&quot;https://www.riverbankcomputing.com/software/pyqt/&quot; rel=&quot;nofollow&quot;&gt;here&lt;/a&gt;.&lt;/li&gt;
 &lt;li&gt;UI theme: Qt-Material, &lt;a href=&quot;https://github.com/UN-GCPDS/qt-material?tab=BSD-2-Clause-1-ov-file&quot;&gt;BSD-2-Clause license&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Other python libs：&lt;a href=&quot;/abse4411/projz_renpy_translation/blob/devp_tmp/requirements_full.txt&quot;&gt;requirements_full.txt&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Other python libs：&lt;a href=&quot;https://github.com/abse4411/projz_renpy_translation/blob/devp/requirements_full.txt&quot;&gt;requirements_full.txt&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="wordWrap">
