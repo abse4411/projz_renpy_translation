@@ -29,7 +29,9 @@ from translation_provider.base import ApiTranslator
 from util import my_input, line_to_args
 
 app = Flask(__name__)
-
+app.logger.disabled = True
+werkzeug_logger = logging.getLogger('werkzeug')
+werkzeug_logger.disabled = True
 # _required_fields = ['identifier', 'text', 'language', 'type', 'gamedir']
 _required_fields = ['identifier', 'text', 'language', 'type', 'substituted']
 

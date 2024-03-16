@@ -65,14 +65,14 @@ class TranslationRunner(threading.Thread):
                 print('Translator is stopped by the user.')
                 return
             packs, texts = [], []
-            while not self._queue.empty():
-                p = self._queue.get()
-                t = p['substituted']
-                packs.append(p)
-                texts.append(_strip_tags(t))
-                if len(packs) == self._batch_size:
-                    break
             try:
+                while not self._queue.empty():
+                    p = self._queue.get()
+                    t = p['substituted']
+                    packs.append(p)
+                    texts.append(_strip_tags(t))
+                    if len(packs) == self._batch_size:
+                        break
                 new_texts = self._translator.translate_batch(texts)
                 for p, t in zip(packs, new_texts):
                     p['new_text'] = t
@@ -235,15 +235,15 @@ class WebTranslationIndex:
         if self._add_if_noexisting(tid):
             print(f'Miss: {tid}-{pack["text"]}')
             self._queue.put(pack)
-            time.sleep(self._wait_time)
-            if t == self.STRING_TYPE:
-                p = self._strings.get(tid)
-            elif t == self.SAY_TYPE:
-                p = self._dialogue.get(tid)
-            # print('p->', p)
-            if p:
-                print(f'Hit: {tid}-{p["text"]}')
-                return self._quote_with_fonttag(_strip_tags(p['new_text']))
+            # time.sleep(self._wait_time)
+            # if t == self.STRING_TYPE:
+            #     p = self._strings.get(tid)
+            # elif t == self.SAY_TYPE:
+            #     p = self._dialogue.get(tid)
+            # # print('p->', p)
+            # if p:
+            #     print(f'Hit: {tid}-{p["text"]}')
+            #     return self._quote_with_fonttag(_strip_tags(p['new_text']))
         else:
             if t == self.STRING_TYPE:
                 # print(f'{tid} in _strings={tid in self._strings}')
@@ -259,6 +259,10 @@ class WebTranslationIndex:
                 print(f'{tid} not Found')
                 logging.warning(f'Unknown pack: {pack}')
             if p:
+                old_text, new_text = p['substituted'], pack['substituted']
+                if old_text != new_text:
+                    self._queue.put(pack)
+                    return None
                 print(f'Hit: {tid}-{p["text"]}')
                 return self._quote_with_fonttag(_strip_tags(p['new_text']))
         return None

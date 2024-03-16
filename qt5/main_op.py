@@ -411,7 +411,7 @@ def applyTranslator(app, win: Ui_MainWindow):
         font = strip_or_none(win.font_combobox.currentText())
         if font == 'Default':
             font = None
-        print(f'Apply a translator: {provider}/{api}, translation target:{source}->{target}')
+        print(f'Apply a translator: {provider}/{api}, translation target: {source}->{target}')
         if provider and api and source and target:
             initThread = InitTranslator(provider, api, source, target, font)
             initThread.trigger.connect(lambda x: _updateTranslator(app, win, x))

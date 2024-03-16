@@ -60,6 +60,7 @@ class FakeProvider(Provider):
 
 register_provider('Foo', FakeProvider())
 
+# package cmd: pyinstaller -i imgs/proz_icon_simple.ico server_ui.py
 if __name__ == "__main__":
     import log
 
