@@ -127,12 +127,13 @@ class FontInjection(BaseChainInjector):
 def _list_tl_names(project_path: str):
     languages = []
     tl_dir = os.path.join(project_path, RENPY_GAME_DIR, RENPY_TL_DIR)
-    items = os.listdir(tl_dir)
-    for i in items:
-        # we don't need the None dir
-        name = file_name(i)
-        if exists_dir(os.path.join(tl_dir, name)) and name != 'None':
-            languages.append(name)
+    if exists_dir(tl_dir):
+        items = os.listdir(tl_dir)
+        for i in items:
+            # we don't need the None dir
+            name = file_name(i)
+            if exists_dir(os.path.join(tl_dir, name)) and name != 'None':
+                languages.append(name)
     print(f'{len(languages)} languages ({languages}) found in {tl_dir}')
     return languages
 

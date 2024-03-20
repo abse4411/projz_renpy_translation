@@ -59,7 +59,8 @@ def mkdir(dn):
 
 
 def walk_and_select(root, select_fn=None, exclude_dirs=None):
-    assert os.path.isdir(root), f'{root} is expected as a dir'
+    if not os.path.isdir(root):
+        return []
     res_files = []
     mapped_dirs = []
     if exclude_dirs is not None:
