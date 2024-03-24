@@ -15,15 +15,16 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import json
 import os.path
-import random
-import uuid
 from typing import Dict, List
 
 import pandas as pd
 
 from injection import Project
-from store import TranslationIndex
+from store import TranslationIndex, index_type
 from store.database.base import db_context
+from store.index import extra_data_of
+from store.index_type import register_index
+from store.misc import ast_of, block_of
 from util import default_read, default_write, strip_or_none, file_name, exists_file, assert_not_blank
 
 
@@ -159,44 +160,12 @@ def convertors_info():
     return res
 
 
-def ast_of(
-        identifier=None,
-        language=None,
-        filename=None,
-        linenumber=None,
-        block=None
-):
-    return {
-        'identifier': identifier,
-        'language': language,
-        'filename': filename,
-        'linenumber': linenumber,
-        'block': block if block is not None else [],
-    }
-
-
-def block_of(
-        type=None,
-        what=None,
-        who=None,
-        code=None,
-        new_code=None,
-        parsed=None,
-):
-    return {
-        'type': type,
-        'what': what,
-        'who': who,
-        'code': code,
-        'new_code': new_code,
-        'parsed': parsed if parsed is not None else [],
-    }
-
-
 class FileTranslationIndex(TranslationIndex):
 
-    def __init__(self, project: Project, nickname: str, tag: str, stats: dict = None, db_file: str = None):
-        super().__init__(project, nickname, tag, stats, db_file)
+    def __init__(self, project: Project, nickname: str, tag: str, stats: dict = None, db_file: str = None,
+                 extra_data: dict = None, doc_id: int = None):
+        extra_data = extra_data_of(index_type.FILE, extra_data)
+        super().__init__(project, nickname, tag, stats, db_file, extra_data, doc_id)
 
     @property
     def project_name(self):
@@ -210,10 +179,7 @@ class FileTranslationIndex(TranslationIndex):
     def from_file(cls, file_path: str, file_type: str, nickname: str = None, tag: str = None):
         assert file_type in _CONVERTORS, f'Unknown file type: {file_type}'
         assert exists_file(file_path), f'{file_path} is not a file.'
-        nickname = strip_or_none(nickname)
-        if not nickname:
-            nickname = ''.join(random.sample(uuid.uuid1().hex, 8))
-            print(f'The blank nickname is set to "{nickname}"')
+        nickname, tag = cls._process_name(nickname, tag)
         nickname, tag = cls.check_existing_with(nickname, tag)
         filename = file_name(file_path)
         file_path = os.path.abspath(file_path)
@@ -226,9 +192,12 @@ class FileTranslationIndex(TranslationIndex):
 
     @classmethod
     def from_index(cls, index: TranslationIndex):
-        res = cls(index.project, index.nickname, index.tag, index._stats, index._db_file)
-        res._doc_id = index.doc_id
-        return res
+        if index.itype == index_type.FILE:
+            res = cls(index.project, index.nickname, index.tag, index._stats, index._db_file, index._extra_data,
+                      index.doc_id)
+            return res
+        else:
+            raise ValueError(f'Unable to cast {index.to_dict()} into a FileTranslationIndex')
 
     @db_context
     def import_translations(self, lang: str, translated_only: bool = True, say_only: bool = True):
@@ -275,3 +244,6 @@ class FileTranslationIndex(TranslationIndex):
 
     def count_translations(self, lang: str, show_detail: bool = False, say_only: bool = True):
         raise NotImplementedError()
+
+
+register_index(FileTranslationIndex.from_index, index_type.FILE)

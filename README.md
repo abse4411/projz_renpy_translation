@@ -3,7 +3,7 @@
   <img src="imgs/projz_icon.ico" />
   <br />
 
-[![](https://img.shields.io/badge/projz_renpy_translation-0.4.2-brightgreen.svg)](https://github.com/abse4411/projz_renpy_translation)
+[![](https://img.shields.io/badge/projz_renpy_translation-0.4.3-brightgreen.svg)](https://github.com/abse4411/projz_renpy_translation)
 ![Github Stars](https://img.shields.io/github/stars/abse4411/projz_renpy_translation)
 [![](https://img.shields.io/badge/license-GPLv3-blue)](https://github.com/abse4411/projz_renpy_translation/blob/devp/LICENSE)
 ![](https://img.shields.io/badge/python-3.8-blue)
@@ -19,7 +19,7 @@
 
 </div>
 
-# ✨One-button translator (Demo)
+# ✨RealTime translator (Demo)
 Download 'projz Windows V0.4.2.7z' from [Release](https://github.com/abse4411/projz_renpy_translation/releases), then unzip it. Open the `server_ui.exe`.
 You can see the following UI:
 
@@ -142,6 +142,8 @@ You can download a packaged exe file for Windows to run this tool without instal
       from_language: 'English'
       to_language: 'Chinese'
    ```
+9. [0.4.3] Now you can save translations as a TranslationIndex in the RealTime Translator, which means that you can process these translations toolkit to process these translations.
+
 # 🛫Get started
 
 ## 1.Startup (Optional)

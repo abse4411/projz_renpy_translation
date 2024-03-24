@@ -24,24 +24,13 @@ from typing import List
 
 from config import default_config
 from injection import Project
-from injection.base import PyCodeInjector, PyFileInjector
-from injection.base.base import UndoOnFailedCallInjector, BaseInjector, undo_chain, call_chain
-from injection.base.file import StrFileInjector
-from injection.default import RENPY_PY_DIR, FontInjection
+from injection.base.base import UndoOnFailedCallInjector, undo_chain
+from injection.default import FontInjection, OnlinePyInjection
 from local_server.safe import SafeDict
+from store.misc import strip_tags, quote_with_fonttag
+from store.web_index import WebTranslationIndex
 from translation_provider.base import ApiTranslator
-from util import default_read, file_name, exists_dir, mkdir, strip_or_none, exists_file
-from util.renpy import list_tags
-
-
-def _strip_tags(text: str):
-    if text:
-        tags = list_tags(text)
-        if tags:
-            for t in tags.keys():
-                text = text.replace(t, '')
-        return text
-    return ''
+from util import strip_or_none, exists_file
 
 
 class TranslationRunner(threading.Thread):
@@ -70,7 +59,7 @@ class TranslationRunner(threading.Thread):
                     p = self._queue.get()
                     t = p['substituted']
                     packs.append(p)
-                    texts.append(_strip_tags(t))
+                    texts.append(strip_tags(t))
                     if len(packs) == self._batch_size:
                         break
                 new_texts = self._translator.translate_batch(texts)
@@ -96,39 +85,7 @@ class TranslationRunner(threading.Thread):
         self._stop_flag = True
 
 
-class OnlinePyInjection(BaseInjector):
-
-    def __init__(self, project_path):
-        renpy_init_py = os.path.join(project_path, RENPY_PY_DIR, '__init__.py')
-        self.import_injection = UndoOnFailedCallInjector(
-            PyCodeInjector(renpy_init_py,
-                           anchor_codes=['post_import()'],
-                           target_codes=['import renpy.translation.projz_translation'],
-                           insert_before=True))
-        injection_py = os.path.join(project_path, RENPY_PY_DIR, 'translation', 'projz_translation.py')
-        rconfig = default_config['translator']['realtime']
-        with default_read(r'resources/codes/projz_translation.py') as f:
-            py_content = f.read()
-        py_content = (py_content.replace('{projz_host}', str(rconfig.get('host', '127.0.0.1')).strip())
-                      .replace('{projz_port}', str(rconfig.get('port', 8888)).strip())
-                      .replace('{projz_retry_time}', str(rconfig.get('retry_time', 10)).strip())
-                      .replace('{projz_string_request_time_out}',
-                               str(rconfig.get('string_request_time_out', 0.8))).strip()
-                      .replace('{projz_dialogue_request_time_out}',
-                               str(rconfig.get('dialogue_request_time_out', 1.0))).strip())
-        self.code_injection = UndoOnFailedCallInjector(StrFileInjector(
-            PyFileInjector(
-                source_filename=r'resources/codes/projz_translation.py',
-                target_filename=injection_py), content=py_content))
-
-    def __call__(self, *args, **kwargs):
-        return call_chain([self.import_injection, self.code_injection])
-
-    def undo(self, *args, **kwargs):
-        return undo_chain([self.import_injection, self.code_injection])
-
-
-class WebTranslationIndex:
+class _WebTranslationIndex:
     SAY_TYPE = 'Say'
     STRING_TYPE = 'String'
 
@@ -146,7 +103,7 @@ class WebTranslationIndex:
         self._runner = None
         self._golobal_ids = set()
         self._set_lock = threading.Lock()
-        self._font_dir = default_config['renpy']['font_dir']
+        self._font_dir = default_config['renpy']['font']['save_dir']
         self._wait_time = float(default_config['translator']['realtime'].get('translator_wait_time', 0.5))
 
     @property
@@ -182,10 +139,7 @@ class WebTranslationIndex:
             self._runner.start()
 
     def _quote_with_fonttag(self, text):
-        if self._font:
-            # print(f'{{font={self._font_dir}{self._font}}}{text}{{/font}}')
-            return f'{{font={self._font_dir}{self._font}}}{text}{{/font}}'
-        return text
+        return quote_with_fonttag(self._font_dir, self._font, text)
 
     def set_font(self, font: str):
         self._font = strip_or_none(font)
@@ -264,7 +218,7 @@ class WebTranslationIndex:
                     self._queue.put(pack)
                     return None
                 print(f'Hit: {tid}-{p["text"]}')
-                return self._quote_with_fonttag(_strip_tags(p['new_text']))
+                return self._quote_with_fonttag(strip_tags(p['new_text']))
         return None
 
     def stop(self):
@@ -288,27 +242,32 @@ class WebTranslationIndex:
         new_s, new_d = dict(), dict()
         for k, v in s.items():
             new_v = copy(v)
-            new_v['new_text'] = self._quote_with_fonttag(_strip_tags(new_v['new_text']))
+            new_v['new_text'] = self._quote_with_fonttag(strip_tags(new_v['new_text']))
             new_s[k] = new_v
         for k, v in d.items():
             new_v = copy(v)
-            new_v['new_text'] = self._quote_with_fonttag(_strip_tags(new_v['new_text']))
+            new_v['new_text'] = self._quote_with_fonttag(strip_tags(new_v['new_text']))
             new_d[k] = new_v
         with open(save_json, 'w', encoding='utf-8') as f:
             json.dump({'String': new_s, 'Say': new_d}, f, ensure_ascii=False, indent=2)
         print(f'Translations stored: {len(s)} dialogue translations, {len(d)} string translations')
         return True
 
+    def save_web_index(self, nickname: str = None, tag: str = None, lang: str = 'None'):
+        s = self._strings.copy()
+        d = self._dialogue.copy()
+        return WebTranslationIndex.from_data(self.project, {'String': s, 'Say': d}, nickname, tag, self._font, lang)
+
     @classmethod
-    def from_dir(cls, project_path: str, default_tl_dir: str = None):
+    def from_dir(cls, project_path: str, test_launching: bool = True, default_tl_dir: str = None):
         print('Injecting translation code...')
         code_injection = UndoOnFailedCallInjector(OnlinePyInjection(project_path))
-        font_injection = UndoOnFailedCallInjector(FontInjection(project_path, default_config['renpy']['fonts']))
-        chain = [font_injection, code_injection]
-        p = Project.from_dir(project_path, test=True, injections=chain)
+        font_injection = UndoOnFailedCallInjector(FontInjection(project_path, default_config['renpy']['font']['list']))
+        project_chain = [('Font', font_injection), ('Web', code_injection)]
+        chain = [i[1] for i in project_chain]
+        p = Project.from_dir(project_path, test=test_launching, injections=project_chain)
         if p:
             index = cls(p)
-            # if call_chain(chain):
             print('Done!')
             index._font_injection = font_injection
             index._code_injection = code_injection

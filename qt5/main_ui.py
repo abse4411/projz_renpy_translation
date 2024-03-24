@@ -17,17 +17,18 @@ import sys
 import time
 from queue import Queue
 
-from PyQt5.QtCore import QObject, pyqtSignal, Qt, QThread
+from PyQt5.QtCore import QObject, pyqtSignal, Qt, QThread, QTranslator
 from PyQt5.QtGui import QTextCursor
-from PyQt5.QtWidgets import QMainWindow, QDialog
+from PyQt5.QtWidgets import QMainWindow, QDialog, QApplication
 from qt_material import QtStyleTools
 
 from local_server.safe import LockObject
 from qt5.about import Ui_AboutDialogue
+from qt5.lang import get_lang_ts, set_lang
 from qt5.main import Ui_MainWindow
 from qt5.main_op import loadServerConfig, startServer, undoInjection, injectionGame, selectRenpyDir, startGame, \
-    stopServer, applyTranslator, providerChanged, apiChanged, loadFontConfig, writeTranslations, fontChanged, clearLog, \
-    setMaxLogLine
+    stopServer, applyTranslator, providerChanged, apiChanged, loadFontConfig, writeTranslations, fontChanged, \
+    loadGameRootDirs, saveTranslationIndex
 from translation_provider.base import registered_providers
 
 
@@ -142,6 +143,7 @@ class MainWindow(QMainWindow, QtStyleTools):
         self.main.uninject_button.setDisabled(True)
         self.main.startgame_button.setDisabled(True)
         self.main.savetrans_button.setDisabled(True)
+        self.main.saveindex_button.setDisabled(True)
         self.main.start_button.setDisabled(True)
         self.main.stop_button.setDisabled(True)
         self.main.translatorapply_button.setDisabled(True)
@@ -152,16 +154,19 @@ class MainWindow(QMainWindow, QtStyleTools):
         # Theme
         setThemeAction(self, self.main)
 
+        # Language
+        self.trans = QTranslator()
+
         # Log
-        self._std_color = self.main.startgame_button.palette().button().color()
-        self._err_color = Qt.red
-        self.main.log_text.document().setMaximumBlockCount(100)
-        q = Queue()
-        self.logThread = LogThread(q)
-        self.logThread.outputWritten.connect(self.updateLog)
-        self.logThread.start()
-        self.stdout = OutputWrapper(self, q, True)
-        self.stderr = OutputWrapper(self, q, False)
+        # self._std_color = self.main.startgame_button.palette().button().color()
+        # self._err_color = Qt.red
+        # self.main.log_text.document().setMaximumBlockCount(100)
+        # q = Queue()
+        # self.logThread = LogThread(q)
+        # self.logThread.outputWritten.connect(self.updateLog)
+        # self.logThread.start()
+        # self.stdout = OutputWrapper(self, q, True)
+        # self.stderr = OutputWrapper(self, q, False)
 
         # self.stdout.outputWritten.connect(self.handleOutput)
         # self.stderr = OutputWrapper(self, False)
@@ -185,6 +190,8 @@ class MainWindow(QMainWindow, QtStyleTools):
         loadServerConfig(self, self.main)
         # Font
         loadFontConfig(self, self.main)
+        # Game roots
+        loadGameRootDirs(self, self.main)
 
         # Register actions
         self.main.selectdir_button.clicked.connect(lambda: selectRenpyDir(self, self.main))
@@ -197,8 +204,11 @@ class MainWindow(QMainWindow, QtStyleTools):
         self.main.translator_combobox.currentIndexChanged.connect(lambda: providerChanged(self, self.main))
         self.main.savetrans_button.clicked.connect(lambda: writeTranslations(self, self.main))
         self.main.font_combobox.currentIndexChanged.connect(lambda: fontChanged(self, self.main))
-        self.main.setlogline_button.clicked.connect(lambda: setMaxLogLine(self, self.main))
-        self.main.clearlog_button.clicked.connect(lambda: clearLog(self, self.main))
+        self.main.saveindex_button.clicked.connect(lambda: saveTranslationIndex(self, self.main))
+        # self.main.setlogline_button.clicked.connect(lambda: setMaxLogLine(self, self.main))
+        # self.main.clearlog_button.clicked.connect(lambda: clearLog(self, self.main))
+        self.main.actionEnglish.triggered.connect(lambda: self.changeLang('en'))
+        self.main.actionSimplyfied_Chinese.triggered.connect(lambda: self.changeLang('zh-cn'))
 
         # Select provider
         if providers:
@@ -206,27 +216,34 @@ class MainWindow(QMainWindow, QtStyleTools):
             # self.main.translator_combobox.setCurrentIndex(0)
         self.main.api_combobox.currentIndexChanged.connect(lambda: apiChanged(self, self.main))
 
-    def handleOutput(self, text, stdout):
-        log_text = self.main.log_text
-        log_text.moveCursor(QTextCursor.End)
-        log_text.setTextColor(self._std_color if stdout else self._err_color)
-        log_text.insertPlainText(text)
+    # def handleOutput(self, text, stdout):
+    #     log_text = self.main.log_text
+    #     log_text.moveCursor(QTextCursor.End)
+    #     log_text.setTextColor(self._std_color if stdout else self._err_color)
+    #     log_text.insertPlainText(text)
+
+    def changeLang(self, lang: str):
+        set_lang(lang)
+        _app = QApplication.instance()
+        self.trans.load(get_lang_ts())
+        _app.installTranslator(self.trans)
+        self.main.retranslateUi(self)
 
     def closeEvent(self, event):
         # sys.stderr = self._stderr
         # sys.stdout = self._stdout
-        if hasattr(self, 'stdout'):
-            del self.stdout
-        if hasattr(self, 'stderr'):
-            del self.stderr
-        self.logThread.stop()
+        # if hasattr(self, 'stdout'):
+        #     del self.stdout
+        # if hasattr(self, 'stderr'):
+        #     del self.stderr
+        # self.logThread.stop()
         event.accept()
 
-    def updateLog(self, text: str, isStd: bool, cnt: int):
-        log_text = self.main.log_text
-        log_text.moveCursor(QTextCursor.End)
-        log_text.setTextColor(self._std_color if isStd else self._err_color)
-        log_text.insertPlainText(text)
+    # def updateLog(self, text: str, isStd: bool, cnt: int):
+    #     log_text = self.main.log_text
+    #     log_text.moveCursor(QTextCursor.End)
+    #     log_text.setTextColor(self._std_color if isStd else self._err_color)
+    #     log_text.insertPlainText(text)
 
     # def updateStdoutLog(self, text: str):
     #     log_text_obj = self.main.log_text

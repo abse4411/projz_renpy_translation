@@ -39,14 +39,6 @@ _cache_res = {}
 _cache_lock = Lock()
 
 
-def add_translation(translation_block: dict, new_text: str):
-    if translation_block['identifier'] not in _cache_res:
-        with _cache_lock:
-            new_block = translation_block.copy()
-            new_block['new_text'] = new_text
-            _cache_res[translation_block['identifier']] = new_block
-
-
 def ok_of(response: dict):
     response['code'] = 0
     return response
@@ -83,7 +75,7 @@ def translation():
     if index:
         new_text = index.translate(payload)
         # print(f'new text: {new_text}')
-    return jsonify(ok_of({'text': new_text}))
+    return jsonify(ok_of({'new_text': new_text}))
 
 
 from werkzeug.serving import make_server

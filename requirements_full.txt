@@ -8,7 +8,7 @@ cffi==1.15.1
 charset-normalizer==3.2.0
 click==8.1.7
 colorama==0.4.6
-cryptography==42.0.3
+cryptography==42.0.5
 dill==0.3.8
 dl-translate==0.3.0
 et-xmlfile==1.1.0
@@ -79,7 +79,7 @@ torchaudio==2.0.2+cu117
 torchvision==0.15.2+cu117
 tqdm==4.66.1
 transformers==4.33.0
-translators==5.8.9
+translators==5.9.0
 trio==0.22.2
 trio-websocket==0.10.3
 typing_extensions==4.7.1

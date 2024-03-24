@@ -1,3 +1,4 @@
+# coding=utf8
 # projz_renpy_translation, a translator for RenPy games
 # Copyright (C) 2023  github.com/abse4411
 #

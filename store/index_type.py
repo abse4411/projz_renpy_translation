@@ -14,6 +14,18 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from .index import TranslationIndex
-from .file_index import FileTranslationIndex
-from .web_index import WebTranslationIndex
+BASE = 0
+FILE = 1
+WEB = 2
+
+_INDEX_TRANSFORMER = {BASE: lambda x: x}
+
+
+def register_index(cls, itype: int):
+    if itype not in _INDEX_TRANSFORMER:
+        _INDEX_TRANSFORMER[itype] = cls
+    return cls
+
+
+def transform_index(index, *args, **kwargs):
+    return _INDEX_TRANSFORMER[index.itype](index, *args, **kwargs)

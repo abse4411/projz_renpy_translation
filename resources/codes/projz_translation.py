@@ -1,3 +1,4 @@
+# coding=utf8
 # projz_renpy_translation, a translator for RenPy games
 # Copyright (C) 2023  github.com/abse4411
 #
@@ -30,6 +31,7 @@
 import json
 import os.path
 import time
+
 try:
     from renpy.compat import basestring
 except Exception as e:
@@ -38,6 +40,7 @@ except Exception as e:
 _requests_ref = None
 try:
     import requests
+
     _requests_ref = requests
 except Exception as e:
     print(e)
@@ -74,18 +77,21 @@ if _requests_ref is None:
     if _PY3_OR_LATER:
         import urllib
         from urllib.request import Request, urlopen
+
         _requests_ref = urllib.request
     else:
         import urllib2
         from urllib2 import Request, urlopen
+
         _requests_ref = urllib2
+
 
     def quick_post(path, payload, timeout=1.0):
         global _URL, _rest_time, _REQ_RETRY_TIME
         if _rest_time < time.time():
             try:
                 req = Request(_URL + path, headers={'Content-Type': 'application/json'},
-                                            data=json.dumps(payload, ensure_ascii=False).encode('utf-8'))
+                              data=json.dumps(payload, ensure_ascii=False).encode('utf-8'))
                 resp = urlopen(req, timeout=timeout)
                 resp_data = resp.read()
                 resp_json = json.loads(resp_data.decode('utf-8'))
@@ -121,16 +127,20 @@ def ok(res):
     return False
 
 
-def translation_post(identifier, language, type, text, substituted):
+def translation_post(identifier, language, type, text, substituted, filename='projz_translations.rpy', linenumber=0,
+                     code=None, who=None):
     global _STRING_REQ_TIMEOUT, _DIALOGUE_REQ_TIMEOUT
     try:
-        # print(identifier)
         payload = {
             'identifier': identifier,
             'language': language,
             'type': type,
             'text': text,
             'substituted': substituted,
+            'filename': filename,
+            'linenumber': linenumber,
+            'code': code,
+            'who': who,
         }
         if type == 'String':
             timeout = _STRING_REQ_TIMEOUT
@@ -138,14 +148,20 @@ def translation_post(identifier, language, type, text, substituted):
             timeout = _DIALOGUE_REQ_TIMEOUT
         res = quick_post('/translation', payload, timeout)
         if ok(res):
-            return res['text']
+            return res['new_text'], True
         else:
             if _rest_time > time.time():
-                new_text = _stored_translations.get(type, {}).get(identifier, {}).get('new_text', None)
-                return new_text
+                data = _stored_translations.get(type, {}).get(identifier, {})
+                new_text = data.get('new_text', None)
+                new_code = data.get('new_code', None)
+                if new_code is not None:
+                    return new_code, False
+                if new_text is not None:
+                    return new_text, True
+                return None, True
     except Exception as e:
         pass
-    return None
+    return None, True
 
 
 _string_set_build = False
@@ -164,7 +180,7 @@ def build_string_set():
         for s in strings:
             # print(elide_filename(s.filename))
             short_name = elide_filename(s.filename)
-            _string_set[s.text] = short_name
+            _string_set[s.text] = short_name, s.line
         # print('_string_set', len(_string_set))
         _string_set_build = True
     except Exception as e:
@@ -175,7 +191,7 @@ def _should_translate(string):
     global _string_set
     if string.strip() == '':
         return False
-    filename = _string_set.get(string, None)
+    filename, line = _string_set.get(string, (None, None))
     if filename is not None:
         if filename.startswith('renpy'):
             return False
@@ -185,20 +201,33 @@ def _should_translate(string):
     return True
 
 
+def is_translatable(string):
+    if string:
+        for ch in string:
+            if ch not in u'1234567890+-*=_)(&^%$#@!`~<,>.?/:;"\'|\\}]{[【】“”、；：？《，》。！￥（）—\t \a\r\n\b\f\v\0':
+                return True
+        return False
+    return False
+
+
 def projz_prefix_suffix(self, thing, prefix, body, suffix):
     # if thing != 'what':
-    #     return old_prefix_suffix(self, thing, prefix, body, suffix)
-    res = old_prefix_suffix(self, thing, prefix, body, suffix)
-    if body is None or body.strip() == '':
+    #     return _old_prefix_suffix(self, thing, prefix, body, suffix)
+    res = _old_prefix_suffix(self, thing, prefix, body, suffix)
+    if body is None or body.strip() == '' or not is_translatable(body):
         return res
     new_text = None
     if thing == 'what':
-        new_text = translation_post(renpy.game.context().translate_identifier, renpy.game.preferences.language, 'Say',
-                                    body,
-                                    res)
+        context = renpy.game.context()
+        node = renpy.game.script.lookup(context.current)
+        new_text, subed = translation_post(context.translate_identifier, renpy.game.preferences.language, 'Say',
+                                           body, res, node.filename, node.linenumber, node.get_code(), self.name)
+        if not subed:
+            return _old_prefix_suffix(self, thing, prefix, new_text, suffix)
     elif thing == 'who':
-        new_text = translation_post(body, renpy.game.preferences.language, 'String', body,
-                                    res)
+        new_text, subed = translation_post(body, renpy.game.preferences.language, 'String', body, res)
+        if not subed:
+            return _old_prefix_suffix(self, thing, prefix, new_text, suffix)
     if new_text is not None:
         return new_text
     return res
@@ -215,29 +244,50 @@ def projz_set_text(self, text, scope=None, substitute=False, update=True):
         return res
     old_text = text[0]
     striped_text = old_text.strip()
-    if len(striped_text) <= 1 or (not _should_translate(old_text)) or (striped_text.startswith('[') and striped_text.endswith(']')):
+    if len(striped_text) <= 1 or (not _should_translate(old_text)) or (
+            striped_text.startswith('[') and striped_text.endswith(']')) or not is_translatable(striped_text):
         return res
     if substitute is None and '{#' in striped_text:
         return res
     s_text = self.text[0]
-    new_text = translation_post(old_text, renpy.game.preferences.language, 'String', old_text, s_text)
+    new_text, subed = translation_post(old_text, renpy.game.preferences.language, 'String', old_text, s_text)
     if new_text is not None:
-        if new_text == s_text:
+        if not subed:
+            res = old_set_text(self, new_text, scope, substitute, update)
+            s_text = self.text[0]
+            if s_text == old_text:
+                return False
+            return True
+        if new_text == old_text:
             return False
         self.text = [new_text]
         return True
     return res
 
 
+_tid_what = (None, None)
+
+
+def projz_call(self, what, **kwargs):
+    global _tid_what
+    _tid_what = (renpy.game.context().translate_identifier, what)
+    return _old_character_call(self, what, **kwargs)
+
+
 def projz_do_display(self, who, what, **display_args):
+    global _tid_what, _old_do_display
     new_what = None
-    if what is not None and what.strip() != '':
-        new_what = translation_post(renpy.game.context().translate_identifier, renpy.game.preferences.language, 'Say',
-                                    what,
-                                    what)
+    if what is not None and what.strip() != '' and is_translatable(what):
+        context = renpy.game.context()
+        tid, raw_what = _tid_what
+        node = renpy.game.script.lookup(context.current)
+        new_what, subed = translation_post(context.translate_identifier, renpy.game.preferences.language, 'Say',
+                                           raw_what if tid == context.translate_identifier else what, what,
+                                           node.filename,
+                                           node.linenumber, node.get_code(), self.name)
     new_who = None
-    if who is not None and who.strip() != '':
-        new_who = translation_post(who, renpy.game.preferences.language, 'String', who, who)
+    if who is not None and who.strip() != '' and is_translatable(who):
+        new_who, subed = translation_post(who, renpy.game.preferences.language, 'String', self.name, who)
     if new_who is not None:
         who = new_who
     if new_what is not None:
@@ -247,7 +297,7 @@ def projz_do_display(self, who, what, **display_args):
     if _DialogueTextTags_ref and isinstance(old_dtt, _DialogueTextTags_ref):
         new_dtt = _DialogueTextTags_ref(what)
         display_args['dtt'] = new_dtt
-    old_do_display(self, who, what, **display_args)
+    _old_do_display(self, who, what, **display_args)
     if old_dtt is not None:
         for k, v in vars(new_dtt).items():
             setattr(old_dtt, k, v)
@@ -260,12 +310,14 @@ try:
 except Exception as e:
     print(e)
 try:
-    old_prefix_suffix = renpy.character.ADVCharacter.prefix_suffix
+    _old_prefix_suffix = renpy.character.ADVCharacter.prefix_suffix
     renpy.character.ADVCharacter.prefix_suffix = projz_prefix_suffix
 except Exception as e:
     print(e)
     try:
-        old_do_display = renpy.character.ADVCharacter.do_display
+        _old_do_display = renpy.character.ADVCharacter.do_display
+        _old_character_call = renpy.character.ADVCharacter.__call__
+        renpy.character.ADVCharacter.__call__ = projz_call
         renpy.character.ADVCharacter.do_display = projz_do_display
     except Exception as e:
         print(e)

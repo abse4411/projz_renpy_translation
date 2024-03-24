@@ -24,16 +24,22 @@ import regex
 
 from config import default_config
 from injection import Project, get_translations, generate_translations, count_translations
+from store import index_type
 from store.database import TranslationIndexDao, TranslationDao
 from store.database.base import db_context
 from util import exists_dir, strip_or_none, assert_not_blank, exists_file, to_translatable_text, to_string_text
 from util.renpy import list_tags
 
 
-
-
 def _get_task_result(res):
     return res['items'], res['message']
+
+
+def extra_data_of(itype: int, data: dict = None):
+    if data is None:
+        data = {}
+    data['index_type'] = itype
+    return data
 
 
 class TranslationIndex:
@@ -41,14 +47,24 @@ class TranslationIndex:
     STRING_ID_PREFIX = 'S'
     TID_PATTERN = regex.compile(r'^([DS])(\d+)_(\d+)$')
 
-    def __init__(self, project: Project, nickname: str, tag: str, stats: dict = None, db_file: str = None):
-        self._doc_id = None
+    def __init__(self, project: Project, nickname: str, tag: str, stats: dict = None, db_file: str = None,
+                 extra_data: dict = None, doc_id: int = None):
+        self._doc_id = doc_id
         self._project = project
         self._nickname = nickname
         self._tag = tag
         self._stats = stats if stats is not None else {'dialogue': dict(), 'string': dict()}
         self._db_file = os.path.join(default_config.project_path,
                                      f'projz_{self._nickname}_{self._tag}.db') if db_file is None else db_file
+        self._extra_data = extra_data if extra_data is not None else {'index_type': index_type.BASE}
+
+
+    @property
+    def itype(self):
+        # compatible for previous FileTranslationIndex
+        if len(self.game_info) == 0:
+            return index_type.FILE
+        return self._extra_data.get('index_type', None)
 
     @property
     def doc_id(self):
@@ -785,6 +801,7 @@ class TranslationIndex:
             'tag': self._tag,
             'stats': self._stats,
             'db_file': self._db_file,
+            'extra_data': self._extra_data,
         }
 
     @classmethod
@@ -795,7 +812,8 @@ class TranslationIndex:
             nickname=data['nickname'],
             tag=data['tag'],
             stats=data.get('stats', None),
-            db_file=data['db_file']
+            db_file=data['db_file'],
+            extra_data=data.get('extra_data', None),
         )
         if hasattr(data, 'doc_id'):
             new_inst._doc_id = data.__getattribute__('doc_id')
@@ -806,7 +824,7 @@ class TranslationIndex:
         nickname = assert_not_blank(nickname)
         tag = strip_or_none(tag)
 
-        # check among current db files to make sure not to overwrite a existing one
+        # check among current db files to make sure not to overwrite an existing one
         if check_dbfiles:
             current_name = f'projz_{nickname}_{tag}.db'
             db_files = sorted(glob.glob(os.path.join(default_config.project_path, '*.db')))
@@ -822,11 +840,17 @@ class TranslationIndex:
         return nickname, tag
 
     @classmethod
-    def from_dir(cls, project_path: str, nickname: str = None, tag: str = None):
+    def _process_name(cls, nickname: str, tag: str):
         nickname = strip_or_none(nickname)
+        tag = strip_or_none(tag)
         if not nickname:
             nickname = ''.join(random.sample(uuid.uuid1().hex, 8))
             print(f'The blank nickname is set to "{nickname}"')
+        return nickname, tag
+
+    @classmethod
+    def from_dir(cls, project_path: str, nickname: str = None, tag: str = None):
+        nickname, tag = cls._process_name(nickname, tag)
         nickname, tag = cls.check_existing_with(nickname, tag)
         project = Project.from_dir(project_path)
         return cls(
@@ -868,11 +892,13 @@ class TranslationIndex:
             data['tag'] = tag
         with TranslationIndexDao() as dao:
             dao.update(data, self._doc_id)
-            self._nickname = nickname
-            self._tag = tag
+            if nickname is not None:
+                self._nickname = nickname
+            if tag is not None:
+                self._tag = tag
 
     @classmethod
-    def _split_nickname(cls, nickname:str):
+    def _split_nickname(cls, nickname: str):
         tag = None
         if nickname:
             if ":" in nickname:

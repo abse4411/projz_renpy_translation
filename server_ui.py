@@ -32,7 +32,7 @@ class FakeTranslator(ApiTranslator):
         self._suffix = suffix
 
     def translate(self, text: str):
-        time.sleep(1)
+        # time.sleep(1)
         return text + self._suffix
 
 

@@ -21,10 +21,10 @@ from typing import List
 
 from config import default_config
 from injection.base import PyCodeInjector, FileInjector, BaseInjector
-from injection.base.base import call_chain, undo_chain, BaseChainInjector
+from injection.base.base import call_chain, undo_chain, BaseChainInjector, UndoOnFailedCallInjector
 from injection.base.code import line_strip
 from injection.base.file import PyFileInjector, RpyFileInjector, StrFileInjector
-from util import walk_and_select, file_name, default_read, default_write, mkdir, exists_dir
+from util import walk_and_select, file_name, default_read, mkdir, exists_dir
 
 PYTHON_WIN64_EXE = [
     'windows-x86_64/python.exe',
@@ -102,11 +102,12 @@ class FontInjection(BaseChainInjector):
 
     def __init__(self, project_path, font_list: List[str]):
         super().__init__()
-        self.font_dir = os.path.join(project_path, RENPY_GAME_DIR, default_config['renpy']['font_dir'])
+        self.font_dir = os.path.join(project_path, RENPY_GAME_DIR, default_config['renpy']['font']['save_dir'])
         self.valid_font_map = dict()
         if font_list:
             for f in set(font_list):
                 self.valid_font_map[file_name(f)] = f
+        print(f'Find {len(self.valid_font_map)} fonts: {list(self.valid_font_map.keys())}')
         fis = []
         for f, path in self.valid_font_map.items():
             fis.append(FileInjector(source_filename=path, target_filename=os.path.join(self.font_dir, f)))
@@ -209,7 +210,7 @@ screen preferences():
 
         # Font
         font_list = []
-        for f in default_config['renpy']['fonts']:
+        for f in default_config['renpy']['font']['list']:
             font_list.append(f)
         valid_lang_map = dict()
 
@@ -229,7 +230,7 @@ screen preferences():
             [f'"{k}":("{v["title"]}","{file_name(v["font"])}")' for k, v in valid_lang_map.items()])
         font_content = ','.join(f'"{file_name(f)}"' for f in set(font_list))
         mconfig = default_config['renpy']
-        font_dir = mconfig['font_dir']
+        font_dir = mconfig['font']['save_dir']
         enable_console = mconfig['debug_console']
         enable_developer = mconfig['developer_mode']
         shortcut_key = mconfig['i18n_menu']['shortcut_key']
@@ -243,7 +244,7 @@ screen preferences():
         injection_rpy = os.path.join(project_path, RENPY_GAME_DIR, 'projz_i18n_inject.rpy')
         self.inpyi = StrFileInjector(RpyFileInjector(None, target_filename=injection_rpy), rpy_template)
         self.fonts = FontInjection(project_path, font_list)
-        self.set_chain(self.rpyis+[self.fonts, self.inpyi])
+        self.set_chain(self.rpyis + [self.fonts, self.inpyi])
 
     def __call__(self, *args, **kwargs):
         # inject into screens.rpy
@@ -260,3 +261,33 @@ screen preferences():
                 print(self.NOT_FOUND_ERROR_TEXT.format(ganme_dir=self.game_dir))
 
         return call_chain([self.fonts, self.inpyi])
+
+
+class OnlinePyInjection(BaseInjector):
+
+    def __init__(self, project_path):
+        renpy_init_py = os.path.join(project_path, RENPY_PY_DIR, '__init__.py')
+        self.import_injection = PyCodeInjector(renpy_init_py,
+                                               anchor_codes=['post_import()'],
+                                               target_codes=['import renpy.translation.projz_translation'],
+                                               insert_before=True)
+        injection_py = os.path.join(project_path, RENPY_PY_DIR, 'translation', 'projz_translation.py')
+        rconfig = default_config['translator']['realtime']
+        with default_read(r'resources/codes/projz_translation.py') as f:
+            py_content = f.read()
+        py_content = (py_content.replace('{projz_host}', str(rconfig.get('host', '127.0.0.1')).strip())
+                      .replace('{projz_port}', str(rconfig.get('port', 8888)).strip())
+                      .replace('{projz_retry_time}', str(rconfig.get('retry_time', 10)).strip())
+                      .replace('{projz_string_request_time_out}',
+                               str(rconfig.get('string_request_time_out', 0.8))).strip()
+                      .replace('{projz_dialogue_request_time_out}',
+                               str(rconfig.get('dialogue_request_time_out', 1.0))).strip())
+        self.code_injection = StrFileInjector(
+            PyFileInjector(source_filename=r'resources/codes/projz_translation.py', target_filename=injection_py),
+            content=py_content)
+
+    def __call__(self, *args, **kwargs):
+        return call_chain([self.import_injection, self.code_injection])
+
+    def undo(self, *args, **kwargs):
+        return undo_chain([self.import_injection, self.code_injection])

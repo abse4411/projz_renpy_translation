@@ -65,11 +65,14 @@ projz:
       shortcut_key: 'ctrl_K_i' # use this shortcut_key to show our I18n menu
     # fonts listed in the i18n menu. we also add fonts configured in lang_map to the i18n menu
     # you can find download links in resources/fonts/readme.txt
-    fonts:
-      - 'resources/fonts/Roboto-Light.ttf'
-      - 'resources/fonts/SourceHanSansLite.ttf'
-      - 'resources/fonts/DejaVuSans.ttf'
-    font_dir: 'projz_fonts/' # font dir in your_game/game, The dir should end with '/'.
+    font:
+      save_dir: 'projz_fonts/' # font dir in your_game/game, The dir should end with '/'.
+      default: 'SourceHanSansLite.ttf' # the default font to use.
+      list:
+        - 'resources/fonts/Roboto-Light.ttf'
+        - 'resources/fonts/SourceHanSansLite.ttf'
+        - 'resources/fonts/DejaVuSans.ttf'
+
     # the final languages listed in the i18n menu is determined by dirs in your_game/game/tl except "None"
     lang_map:
       - tl_name: 'indonesian'

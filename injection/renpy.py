@@ -20,7 +20,7 @@ import logging
 import os.path
 import subprocess
 import uuid
-from typing import List, Dict
+from typing import List, Dict, Tuple
 
 from config import default_config
 from injection.base import BaseInjector
@@ -213,7 +213,7 @@ class Project:
                 try_running(try_fn=lambda: os.remove(json_file), return_try=False)
 
     @classmethod
-    def from_dir(cls, project_path, test: bool = True, injections: List[BaseInjector] = None):
+    def from_dir(cls, project_path, test: bool = True, injections: List[Tuple[str, BaseInjector]] = None):
         print('Checking the skeleton for this RenPy game...')
         abs_path = os.path.abspath(project_path)
 
@@ -230,7 +230,10 @@ class Project:
         print('Injecting our code...')
         injection_chain = [tmp_instance.get_base_injection()]
         if isinstance(injections, list):
-            injection_chain += injections
+            register_injections = []
+            for name, injector in injections:
+                register_injections.append(tmp_instance.register_injection(name, injector))
+            injection_chain += register_injections
         # check and inject
         if call_chain(injection_chain):
             if test:

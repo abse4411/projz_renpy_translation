@@ -14,6 +14,22 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from .index import TranslationIndex
-from .file_index import FileTranslationIndex
-from .web_index import WebTranslationIndex
+LANG = 'en'
+LANG_MAP = {
+    'en': 'qt5/i18n/EN',
+    'zh-cn': 'qt5/i18n/zh_CN',
+}
+
+
+def set_lang(lang: str):
+    global LANG
+    if lang in LANG_MAP:
+        LANG = lang
+
+
+def get_lang_ts():
+    global LANG
+    ts = LANG_MAP.get(LANG, None)
+    if ts is None:
+        return LANG_MAP['en']
+    return ts

@@ -19,7 +19,7 @@
 
 </div>
 
-# ✨一键翻译功能支持(Demo)
+# ✨实时翻译功能支持(Demo)
 下载[Release](https://github.com/abse4411/projz_renpy_translation/releases)中的`projz-Winndows_V0.4.2.7z`，解压打开里面的`server_ui.exe`
 
 你可看到以下界面：
@@ -63,7 +63,7 @@
 
 要使用翻译缓存文件您需要重新打开游戏，并关闭我们的翻译器。此外，我们的翻译器也会自动从游戏目录加载这个翻译缓存文件（在点击"Injection"按钮后），避免重复翻译。
 
-目前这个翻译器只是个Demo，后续将与我们的翻译工具集成。
+你还可以通过点击"Save translations to the game"按钮保存当前的翻译结果到游戏中。
 
 # 👀开始之前
 
@@ -144,6 +144,7 @@ translate chinese scene_01_5f0ee2360:
       from_language: 'English'
       to_language: 'Chinese'
    ```
+9. [0.4.3] 现在你可以保存RealTime Translator的翻译为TranslationIndex，这意味着你可以用我们翻译工具来处理这些翻译。
 
 # 🛫快速开始
 

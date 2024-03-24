@@ -15,19 +15,18 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import logging
 import os
-import random
-import threading
 import time
 from typing import List, Tuple
 
-from PyQt5.QtCore import QObject, pyqtSignal, QThread, Qt
+from PyQt5.QtCore import pyqtSignal, QThread, Qt
 from PyQt5.QtGui import QPalette, QColor
-from PyQt5.QtWidgets import QFileDialog, QMessageBox, QApplication
+from PyQt5.QtWidgets import QFileDialog, QMessageBox
 
-from translation_provider.base import get_provider, Provider, ApiTranslator
+from store import TranslationIndex, index_type
+from translation_provider.base import get_provider, ApiTranslator
 from config import default_config
-from local_server.index import WebTranslationIndex
-from local_server.server import FlaskServer, MockTranslator
+from local_server.index import _WebTranslationIndex
+from local_server.server import FlaskServer
 from qt5.main import Ui_MainWindow
 from util import exists_dir, strip_or_none, open_item, exists_file, file_name
 
@@ -52,13 +51,26 @@ def errorWrapper(app, func, returnRes: bool = True, defaultRes=None):
     return defaultRes
 
 
+def errorAspect(func):
+    def wrapper(app, win: Ui_MainWindow):
+        try:
+            return func(app, win)
+        except Exception as e:
+            logging.exception(e)
+            showErrorMsg(app, str(e))
+
+    return wrapper
+
+
 def selectRenpyDir(app, win: Ui_MainWindow):
     options = QFileDialog.Options()
     dirname = QFileDialog.getExistingDirectory(app, "Choose a RenPy game root", options=options)
     if dirname:
-        win.gameroot_text.setText(dirname)
+        # win.gameroot_combox.addItem()
+        win.gameroot_combox.setCurrentText(str(dirname))
 
 
+@errorAspect
 def startGame(app, win: Ui_MainWindow):
     index = app.index.get()
     if index:
@@ -73,6 +85,7 @@ def startGame(app, win: Ui_MainWindow):
         win.uninject_button.setDisabled(True)
 
 
+@errorAspect
 def undoInjection(app, win: Ui_MainWindow):
     index = app.index.get()
     if index:
@@ -86,12 +99,13 @@ def undoInjection(app, win: Ui_MainWindow):
             win.translatorapply_button.setDisabled(True)
             win.uninject_button.setDisabled(True)
             win.savetrans_button.setDisabled(True)
+            win.saveindex_button.setDisabled(True)
             win.inject_button.setEnabled(True)
             win.selectdir_button.setEnabled(True)
             win.gamename_text.setText(None)
             win.gameversion_text.setText(None)
             win.renpyversion_text.setText(None)
-            win.gameroot_text.setReadOnly(False)
+            win.gameroot_combox.setDisabled(False)
             win.dialoguenum_text.display(0)
             win.stringnum_text.display(0)
             win.totalnum_text.display(0)
@@ -102,9 +116,10 @@ def undoInjection(app, win: Ui_MainWindow):
         win.uninject_button.setDisabled(True)
 
 
+@errorAspect
 def injectionGame(app, win: Ui_MainWindow):
-    if exists_dir(win.gameroot_text.text()):
-        index = errorWrapper(app, lambda: WebTranslationIndex.from_dir(win.gameroot_text.text()))
+    if exists_dir(win.gameroot_combox.currentText()):
+        index = errorWrapper(app, lambda: _WebTranslationIndex.from_dir(win.gameroot_combox.currentText()))
         if index:
             app.index.set(index)
             showInfoMsg(app, 'Injection succeed!')
@@ -116,9 +131,10 @@ def injectionGame(app, win: Ui_MainWindow):
             win.uninject_button.setEnabled(True)
             win.startgame_button.setEnabled(True)
             win.savetrans_button.setEnabled(True)
+            win.saveindex_button.setEnabled(True)
             win.selectdir_button.setDisabled(True)
             win.inject_button.setDisabled(True)
-            win.gameroot_text.setReadOnly(True)
+            win.gameroot_combox.setDisabled(True)
             lend = index.dialogue_size
             lens = index.string_size
             win.dialoguenum_text.display(lend)
@@ -129,13 +145,13 @@ def injectionGame(app, win: Ui_MainWindow):
                 font = None
             index.set_font(font)
     else:
-        showErrorMsg(app, f'{win.gameroot_text.text()} is not a valid dir!')
+        showErrorMsg(app, f'{win.gameroot_combox.currentText()} is not a valid dir!')
 
 
 class CollectServerInfoThread(QThread):
     trigger = pyqtSignal(tuple)
 
-    def __init__(self, server: FlaskServer, index: WebTranslationIndex):
+    def __init__(self, server: FlaskServer, index: _WebTranslationIndex):
         super().__init__()
         self._server = server
         self._index = index
@@ -164,16 +180,18 @@ class CollectServerInfoThread(QThread):
 
 
 def updateTextState(state: str, win: Ui_MainWindow, target):
+    def _set_color(t, c):
+        t.setStyleSheet(f'color: {c}')
+
     if state == 'Running':
         target.setText('Running')
-        target.palette().setColor(QPalette.WindowText, QColor(Qt.green))
+        _set_color(target, 'green')
     elif state == 'Error':
         target.setText('Error')
-        target.palette().setColor(QPalette.WindowText, QColor(Qt.red))
+        _set_color(target, 'red')
     else:
-        color = win.label_2.palette().base().color()
         target.setText(state)
-        target.palette().setColor(QPalette.WindowText, color)
+        target.setStyleSheet('')
 
 
 def _stopServer(app, win: Ui_MainWindow, server: FlaskServer):
@@ -186,15 +204,6 @@ def _stopServer(app, win: Ui_MainWindow, server: FlaskServer):
     win.translatorapply_button.setDisabled(True)
     updateTextState('Stopped', win, win.serverstatus_text)
     updateTextState('Stopped', win, win.translatorstatus_text)
-    # win.serverstatus_text.setText('Stopped')
-    # color = win.label_2.palette().base().color()
-    # win.serverstatus_text.palette().setColor(QPalette.WindowText, color)
-    # win.translatorstatus_text.setText('Stopped')
-    # win.translatorstatus_text.palette().setColor(QPalette.WindowText, color)
-    win.queue_text.display(0)
-    win.dialoguenum_text.display(0)
-    win.stringnum_text.display(0)
-    win.totalnum_text.display(0)
 
 
 def _updateServerInfo(app, win: Ui_MainWindow, info):
@@ -210,19 +219,20 @@ def _updateServerInfo(app, win: Ui_MainWindow, info):
             win.stringnum_text.display(index_info['string'])
             win.totalnum_text.display(index_info['total'])
             if not translator_info['ok']:
-                updateTextState('Stopped', win, win.translatorstatus_text)
-                # win.translatorstatus_text.setText('Error')
-                # win.translatorstatus_text.palette().setColor(QPalette.WindowText, QColor(Qt.red))
+                updateTextState('Error', win, win.translatorstatus_text)
                 showErrorMsg(app, f'Translator is crashed!')
                 logging.exception(translator_info['error'])
+            # else:
+            #     updateTextState('Running', win, win.translatorstatus_text)
 
-
+@errorAspect
 def stopServer(app, win: Ui_MainWindow):
     server = app.server.get()
     if server and not server.is_stopped():
         _stopServer(app, win, server)
 
 
+@errorAspect
 def startServer(app, win: Ui_MainWindow):
     index = app.index.get()
     if index:
@@ -246,11 +256,6 @@ def startServer(app, win: Ui_MainWindow):
                     win.translatorapply_button.setEnabled(True)
                     updateTextState('Running', win, win.serverstatus_text)
                     applyTranslator(app, win)
-                    # updateTextState('Running', win, win.translatorstatus_text)
-                    # win.serverstatus_text.setText('Running')
-                    # win.serverstatus_text.palette().setColor(QPalette.WindowText, QColor(Qt.green))
-                    # win.translatorstatus_text.setText('Running')
-                    # win.translatorstatus_text.palette().setColor(QPalette.WindowText, QColor(Qt.green))
                 else:
                     showErrorMsg(app, f'Launching server failed!')
             else:
@@ -262,6 +267,7 @@ def startServer(app, win: Ui_MainWindow):
         showErrorMsg(app, f'Please inject the game first!')
 
 
+@errorAspect
 def loadServerConfig(app, win: Ui_MainWindow):
     try:
         sconfig = default_config['translator']['realtime']
@@ -272,22 +278,24 @@ def loadServerConfig(app, win: Ui_MainWindow):
         win.start_button.setEnabled(True)
     except Exception as e:
         logging.exception(e)
-        showErrorMsg('Loading server config failed!')
+        showErrorMsg(app, 'Loading server config failed!')
     win.start_button.setDisabled(True)
 
 
+@errorAspect
 def loadFontConfig(app, win: Ui_MainWindow):
     win.font_combobox.addItems(['Default'])
     try:
-        fconfig = default_config['renpy']['fonts']
+        fconfig = default_config['renpy']['font']
         # print(fconfig)
-        font_list = [file_name(f) for f in set(fconfig)]
+        font_list = [file_name(f) for f in set(fconfig['list'])]
         win.font_combobox.addItems(font_list)
     except Exception as e:
         logging.exception(e)
-        showErrorMsg('Loading font config failed!')
+        showErrorMsg(app, 'Loading font config failed!')
 
 
+@errorAspect
 def apiChanged(app, win: Ui_MainWindow):
     win.translatorapply_button.setDisabled(True)
     # if app.server.get() is None:
@@ -315,6 +323,7 @@ def apiChanged(app, win: Ui_MainWindow):
         showErrorMsg(app, f'The {api} API of {provider} is crashed!')
 
 
+@errorAspect
 def providerChanged(app, win: Ui_MainWindow):
     win.translatorapply_button.setDisabled(True)
     provider = get_provider(win.translator_combobox.currentText())
@@ -400,6 +409,7 @@ def _updateTranslator(app, win: Ui_MainWindow, data: Tuple[ApiTranslator, str]):
         showErrorMsg(app, f'Starting translator failed!')
 
 
+@errorAspect
 def applyTranslator(app, win: Ui_MainWindow):
     win.translatorapply_button.setDisabled(True)
     server = app.server.get()
@@ -425,6 +435,7 @@ def applyTranslator(app, win: Ui_MainWindow):
         win.translatorapply_button.setDisabled(True)
 
 
+@errorAspect
 def writeTranslations(app, win: Ui_MainWindow):
     win.savetrans_button.setDisabled(True)
     index = app.index.get()
@@ -442,6 +453,7 @@ def writeTranslations(app, win: Ui_MainWindow):
         win.savetrans_button.setDisabled(True)
 
 
+@errorAspect
 def fontChanged(app, win: Ui_MainWindow):
     index = app.index.get()
     if index:
@@ -451,10 +463,36 @@ def fontChanged(app, win: Ui_MainWindow):
         index.set_font(font)
 
 
-def clearLog(app, win: Ui_MainWindow):
-    win.log_text.clear()
+@errorAspect
+def saveTranslationIndex(app, win: Ui_MainWindow):
+    win.saveindex_button.setDisabled(True)
+    index = app.index.get()
+    if index:
+        try:
+            index.save_web_index()
+            showInfoMsg(app, 'Save successfully!')
+        except Exception as e:
+            logging.exception(e)
+        win.saveindex_button.setEnabled(True)
 
 
-def setMaxLogLine(app, win: Ui_MainWindow):
-    lines = win.maxline_spinbox.value()
-    win.log_text.document().setMaximumBlockCount(lines)
+@errorAspect
+def loadGameRootDirs(app, win: Ui_MainWindow):
+    try:
+        dirs = []
+        indexes = TranslationIndex.list_indexes()
+        for _, index in indexes:
+            if index.itype == index_type.WEB:
+                dirs.append(index.project_path)
+        win.gameroot_combox.addItems(list(set(dirs)))
+    except Exception as e:
+        logging.exception(e)
+        showErrorMsg(app, 'Loading TranslationIndex list failed!')
+
+# def clearLog(app, win: Ui_MainWindow):
+#     win.log_text.clear()
+#
+#
+# def setMaxLogLine(app, win: Ui_MainWindow):
+#     lines = win.maxline_spinbox.value()
+#     win.log_text.document().setMaximumBlockCount(lines)
