@@ -19,8 +19,8 @@
 
 </div>
 
-# ✨RealTime translator (Demo)
-Download 'projz Windows V0.4.2.7z' from [Release](https://github.com/abse4411/projz_renpy_translation/releases), then unzip it. Open the `server_ui.exe`.
+# ✨RealTime translator (Free and Open Source)
+Download 'projz Windows VX.X.X.7z' from [Release](https://github.com/abse4411/projz_renpy_translation/releases), then unzip it. Open the `server_ui.exe`.
 You can see the following UI:
 
 ![main_ui.png](imgs/main_ui.png)
@@ -64,6 +64,8 @@ This translation cache file `projz_translations.json` will be saved to the game 
 To use the translation cache file, you need to reopen the game and close our translator. In addition, our translator will automatically load this translation cache file from the game directory (after clicking the "Injection" button) to avoid duplicating translations.
 
 At present, this translator is only a demo and will be integrated with our translation tools in the future.
+
+You can also save the current translation as a TranslationIndex by clicking the "Save as a TranslationIndex" button, so that you can use various commands for TranslationIndex to quickly process these translations.
 
 # 👀Before getting started
 
@@ -287,7 +289,7 @@ Note that: Translation Stats list translated/untranslated lines of dialogue and 
 > 
 > It's still difficult to assess the translation quality of each translation command.
 
-## 4.Generate translation rpy
+## 4.Generate translation rpys
 
 Use `generate` command to generate translation rpy files to the game:
 

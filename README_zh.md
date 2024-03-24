@@ -3,7 +3,7 @@
   <img src="imgs/projz_icon.ico" />
   <br />
 
-[![](https://img.shields.io/badge/projz_renpy_translation-0.4.2-brightgreen.svg)](https://github.com/abse4411/projz_renpy_translation)
+[![](https://img.shields.io/badge/projz_renpy_translation-0.4.3-brightgreen.svg)](https://github.com/abse4411/projz_renpy_translation)
 ![Github Stars](https://img.shields.io/github/stars/abse4411/projz_renpy_translation)
 [![](https://img.shields.io/badge/license-GPLv3-blue)](https://github.com/abse4411/projz_renpy_translation/blob/devp/LICENSE)
 ![](https://img.shields.io/badge/python-3.8-blue)
@@ -19,8 +19,8 @@
 
 </div>
 
-# ✨实时翻译功能支持(Demo)
-下载[Release](https://github.com/abse4411/projz_renpy_translation/releases)中的`projz-Winndows_V0.4.2.7z`，解压打开里面的`server_ui.exe`
+# ✨实时翻译功能支持(免费+开源)
+下载[Release](https://github.com/abse4411/projz_renpy_translation/releases)中的`projz-Winndows_VX.X.X.7z`，解压打开里面的`server_ui.exe`
 
 你可看到以下界面：
 
@@ -63,7 +63,7 @@
 
 要使用翻译缓存文件您需要重新打开游戏，并关闭我们的翻译器。此外，我们的翻译器也会自动从游戏目录加载这个翻译缓存文件（在点击"Injection"按钮后），避免重复翻译。
 
-你还可以通过点击"Save translations to the game"按钮保存当前的翻译结果到游戏中。
+你还可以通过点击"Save as a TranslationIndex"按钮保存当前的翻译保存为TranslationIndex，这样您可以使用针对TranslationIndex各种命令来快速修改这些翻译。
 
 # 👀开始之前
 
