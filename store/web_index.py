@@ -52,14 +52,14 @@ class WebTranslationIndex(TranslationIndex):
             if lang is None:
                 lang = 'None'
             identifier = item['identifier']
-            substituted = strip_tags(item['substituted'])
+            new_code = strip_tags(item['new_text'])
             what = item['text']
             who = item.get('who', None)
             filename = item.get('filename', 'projz_translations.rpy')
             linenumber = item.get('linenumber', 0)
             code = item.get('code', None)
             return ast_of(language=lang, filename=filename, linenumber=linenumber, identifier=identifier,
-                          block=[block_of(type=t, what=what, who=who, code=code, new_code=substituted)])
+                          block=[block_of(type=t, what=what, who=who, code=code, new_code=new_code)])
 
         for d in dialogues.values():
             dialogue_data.append(_collect(d, 'Say'))
@@ -126,21 +126,9 @@ class WebTranslationIndex(TranslationIndex):
         dialogue_data, string_data = self._list_translations(lang)
         new_string_data, new_dialogue_data = {}, {}
         for v in dialogue_data:
-            b = v['block'][0]
-            tid = v['identifier']
-            if b['new_code'] is not None:
-                b['new_code'] = self._quote_with_fonttag(b['new_code'])
-            elif not translated_only:
-                b['new_text'] = self._quote_with_fonttag(b['substituted'])
-            new_dialogue_data[tid] = b
+            new_dialogue_data[v['identifier']] = v['block'][0]
         for v in string_data:
-            b = v['block'][0]
-            tid = v['identifier']
-            if b['new_code'] is not None:
-                b['new_code'] = self._quote_with_fonttag(b['new_code'])
-            elif not translated_only:
-                b['new_text'] = self._quote_with_fonttag(b['substituted'])
-            new_string_data[tid] = b
+            new_string_data[v['identifier']] = v['block'][0]
         if len(new_dialogue_data) == 0 and len(new_string_data) == 0:
             print(f'No {lang} translations in this TranslationIndex to export')
             return
@@ -153,8 +141,16 @@ class WebTranslationIndex(TranslationIndex):
                 data = json.load(f)
             dmap = data.get('Say', {})
             smap = data.get('String', {})
-        dmap.update(new_dialogue_data)
-        smap.update(new_string_data)
+
+        def _update(old_map: dict, new_map: dict):
+            for k, v in new_map.items():
+                old_v = old_map.get(k, None)
+                if old_v is not None:
+                    if v['new_code'] != strip_tags(old_v['new_text']):
+                        old_v['new_code'] = self._quote_with_fonttag(v['new_code'])
+
+        _update(dmap, new_dialogue_data)
+        _update(smap, new_string_data)
         with default_write(json_file) as f:
             json.dump({'String': smap, 'Say': dmap}, f, ensure_ascii=False, indent=2)
         print(f'We have written translations to: {json_file}')

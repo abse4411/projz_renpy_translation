@@ -473,6 +473,7 @@ def saveTranslationIndex(app, win: Ui_MainWindow):
             showInfoMsg(app, 'Save successfully!')
         except Exception as e:
             logging.exception(e)
+            showErrorMsg(app, 'Save Failed!')
         win.saveindex_button.setEnabled(True)
 
 
