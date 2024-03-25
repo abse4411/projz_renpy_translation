@@ -17,7 +17,7 @@ import logging
 
 from command import BaseCmd
 from command.manage import exists_cmd, execute_cmd, all_cmds, register
-from util import my_input, line_to_args
+from util import my_input, line_to_args, is_windows
 import translator
 
 __VERSION__ = '0.4.3'
@@ -41,8 +41,13 @@ The codes or libs we use or refer to:
 * [UlionTse/translators](https://github.com/UlionTse/translators), [GPL-3.0 License](https://github.com/UlionTse/translators?tab=GPL-3.0-1-ov-file)
 * Pre-translated RPY file: [RenPy](https://github.com/renpy/renpy/tree/master/launcher/game/tl), [MIT License for these rpy files](https://www.renpy.org/doc/html/license.html)
 * [resources/codes/projz_injection.py](resources/codes/projz_injection.py): [RenPy](https://github.com/renpy/renpy/blob/master/renpy/translation/generation.py), [MIT License for the code file](https://www.renpy.org/doc/html/license.html)
-* Other python libs：[requirements.txt](./requirements.txt)
+* UI: PyQt5, it contains dual licenses: the GNU GPL v3 and the Riverbank Commercial License. See [here](https://www.riverbankcomputing.com/software/pyqt/).
+* UI theme: Qt-Material, [BSD-2-Clause license](https://github.com/UN-GCPDS/qt-material?tab=BSD-2-Clause-1-ov-file)
+* Other python libs：[requirements_full.txt](./requirements_full.txt)
 ''')
+
+
+from os import system
 
 
 class AboutCmd(BaseCmd):
@@ -53,7 +58,19 @@ class AboutCmd(BaseCmd):
         print_banner()
 
 
+class ClsCmd(BaseCmd):
+    def __init__(self):
+        super().__init__('cls', 'Clean screen.')
+
+    def invoke(self):
+        if is_windows():
+            system('cls')
+        else:
+            system('clear')
+
+
 register(AboutCmd())
+register(ClsCmd())
 
 
 def main():
@@ -83,4 +100,5 @@ def main():
 # --copy-metadata pyyaml --copy-metadata sentencepiece
 if __name__ == '__main__':
     import log  # enable logging
+
     main()
