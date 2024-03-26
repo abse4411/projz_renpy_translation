@@ -28,6 +28,13 @@ class ApiTranslator:
     def translate_batch(self, texts: List[str]) -> List[str]:
         return [self.translate(t) for t in texts]
 
+    def close(self):
+        '''
+        Release resources if necessary
+        :return:
+        '''
+        pass
+
 
 class Provider:
     def __init__(self):

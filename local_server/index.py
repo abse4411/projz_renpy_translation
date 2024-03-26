@@ -48,9 +48,17 @@ class TranslationRunner(threading.Thread):
         self._error = None
         super().setDaemon(daemonic)
 
+    def _close_translator(self):
+        try:
+            print('Release resources of the translator...')
+            self._translator.close()
+        except Exception as e:
+            logging.exception(e)
+
     def run(self):
         while True:
             if self._stop_flag:
+                self._close_translator()
                 print('Translator is stopped by the user.')
                 return
             packs, texts = [], []
@@ -68,6 +76,7 @@ class TranslationRunner(threading.Thread):
                 self._update_func(packs)
             except Exception as e:
                 logging.exception(e)
+                self._close_translator()
                 # reverse get()
                 for p in packs:
                     self._queue.put(p)
