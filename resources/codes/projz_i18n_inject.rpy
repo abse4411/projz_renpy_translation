@@ -41,6 +41,7 @@ define projz_gui_vars = ["projz_gui_text_font","projz_gui_name_text_font","projz
 # Names of gui font var for saving selected font
 define projz_sgui_vars = ["projz_sgui_text_font","projz_sgui_name_text_font","projz_sgui_interface_text_font","projz_sgui_button_text_font","projz_sgui_choice_button_text_font","projz_sgui_system_font","projz_sgui_main_font"]
 define projz_gui_names = ["Text Font","Name Text Font","Interface Text Font","Button Text Font","Choice Button Text Font","System Font","Main Font"]
+define projz_global_font = 'projz_global_font'
 # Names for saving current selected font by our setting
 # define projz_gui_selected_font = "projz_gui_selected_font"
 init python:
@@ -86,6 +87,9 @@ init python:
     else:
         projz_config_set("console", {projz_enable_console_content})
 
+    if projz_get(projz_global_font) is None:
+        projz_set(projz_global_font, None)
+
     # save default fonts
     projz_dset(projz_gui_vars[0], gui, 'text_font')
     projz_dset(projz_gui_vars[1], gui, 'name_text_font')
@@ -122,6 +126,71 @@ define projz_fonts = [{projz_font_content}]
 
 
 init python:
+    old_set_text = None
+    _old_prefix_suffix = None
+    _old_do_display = None
+    _DialogueTextTags_ref = None
+
+    def global_set_text(self, text, scope=None, substitute=False, update=True):
+        res = old_set_text(self, text, scope, substitute, update)
+        if not (substitute is True or substitute is None):
+            return res
+        if len(text) != 1 or (not isinstance(text[0], basestring)) or isinstance(text[0], bytes):
+            return res
+        old_text = self.text[0]
+        current_font = projz_get(projz_global_font)
+        if current_font is not None and old_text is not None and old_text.strip()!='':
+            new_text = u'{font='+str(current_font) + u'}' + old_text + u'{font}'
+            self.text = [new_text]
+        return res
+
+    def global_prefix_suffix(self, thing, prefix, body, suffix):
+        current_font = projz_get(projz_global_font)
+        if current_font is not None:
+            if (thing == 'what' or thing == 'who') and body is not None and body.strip()!='':
+                body = u'{font='+str(current_font) + u'}' + body + u'{font}'
+        return _old_prefix_suffix(self, thing, prefix, body, suffix)
+
+    def global_do_display(self, who, what, **display_args):
+        current_font = projz_get(projz_global_font)
+        if current_font is None:
+            return _old_do_display(self, who, what, **display_args)
+
+        if what is not None and what.strip() != '':
+            what = u'{font='+str(current_font) + u'}' + what + u'{font}'
+        if who is not None and who.strip() != '':
+            who = u'{font='+str(current_font) + u'}' + who + u'{font}'
+        old_dtt = display_args.get('dtt', None)
+        new_dtt = None
+        if _DialogueTextTags_ref and isinstance(old_dtt, _DialogueTextTags_ref):
+            new_dtt = _DialogueTextTags_ref(what)
+            display_args['dtt'] = new_dtt
+        _old_do_display(self, who, what, **display_args)
+        if old_dtt is not None:
+            for k, v in vars(new_dtt).items():
+                setattr(old_dtt, k, v)
+
+    try:
+        _DialogueTextTags_ref = renpy.character.DialogueTextTags
+    except Exception as e:
+        print(e)
+    try:
+        old_set_text = renpy.text.text.Text.set_text
+        renpy.text.text.Text.set_text = global_set_text
+    except Exception as e:
+        print(e)
+    try:
+        _old_prefix_suffix = renpy.character.ADVCharacter.prefix_suffix
+        renpy.character.ADVCharacter.prefix_suffix = global_prefix_suffix
+    except Exception as e:
+        print(e)
+        try:
+            _old_do_display = renpy.character.ADVCharacter.do_display
+            renpy.character.ADVCharacter.do_display = global_do_display
+        except Exception as e:
+            print(e)
+
+
     from store import persistent, Action, DictEquality
     class ProjzFontAction(Action, DictEquality):
         def __init__(self, name, value, rebuild=True):
@@ -205,6 +274,21 @@ init python:
                 return True
             return False
 
+    class ProjzValueAction(Action, DictEquality):
+        def __init__(self, name, value, rebuild=True):
+            self.name = name
+            self.value = value
+            self.rebuild = rebuild
+
+        def __call__(self):
+            projz_set(self.name, self.value)
+
+            if self.rebuild:
+                gui.rebuild()
+
+        def get_selected(self):
+            return projz_get(self.name) == self.value
+
     def projz_set_font(font):
         for name in projz_sgui_vars:
             projz_set(name, font)
@@ -233,6 +317,14 @@ screen projz_i18n_settings():
                     for k,v in projz_languages.items():
                         textbutton v[0] text_font projz_font_dir+v[1] action [Function(projz_set_font, projz_font_dir+v[1]), Language(k)]
                 ################### Make font vars dynamic by our implementation ###################
+                vbox:
+                    style_prefix "radio"
+                    label _("Global Font")
+                    textbutton _("Default") action ProjzValueAction(projz_global_font, None)
+                    for f in projz_fonts:
+                        textbutton f:
+                            text_font projz_font_dir+f
+                            action ProjzValueAction(projz_global_font, projz_font_dir+f)
                 vbox:
                     style_prefix "radio"
                     label _("Font")
