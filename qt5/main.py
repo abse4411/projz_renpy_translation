@@ -355,6 +355,7 @@ class Ui_MainWindow(object):
         self.label_19 = QtWidgets.QLabel(self.groupBox)
         self.label_19.setAlignment(QtCore.Qt.AlignCenter)
         self.label_19.setWordWrap(True)
+        self.label_19.setOpenExternalLinks(True)
         self.label_19.setObjectName("label_19")
         self.gridLayout_5.addWidget(self.label_19, 1, 0, 1, 1)
         spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
