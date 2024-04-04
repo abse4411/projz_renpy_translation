@@ -15,13 +15,14 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 from typing import List
 
-from translation_provider.base import Provider, register_provider, ApiTranslator
+from trans import Translator
+from translation_provider.base import Provider, register_provider
 
 _preacceleration_done = False
 ts = None
 
 
-class _InnerTranslator(ApiTranslator):
+class _InnerTranslator(Translator):
     def __init__(self, api: str, from_lang: str, to_lang: str, trans_kwargs):
         self._api = api
         self._source = from_lang
@@ -64,7 +65,7 @@ class TranslatorsApi(Provider):
         langs = sorted(list(ts.get_languages(api).keys()))
         return ['auto']+langs, langs
 
-    def translator_of(self, api: str, source_lang: str, target_lang: str) -> ApiTranslator:
+    def translator_of(self, api: str, source_lang: str, target_lang: str) -> Translator:
         global ts
         import translators as ts
         use_preacceleration = self.trans_kwargs.pop('if_use_preacceleration', False)

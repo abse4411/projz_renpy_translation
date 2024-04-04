@@ -25,7 +25,7 @@ from typing import List
 from flask import Flask, abort, request, jsonify
 
 from local_server.index import WebTranslationIndex
-from translation_provider.base import ApiTranslator
+from trans import Translator
 from util import my_input, line_to_args
 
 app = Flask(__name__)
@@ -81,7 +81,7 @@ def translation():
 from werkzeug.serving import make_server
 
 
-class MockTranslator(ApiTranslator):
+class MockTranslator(Translator):
 
     def translate(self, text: str):
         return text + ' (Google)'
@@ -146,7 +146,7 @@ class FlaskServer(threading.Thread):
             self._server.shutdown()
             self._server = None
 
-    def set_translator(self, translator: ApiTranslator, font:str):
+    def set_translator(self, translator: Translator, font:str):
         self.index.stop()
         self.index.set_translator(translator, font)
         self.index.start()

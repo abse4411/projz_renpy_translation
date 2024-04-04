@@ -28,7 +28,7 @@ from qt5.lang import get_lang_ts, set_lang
 from qt5.main import Ui_MainWindow
 from qt5.main_op import loadServerConfig, startServer, undoInjection, injectionGame, selectRenpyDir, startGame, \
     stopServer, applyTranslator, providerChanged, apiChanged, loadFontConfig, writeTranslations, fontChanged, \
-    loadGameRootDirs, saveTranslationIndex
+    loadGameRootDirs, saveTranslationIndex, errorWrapper
 from translation_provider.base import registered_providers
 
 
@@ -215,6 +215,7 @@ class MainWindow(QMainWindow, QtStyleTools):
             self.main.translator_combobox.addItems(providers)
             # self.main.translator_combobox.setCurrentIndex(0)
         self.main.api_combobox.currentIndexChanged.connect(lambda: apiChanged(self, self.main))
+        errorWrapper(self, lambda: apiChanged(self, self.main))
 
     # def handleOutput(self, text, stdout):
     #     log_text = self.main.log_text

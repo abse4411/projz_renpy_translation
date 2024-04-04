@@ -23,7 +23,8 @@ from PyQt5.QtGui import QPalette, QColor
 from PyQt5.QtWidgets import QFileDialog, QMessageBox
 
 from store import TranslationIndex, index_type
-from translation_provider.base import get_provider, ApiTranslator
+from trans import Translator
+from translation_provider.base import get_provider
 from config import default_config
 from local_server.index import _WebTranslationIndex
 from local_server.server import FlaskServer
@@ -297,20 +298,29 @@ def loadFontConfig(app, win: Ui_MainWindow):
 
 @errorAspect
 def apiChanged(app, win: Ui_MainWindow):
+    win.sourcelang_combobox.clear()
+    win.targetlang_combobox.clear()
     win.translatorapply_button.setDisabled(True)
     # if app.server.get() is None:
     #     return
     provider = get_provider(win.translator_combobox.currentText())
     api = win.api_combobox.currentText()
-    win.sourcelang_combobox.clear()
-    win.targetlang_combobox.clear()
     error = False
     if api and provider is not None:
         try:
             slangs, tlangs = provider.languages_of(api)
             if slangs and tlangs:
+                dsl = provider.default_source_lang()
+                dtl = provider.default_target_lang()
                 win.sourcelang_combobox.addItems(slangs)
                 win.targetlang_combobox.addItems(tlangs)
+                # print(dname, dsl, dtl, slangs)
+                if dsl not in slangs:
+                    dsl = slangs[0]
+                win.sourcelang_combobox.setCurrentIndex(slangs.index(dsl))
+                if dtl not in tlangs:
+                    dtl = tlangs[-1]
+                win.targetlang_combobox.setCurrentIndex(tlangs.index(dtl))
                 if app.server.get() is None:
                     return
                 win.translatorapply_button.setEnabled(True)
@@ -338,26 +348,11 @@ def providerChanged(app, win: Ui_MainWindow):
                 dname = provider.default_api()
                 if dname not in names:
                     dname = names[0]
-                slangs, tlangs = provider.languages_of(dname)
-                if slangs and tlangs:
-                    dsl = provider.default_source_lang()
-                    dtl = provider.default_target_lang()
-                    win.api_combobox.addItems(names)
-                    win.api_combobox.setCurrentIndex(names.index(dname))
-                    win.sourcelang_combobox.addItems(slangs)
-                    win.targetlang_combobox.addItems(tlangs)
-                    # print(dname, dsl, dtl, slangs)
-                    if dsl not in slangs:
-                        dsl = slangs[0]
-                    win.sourcelang_combobox.setCurrentIndex(slangs.index(dsl))
-                    if dtl not in tlangs:
-                        dtl = tlangs[-1]
-                    win.targetlang_combobox.setCurrentIndex(tlangs.index(dtl))
-                    if app.server.get() is None:
-                        return
-                    win.translatorapply_button.setEnabled(True)
-                else:
-                    error = True
+                win.api_combobox.addItems(names)
+                win.api_combobox.setCurrentIndex(names.index(dname))
+                if app.server.get() is None:
+                    return
+                win.translatorapply_button.setEnabled(True)
             else:
                 error = True
         except Exception as e:
@@ -389,7 +384,7 @@ class InitTranslator(QThread):
         self.trigger.emit((translator, self._font))
 
 
-def _updateTranslator(app, win: Ui_MainWindow, data: Tuple[ApiTranslator, str]):
+def _updateTranslator(app, win: Ui_MainWindow, data: Tuple[Translator, str]):
     translator, font = data
     try:
         with app.server as server:
@@ -401,6 +396,8 @@ def _updateTranslator(app, win: Ui_MainWindow, data: Tuple[ApiTranslator, str]):
                     showErrorMsg(app, f'Initializing translator failed!')
                 win.translatorapply_button.setEnabled(True)
             else:
+                if translator is not None:
+                    translator.close()
                 showErrorMsg(app, f'Please make sure that the server is running!')
                 updateTextState('Stopped', win, win.translatorstatus_text)
                 win.translatorapply_button.setDisabled(True)

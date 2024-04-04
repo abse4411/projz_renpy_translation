@@ -17,9 +17,15 @@ from typing import List
 
 
 class Translator:
-
     def translate(self, text: str) -> str:
-        return NotImplementedError()
+        return text
 
     def translate_batch(self, texts: List[str]) -> List[str]:
         return [self.translate(t) for t in texts]
+
+    def close(self):
+        '''
+        Release resources if necessary
+        :return:
+        '''
+        pass

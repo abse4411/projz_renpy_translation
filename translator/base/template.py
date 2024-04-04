@@ -19,7 +19,7 @@ from typing import Tuple, List
 
 from config.base import ProjzConfig
 from store.database.base import flush
-from translator.base import Translator
+from trans import Translator
 
 
 class TranslatorTemplate(Translator):

@@ -21,3 +21,7 @@ try:
     import translation_provider.translators
 except Exception as e:
     logging.exception(e)
+try:
+    import translation_provider.closeapi
+except Exception as e:
+    logging.exception(e)

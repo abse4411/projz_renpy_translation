@@ -16,24 +16,9 @@
 from typing import List, Tuple
 
 from config.base import default_config
+from trans import Translator
 
 _API_PROVIDERS = {}
-
-
-class ApiTranslator:
-
-    def translate(self, text: str) -> str:
-        return NotImplementedError()
-
-    def translate_batch(self, texts: List[str]) -> List[str]:
-        return [self.translate(t) for t in texts]
-
-    def close(self):
-        '''
-        Release resources if necessary
-        :return:
-        '''
-        pass
 
 
 class Provider:
@@ -76,7 +61,7 @@ class Provider:
         """
         return [], []
 
-    def translator_of(self, api: str, source_lang: str, target_lang: str) -> ApiTranslator:
+    def translator_of(self, api: str, source_lang: str, target_lang: str) -> Translator:
         raise NotImplementedError()
 
 

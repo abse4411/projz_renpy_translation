@@ -29,12 +29,12 @@ from injection.default import FontInjection, OnlinePyInjection
 from local_server.safe import SafeDict
 from store.misc import strip_tags, quote_with_fonttag
 from store.web_index import WebTranslationIndex
-from translation_provider.base import ApiTranslator
+from trans import Translator
 from util import strip_or_none, exists_file
 
 
 class TranslationRunner(threading.Thread):
-    def __init__(self, translator: ApiTranslator, queue: Queue, update_func,
+    def __init__(self, translator: Translator, queue: Queue, update_func,
                  batch_size: int = 1, sleep_time: float = 0.001, daemonic: bool = True):
         threading.Thread.__init__(self)
         self._queue = queue
@@ -153,7 +153,7 @@ class _WebTranslationIndex:
     def set_font(self, font: str):
         self._font = strip_or_none(font)
 
-    def set_translator(self, translator: ApiTranslator, font: str = None):
+    def set_translator(self, translator: Translator, font: str = None):
         self._translator = translator
         self._font = strip_or_none(font)
 

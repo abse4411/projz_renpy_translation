@@ -24,10 +24,12 @@ from qt5.main import Ui_MainWindow
 from qt5.main_ui import MainWindow, setThemeAction
 import qt_material
 from qt_material import apply_stylesheet
-from translation_provider.base import Provider, register_provider, ApiTranslator
+
+from trans import Translator
+from translation_provider.base import Provider, register_provider
 
 
-class FakeTranslator(ApiTranslator):
+class FakeTranslator(Translator):
     def __init__(self, suffix=''):
         self._suffix = suffix
 
@@ -54,7 +56,7 @@ class FakeProvider(Provider):
         langs = ['zh-Hans', 'zh-Hant', 'en', 'jp', 'kr', 'ru', 'fr', 'auto']
         return langs, langs
 
-    def translator_of(self, api: str, source_lang: str, target_lang: str) -> ApiTranslator:
+    def translator_of(self, api: str, source_lang: str, target_lang: str) -> Translator:
         return FakeTranslator(f'({api}:{source_lang}-{target_lang})')
 
 

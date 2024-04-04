@@ -13,6 +13,4 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-import translator.api.translators_impl
-import translator.api.openai_impl
+from .wraaper import OpenAITranslator
