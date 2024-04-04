@@ -243,6 +243,10 @@ class _WebTranslationIndex:
         res = undo_chain([self._font_injection, self._code_injection])
         return res
 
+    def retranslate(self):
+        with self._set_lock:
+            self._golobal_ids.clear()
+
     def save_translations(self):
         save_json = os.path.join(self._project.project_path, 'projz_translations.json')
         print(f'Writing translations to: {save_json}')

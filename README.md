@@ -55,17 +55,17 @@ Then perform the following steps to translate a RenPy game:
 
 You will also find that the translation result is not displayed when playing game for the first time. This is because a large number of translated texts are currently in the queue, so you need to wait for the value of the queue reduced to 0 and re-enter the game scene.
 
-Finally, you can save the current translation results to the game by clicking the "Save translations to the game" button. This way, even if you close the translator, you can still load translations from the translation cache.
+Finally, you can save the current translation results to the game by clicking the "Save translations to the game" button. By doing this, even if you close the translator, you can still load translations from the translation cache.
 
    ![main_ui.png](imgs/ui_s7.png)
 
-This translation cache file `projz_translations.json` will be saved to the game root directory. Please note, do not click the "Undo injection" button as this will disable our translation code.
+This translation cache file `projz_translations.json` will be saved to the game root. Please note that, do not click the "Undo injection" button as this will disable our translation code.
 
 To use the translation cache file, you need to reopen the game and close our translator. In addition, our translator will automatically load this translation cache file from the game directory (after clicking the "Injection" button) to avoid duplicating translations.
 
 At present, this translator is only a demo and will be integrated with our translation tools in the future.
 
-You can also save the current translation as a TranslationIndex by clicking the "Save as a TranslationIndex" button, so that you can use various commands for TranslationIndex to quickly process these translations.
+You can also save the current translation as a TranslationIndex by clicking the "Save as a TranslationIndex" button, so that you can use various commands for FileTranslationIndex to quickly process these translations.
 
 # 👀Before getting started
 

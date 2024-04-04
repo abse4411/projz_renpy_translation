@@ -28,7 +28,7 @@ from qt5.lang import get_lang_ts, set_lang
 from qt5.main import Ui_MainWindow
 from qt5.main_op import loadServerConfig, startServer, undoInjection, injectionGame, selectRenpyDir, startGame, \
     stopServer, applyTranslator, providerChanged, apiChanged, loadFontConfig, writeTranslations, fontChanged, \
-    loadGameRootDirs, saveTranslationIndex, errorWrapper
+    loadGameRootDirs, saveTranslationIndex, errorWrapper, retranslate
 from translation_provider.base import registered_providers
 
 
@@ -140,6 +140,7 @@ class MainWindow(QMainWindow, QtStyleTools):
         self.initThread = None
 
         # Button state
+        self.main.retranslate_button.setDisabled(True)
         self.main.uninject_button.setDisabled(True)
         self.main.startgame_button.setDisabled(True)
         self.main.savetrans_button.setDisabled(True)
@@ -205,6 +206,7 @@ class MainWindow(QMainWindow, QtStyleTools):
         self.main.savetrans_button.clicked.connect(lambda: writeTranslations(self, self.main))
         self.main.font_combobox.currentIndexChanged.connect(lambda: fontChanged(self, self.main))
         self.main.saveindex_button.clicked.connect(lambda: saveTranslationIndex(self, self.main))
+        self.main.retranslate_button.clicked.connect(lambda: retranslate(self, self.main))
         # self.main.setlogline_button.clicked.connect(lambda: setMaxLogLine(self, self.main))
         # self.main.clearlog_button.clicked.connect(lambda: clearLog(self, self.main))
         self.main.actionEnglish.triggered.connect(lambda: self.changeLang('en'))

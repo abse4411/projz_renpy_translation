@@ -100,6 +100,7 @@ def undoInjection(app, win: Ui_MainWindow):
             win.translatorapply_button.setDisabled(True)
             win.uninject_button.setDisabled(True)
             win.savetrans_button.setDisabled(True)
+            win.retranslate_button.setDisabled(True)
             win.saveindex_button.setDisabled(True)
             win.inject_button.setEnabled(True)
             win.selectdir_button.setEnabled(True)
@@ -120,7 +121,9 @@ def undoInjection(app, win: Ui_MainWindow):
 @errorAspect
 def injectionGame(app, win: Ui_MainWindow):
     if exists_dir(win.gameroot_combox.currentText()):
-        index = errorWrapper(app, lambda: _WebTranslationIndex.from_dir(win.gameroot_combox.currentText()))
+        launch_text = win.detectgame_btn.isChecked()
+        index = errorWrapper(app, lambda: _WebTranslationIndex.from_dir(win.gameroot_combox.currentText(),
+                                                                        test_launching=launch_text))
         if index:
             app.index.set(index)
             showInfoMsg(app, 'Injection succeed!')
@@ -132,6 +135,7 @@ def injectionGame(app, win: Ui_MainWindow):
             win.uninject_button.setEnabled(True)
             win.startgame_button.setEnabled(True)
             win.savetrans_button.setEnabled(True)
+            win.retranslate_button.setEnabled(True)
             win.saveindex_button.setEnabled(True)
             win.selectdir_button.setDisabled(True)
             win.inject_button.setDisabled(True)
@@ -225,6 +229,7 @@ def _updateServerInfo(app, win: Ui_MainWindow, info):
                 logging.exception(translator_info['error'])
             # else:
             #     updateTextState('Running', win, win.translatorstatus_text)
+
 
 @errorAspect
 def stopServer(app, win: Ui_MainWindow):
@@ -486,6 +491,19 @@ def loadGameRootDirs(app, win: Ui_MainWindow):
     except Exception as e:
         logging.exception(e)
         showErrorMsg(app, 'Loading TranslationIndex list failed!')
+
+
+@errorAspect
+def retranslate(app, win: Ui_MainWindow):
+    win.retranslate_button.setDisabled(True)
+    index = app.index.get()
+    if index:
+        index.retranslate()
+        showInfoMsg(app, 'Retranslation enabled!')
+        win.savetrans_button.setEnabled(True)
+    else:
+        showErrorMsg(app, f'Please inject the game first!')
+        win.retranslate_button.setDisabled(True)
 
 # def clearLog(app, win: Ui_MainWindow):
 #     win.log_text.clear()

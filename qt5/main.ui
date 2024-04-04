@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>872</width>
-    <height>439</height>
+    <width>813</width>
+    <height>462</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -148,6 +148,9 @@
               <property name="spacing">
                <number>2</number>
               </property>
+              <property name="sizeConstraint">
+               <enum>QLayout::SetDefaultConstraint</enum>
+              </property>
               <property name="leftMargin">
                <number>0</number>
               </property>
@@ -167,10 +170,16 @@
                   <property name="sizeConstraint">
                    <enum>QLayout::SetDefaultConstraint</enum>
                   </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>0</number>
+                  </property>
                   <item>
                    <widget class="QLabel" name="label_9">
                     <property name="sizePolicy">
-                     <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                       <horstretch>0</horstretch>
                       <verstretch>0</verstretch>
                      </sizepolicy>
@@ -224,6 +233,12 @@
                  <layout class="QHBoxLayout" name="horizontalLayout_13">
                   <property name="sizeConstraint">
                    <enum>QLayout::SetDefaultConstraint</enum>
+                  </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>0</number>
                   </property>
                   <item>
                    <widget class="QLabel" name="label_10">
@@ -285,10 +300,16 @@
                 <property name="sizeConstraint">
                  <enum>QLayout::SetFixedSize</enum>
                 </property>
+                <property name="topMargin">
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>0</number>
+                </property>
                 <item>
                  <widget class="QLabel" name="label_14">
                   <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                     <horstretch>0</horstretch>
                     <verstretch>0</verstretch>
                    </sizepolicy>
@@ -335,6 +356,86 @@
                    <set>Qt::AlignCenter</set>
                   </property>
                  </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_18">
+                <property name="leftMargin">
+                 <number>0</number>
+                </property>
+                <property name="topMargin">
+                 <number>0</number>
+                </property>
+                <property name="rightMargin">
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>0</number>
+                </property>
+                <item>
+                 <widget class="QLabel" name="label_20">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="toolTip">
+                   <string>Detect the game info while injecting. If yes, it will result in longer injection time.</string>
+                  </property>
+                  <property name="text">
+                   <string>Detect game info:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QRadioButton" name="detectgame_btn">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="text">
+                   <string>Yes</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                  <attribute name="buttonGroup">
+                   <string notr="true">buttonGroup</string>
+                  </attribute>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QRadioButton" name="notdetectgame_btn">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="text">
+                   <string>No</string>
+                  </property>
+                  <attribute name="buttonGroup">
+                   <string notr="true">buttonGroup</string>
+                  </attribute>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer_5">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
                 </item>
                </layout>
               </item>
@@ -518,6 +619,9 @@
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="editable">
+                <bool>true</bool>
+               </property>
               </widget>
              </item>
             </layout>
@@ -587,6 +691,9 @@
                 <font>
                  <pointsize>12</pointsize>
                 </font>
+               </property>
+               <property name="editable">
+                <bool>true</bool>
                </property>
               </widget>
              </item>
@@ -1177,18 +1284,54 @@
                  </layout>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="savetrans_button">
+                 <widget class="QPushButton" name="retranslate_button">
+                  <property name="toolTip">
+                   <string>Re-Translate once if requesting.</string>
+                  </property>
                   <property name="text">
-                   <string>Save translations to the game</string>
+                   <string>Re-tranlsate</string>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="saveindex_button">
-                  <property name="text">
-                   <string>Save as a TranslationIndex</string>
+                 <layout class="QHBoxLayout" name="horizontalLayout_15">
+                  <property name="leftMargin">
+                   <number>0</number>
                   </property>
-                 </widget>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>0</number>
+                  </property>
+                  <item>
+                   <widget class="QPushButton" name="savetrans_button">
+                    <property name="toolTip">
+                     <string>Save current translations to the game root.
+By doing this, even if you close the translator, you can still load translations from the translation cache. 
+This translation cache file `projz_translations.json` will be saved to the game root.
+Please note that, do not click the &quot;Undo injection&quot; button as this will disable our translation code.</string>
+                    </property>
+                    <property name="text">
+                     <string>Save translations</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="saveindex_button">
+                    <property name="toolTip">
+                     <string>Save the current translation as a TranslationIndex.
+By doing this, you can use various commands for FileTranslationIndex to quickly process these translations.</string>
+                    </property>
+                    <property name="text">
+                     <string>Save TranslationIndex</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
                 </item>
                </layout>
               </item>
@@ -1232,8 +1375,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>872</width>
-     <height>21</height>
+     <width>813</width>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuHelp">
@@ -1451,4 +1594,7 @@
  </widget>
  <resources/>
  <connections/>
+ <buttongroups>
+  <buttongroup name="buttonGroup"/>
+ </buttongroups>
 </ui>
