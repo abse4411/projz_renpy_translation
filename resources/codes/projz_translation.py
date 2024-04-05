@@ -220,8 +220,11 @@ def projz_prefix_suffix(self, thing, prefix, body, suffix):
     if thing == 'what':
         context = renpy.game.context()
         node = renpy.game.script.lookup(context.current)
+        code_str = None
+        if type(node).__name__ != 'Python':
+            code_str = node.get_code()
         new_text, subed = translation_post(context.translate_identifier, renpy.game.preferences.language, 'Say',
-                                           body, res, node.filename, node.linenumber, node.get_code(), self.name)
+                                           body, res, node.filename, node.linenumber, code_str, self.name)
         if not subed:
             return _old_prefix_suffix(self, thing, prefix, new_text, suffix)
     elif thing == 'who':
@@ -281,10 +284,13 @@ def projz_do_display(self, who, what, **display_args):
         context = renpy.game.context()
         tid, raw_what = _tid_what
         node = renpy.game.script.lookup(context.current)
+        code_str = None
+        if type(node).__name__ != 'Python':
+            code_str = node.get_code()
         new_what, subed = translation_post(context.translate_identifier, renpy.game.preferences.language, 'Say',
                                            raw_what if tid == context.translate_identifier else what, what,
                                            node.filename,
-                                           node.linenumber, node.get_code(), self.name)
+                                           node.linenumber, code_str, self.name)
     new_who = None
     if who is not None and who.strip() != '' and is_translatable(who):
         new_who, subed = translation_post(who, renpy.game.preferences.language, 'String', self.name, who)
