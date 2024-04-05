@@ -34,6 +34,8 @@ projz:
 #          https: 'http://127.0.0.1:10809'
     open_ai:
       target_lang: 'Chinese'
+      user_role: &user_role 'user'
+      max_turns: 16
       langs: ['Afrikaans','Albanian','Amharic','Arabic','Armenian','Asturian','Azerbaijani','Bashkir','Belarusian','Bengali','Bosnian','Breton','Bulgarian','Burmese','Catalan','Cebuano','Central Khmer','Chinese','Croatian','Czech','Danish','Dutch','English','Estonian','Finnish','Flemish','French','Fulah','Gaelic','Galician','Ganda','Georgian','German','Greek','Gujarati','Haitian','Haitian Creole','Hausa','Hebrew','Hindi','Hungarian','Icelandic','Igbo','Iloko','Indonesian','Irish','Italian','Japanese','Javanese','Kannada','Kazakh','Khmer','Korean','Lao','Latvian','Letzeburgesch','Lingala','Lithuanian','Luxembourgish','Macedonian','Malagasy','Malay','Malayalam','Marathi','Moldavian','Moldovan','Mongolian','Nepali','Northern Sotho','Norwegian','Occitan','Oriya','Panjabi','Pashto','Persian','Polish','Portuguese','Punjabi','Pushto','Romanian','Russian','Scottish Gaelic','Serbian','Sindhi','Sinhala','Sinhalese','Slovak','Slovenian','Somali','Spanish','Sundanese','Swahili','Swati','Swedish','Tagalog','Tamil','Thai','Tswana','Turkish','Ukrainian','Urdu','Uzbek','Valencian','Vietnamese','Welsh','Western Frisian','Wolof','Xhosa','Yiddish','Yoruba','Zulu']
       models: ['qwen:0.5b','qwen:1.8b', 'qwen:4b', 'qwen:7b', 'qwen:14b', 'qwen:72b', 'gpt-4','gpt-4-0314','gpt-4-32k','gpt-4-32k-0314','gpt-3.5-turbo','gpt-3.5-turbo-0301']
       # Template Args
@@ -45,17 +47,17 @@ projz:
         # Your client should have an endpoint whose url ends with "chat/completions". E.g., http://localhost:11434/v1/chat/completions
         # Args for client.chat.completions.create()
         completions:
-          temperature: 0.2
-          top_p: 0.1
+#          temperature: 0.2
+#          top_p: 0.1
           stream: false
           model: "qwen:0.5b"
           messages:
             -
               role: "system"
-#              content: "You are a professional translator, and you are now asked to translate the text given by the user to {target_lang}. Please note that, the content enclosed in square brackets is the variable name in the game (For example, [lisa_alias], [day!t]), and does not need to be translated. No further explanation for the output is needed."
-              content: "你是一个专业的翻译家，现在要求你把用户给定的游戏中的文本翻译为{target_lang}。需要注意的是，以方括号括起来的内容是游戏中的变量名(例如: [lisa_alias], [day])不需要翻译。不需要对输出做任何解释"
+              content: "You are a professional translator. You are now required to translate the text given by the user into {target_lang} based on the context of the chat. Content enclosed in square brackets (For example, [lisa_alias], [day]) does not need to be translated. NO EXPLANATION is needed for the translation result."
+#              content: "你是一个专业的翻译家。现在要求你根据聊天上下文信息把用户给定的文本翻译为{target_lang}。以方括号括起来的内容(例如: [lisa_alias], [day])不需要翻译。不需要对翻译结果做任何解释。"
             -
-              role: "user"
+              role: *user_role
               content: "{text}"
     realtime:
       host: '127.0.0.1'

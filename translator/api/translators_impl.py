@@ -22,6 +22,7 @@ from prettytable import PrettyTable
 
 from command.translation.base import register_cmd_translator
 from config.base import ProjzConfig
+from trans.translators_api import TranslatorsTranslator
 from translator.base import CachedTranslatorTemplate
 from util import my_input, line_to_args
 
@@ -32,7 +33,7 @@ _preacceleration_done = False
 class TranslatorsLibTranslator(CachedTranslatorTemplate):
     def __init__(self):
         super().__init__()
-        self.trans_kwargs = None
+        self._translotr = None
         self.translator = None
         self._source = None
         self._target = None
@@ -49,18 +50,7 @@ class TranslatorsLibTranslator(CachedTranslatorTemplate):
     def do_init(self, args, config: ProjzConfig):
         super().do_init(args, config)
         tconfig = self.config['translator']['translators']
-        self.trans_kwargs = tconfig.get('translate_text', {})
-        self.trans_kwargs.pop('query_text', None)
-        self.trans_kwargs.pop('translator', None)
-        self.trans_kwargs.pop('from_language', None)
-        self.trans_kwargs.pop('to_language', None)
-        use_preacceleration = self.trans_kwargs.pop('if_use_preacceleration', False)
-        kwargs = tconfig.get('preaccelerate', {})
-        global _preacceleration_done
-        if use_preacceleration and not _preacceleration_done:
-            from translators.server import preaccelerate
-            _ = preaccelerate(kwargs)
-            _preacceleration_done = True
+        done = True
         if self.args.auto:
             self.translator = tconfig['api_name']
             self._source = tconfig['from_language']
@@ -69,9 +59,12 @@ class TranslatorsLibTranslator(CachedTranslatorTemplate):
             print(f'translation service: {self.translator}')
             print(f'from_language: {self._source}')
             print(f'to_language: {self._target}')
-            return True
-        self.translator = args.name
-        return self.determine_translation_target()
+        else:
+            self.translator = args.name
+            done = self.determine_translation_target()
+        if done:
+            self._translotr = TranslatorsTranslator(self.translator, self._source, self._target)
+        return done
 
     def determine_translation_target(self):
         ava_langs = sorted(list(ts.get_languages(self.translator).keys())) + ['auto']
@@ -115,10 +108,7 @@ class TranslatorsLibTranslator(CachedTranslatorTemplate):
                         logging.exception(e)
 
     def translate(self, text: str):
-        res = ts.translate_text(text, from_language=self._source, to_language=self._target,
-                                translator=self.translator, **self.trans_kwargs)
-        # print(res)
-        return res
+        return self._translotr.translate(text)
 
     def translate_batch(self, texts: List[str]):
         new_text = []

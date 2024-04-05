@@ -17,7 +17,7 @@ from argparse import ArgumentParser
 
 from command.translation.base import register_cmd_translator
 from config.base import ProjzConfig
-from openai_api import OpenAITranslator
+from trans.openai_api import OpenAITranslator
 from store.misc import strip_tags
 from translator.base import CachedTranslatorTemplate
 from util import strip_or_none, my_input, line_to_args
@@ -52,7 +52,11 @@ class OpenAILibTranslator(CachedTranslatorTemplate):
     def do_init(self, args, config: ProjzConfig):
         super().do_init(args, config)
         if self.args.auto:
-            target_lang = config['translator']['open_ai']['target_lang']
+            oconfig = config['translator']['open_ai']
+            target_lang = oconfig['target_lang']
+            model = oconfig['chat']['completions']['model']
+            print(f'target_lang: {target_lang}')
+            print(f'model: {model}')
         else:
             done = self.determine_translation_target()
             if not done:

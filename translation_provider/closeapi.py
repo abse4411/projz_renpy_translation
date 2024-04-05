@@ -13,7 +13,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-from openai_api import OpenAITranslator
+from trans.openai_api import OpenAITranslator
 from store.misc import strip_tags
 from trans import Translator
 from translation_provider.base import Provider, register_provider
@@ -25,7 +25,7 @@ class _InnerTranslator(Translator):
         self._api = api
         self._source = from_lang
         self._target = to_lang
-        self._open_ai = OpenAITranslator(target_lang=self._target, model=self._api)
+        self._open_ai = OpenAITranslator(model=self._api, target_lang=self._target)
 
     def translate(self, text: str):
         stripped_text = strip_or_none(strip_tags(text))

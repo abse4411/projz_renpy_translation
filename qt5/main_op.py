@@ -506,7 +506,7 @@ def retranslate(app, win: Ui_MainWindow):
     if index:
         index.retranslate()
         showInfoMsg(app, 'Retranslation enabled!')
-        win.savetrans_button.setEnabled(True)
+        win.retranslate_button.setEnabled(True)
     else:
         showErrorMsg(app, f'Please inject the game first!')
         win.retranslate_button.setDisabled(True)

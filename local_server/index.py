@@ -203,13 +203,14 @@ class _WebTranslationIndex:
         t, tid = pack['type'], pack['identifier']
         # print(f'translate {t}-{tid}: {pack["text"]}')
         if t == self.STRING_TYPE:
-            if self._tran_string:
+            if not self._tran_string:
                 return None
-        if t == self.SAY_TYPE:
+        elif t == self.SAY_TYPE:
             if not self._tran_dialogue:
                 return None
         else:
-            logging.warning(f'Unknown pack: {pack}')
+            print('translate')
+            logging.warning(f'Unknown ~~ pack: {pack}')
 
         p = None
         if self._add_if_noexisting(tid):

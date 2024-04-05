@@ -15,6 +15,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import copy
 import logging
+import time
 
 from openai import OpenAI
 
@@ -24,31 +25,40 @@ from trans import Translator
 
 class OpenAITranslator(Translator):
 
-    def __init__(self, verbose: bool = True, **template_kwargs):
+    def __init__(self, model: str = None, target_lang: str = None, verbose: bool = True, ):
+        '''
+
+        :param model: The model to use.
+        :param target_lang: The {target_lang} in the prompt.
+        :param verbose: Print translation info
+        '''
+        self._target_lang = target_lang
         self._verbose = verbose
         config = default_config['translator']['open_ai']
-        self._template_args = template_kwargs
-        # template var should be removed since it is dynamic
-        self._template_args.pop("text", None)
 
         init_args = config['init']
         self._compl_args = copy.deepcopy(config['chat']['completions'])
         # set default model
-        model = template_kwargs.get('model', None)
         if model is not None:
             self._compl_args['model'] = model
+        # set target_lang model
+        if self._target_lang is None:
+            self._target_lang = config.get('target_lang', 'Chinese')
         self._megs = copy.deepcopy(self._compl_args['messages'])
-
+        self.token_count = 0
         self._client = OpenAI(**init_args)
 
     def translate(self, text: str) -> str:
-        self._template_args['text'] = text
+        st_time = time.time()
         for m1, m2 in zip(self._compl_args['messages'], self._megs):
-            m1['content'] = m2['content'].format(**self._template_args)
+            m1['content'] = m2['content'].format(target_lang=self._target_lang, text=text)
         chat_completion = self._client.chat.completions.create(**self._compl_args)
         new_text = chat_completion.choices[0].message.content.rstrip()
+        use_token = chat_completion.usage.total_tokens
+        self.token_count += use_token
         if self._verbose:
-            print(f'{text}->{new_text}')
+            print(
+                f'[Elapsed: {time.time() - st_time:.1f}s, TOKENS: USE {use_token}, ACC. {self.token_count}]: {text}->{new_text}')
         return new_text
 
     def close(self):
@@ -57,11 +67,3 @@ class OpenAITranslator(Translator):
             self._client.close()
         except Exception as e:
             logging.exception(e)
-
-
-if __name__ == '__main__':
-    t = OpenAITranslator(target_lang='Chinese')
-    res = t.translate(
-        "Welcome to the Nekomimi Institute, [playername]! My first name is [player.names[0]]. I like you [100.0 * points / max_points:.2] percent!")
-    print(res)
-    pass
