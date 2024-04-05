@@ -46,6 +46,27 @@ class Provider:
         """
         return None
 
+    def is_api_editable(self) -> bool:
+        '''
+        Indicates whether the API is editable or not in UI
+        :return: bool
+        '''
+        return False
+
+    def is_source_language_editable(self) -> bool:
+        '''
+        Indicates whether the source language is editable or not in UI
+        :return: bool
+        '''
+        return False
+
+    def is_target_language_editable(self) -> bool:
+        '''
+        Indicates whether the target language is editable or not in UI
+        :return: bool
+        '''
+        return False
+
     def api_names(self) -> List[str]:
         """
         return supported APIs

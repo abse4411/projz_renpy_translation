@@ -114,6 +114,14 @@ class _WebTranslationIndex:
         self._set_lock = threading.Lock()
         self._font_dir = default_config['renpy']['font']['save_dir']
         self._wait_time = float(default_config['translator']['realtime'].get('translator_wait_time', 0.5))
+        self._tran_string = False
+        self._tran_dialogue = True
+
+    def string_translatable(self, enable: bool):
+        self._tran_string = enable
+
+    def dialogue_translatable(self, enable: bool):
+        self._tran_dialogue = enable
 
     @property
     def project(self):
@@ -191,9 +199,18 @@ class _WebTranslationIndex:
             else:
                 logging.warning(f'Unknown pack: {p}')
 
-    def translate(self, pack: dict):
+    def translate(self, pack: dict) -> str:
         t, tid = pack['type'], pack['identifier']
         # print(f'translate {t}-{tid}: {pack["text"]}')
+        if t == self.STRING_TYPE:
+            if self._tran_string:
+                return None
+        if t == self.SAY_TYPE:
+            if not self._tran_dialogue:
+                return None
+        else:
+            logging.warning(f'Unknown pack: {pack}')
+
         p = None
         if self._add_if_noexisting(tid):
             print(f'Miss: {tid}-{pack["text"]}')

@@ -38,6 +38,11 @@ class TranslatorsApi(Provider):
 
     def __init__(self):
         super().__init__()
+        self.trans_kwargs = None
+        self.tconfig = None
+        self.reload_config()
+
+    def reload_config(self):
         self.tconfig = self.config['translator']['translators']
         self.trans_kwargs = self.tconfig.get('translate_text', {})
         self.trans_kwargs.pop('query_text', None)
@@ -51,12 +56,15 @@ class TranslatorsApi(Provider):
         return list(ts.translators_pool)
 
     def default_api(self):
+        self.reload_config()
         return self.tconfig.get('api_name', 'bing')
 
     def default_source_lang(self):
+        self.reload_config()
         return self.tconfig.get('from_language', 'auto')
 
     def default_target_lang(self):
+        self.reload_config()
         return self.tconfig['to_language']
 
     def languages_of(self, api: str):

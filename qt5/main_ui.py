@@ -28,7 +28,8 @@ from qt5.lang import get_lang_ts, set_lang
 from qt5.main import Ui_MainWindow
 from qt5.main_op import loadServerConfig, startServer, undoInjection, injectionGame, selectRenpyDir, startGame, \
     stopServer, applyTranslator, providerChanged, apiChanged, loadFontConfig, writeTranslations, fontChanged, \
-    loadGameRootDirs, saveTranslationIndex, errorWrapper, retranslate
+    loadGameRootDirs, saveTranslationIndex, errorWrapper, retranslate, transDialogueChanged, transStringChanged, \
+    reloadConfig
 from translation_provider.base import registered_providers
 
 
@@ -211,6 +212,9 @@ class MainWindow(QMainWindow, QtStyleTools):
         # self.main.clearlog_button.clicked.connect(lambda: clearLog(self, self.main))
         self.main.actionEnglish.triggered.connect(lambda: self.changeLang('en'))
         self.main.actionSimplyfied_Chinese.triggered.connect(lambda: self.changeLang('zh-cn'))
+        self.main.dialoguetran_check.stateChanged.connect(lambda: transDialogueChanged(self, self.main))
+        self.main.stringtran_check.stateChanged.connect(lambda: transStringChanged(self, self.main))
+        self.main.actionReloadConfig.triggered.connect(lambda: reloadConfig(self, self.main))
 
         # Select provider
         if providers:

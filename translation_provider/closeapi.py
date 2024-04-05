@@ -37,30 +37,47 @@ class _InnerTranslator(Translator):
         self._open_ai.close()
 
 
-class TranslatorsApi(Provider):
+class OpenAIApi(Provider):
 
     def __init__(self):
         super().__init__()
-        self.oconfig = self.config['translator']['open_ai']
+        self.oconfig = None
         self.slangs = ['Auto']
+        self.reload_config()
+
+    def reload_config(self):
+        self.oconfig = self.config['translator']['open_ai']
 
     def api_names(self):
+        self.reload_config()
         return self.oconfig['models']
 
+    def is_api_editable(self) -> bool:
+        return True
+
+    def is_source_language_editable(self) -> bool:
+        return True
+
+    def is_target_language_editable(self) -> bool:
+        return True
+
     def default_api(self):
+        self.reload_config()
         return self.oconfig['chat']['completions']['model']
 
     def default_source_lang(self):
         return self.slangs[0]
 
     def default_target_lang(self):
+        self.reload_config()
         return self.oconfig['target_lang']
 
     def languages_of(self, api: str):
+        self.reload_config()
         return self.slangs, self.oconfig['langs']
 
     def translator_of(self, api: str, source_lang: str, target_lang: str) -> Translator:
         return _InnerTranslator(api, source_lang, target_lang)
 
 
-register_provider('CloseAI', TranslatorsApi())
+register_provider('CloseAI', OpenAIApi())

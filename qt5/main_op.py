@@ -313,6 +313,8 @@ def apiChanged(app, win: Ui_MainWindow):
     error = False
     if api and provider is not None:
         try:
+            win.sourcelang_combobox.setEditable(provider.is_source_language_editable())
+            win.targetlang_combobox.setEditable(provider.is_target_language_editable())
             slangs, tlangs = provider.languages_of(api)
             if slangs and tlangs:
                 dsl = provider.default_source_lang()
@@ -342,7 +344,10 @@ def apiChanged(app, win: Ui_MainWindow):
 def providerChanged(app, win: Ui_MainWindow):
     win.translatorapply_button.setDisabled(True)
     provider = get_provider(win.translator_combobox.currentText())
+    win.api_combobox.setEditable(False)
     win.api_combobox.clear()
+    win.sourcelang_combobox.setEditable(False)
+    win.targetlang_combobox.setEditable(False)
     win.sourcelang_combobox.clear()
     win.targetlang_combobox.clear()
     error = False
@@ -350,6 +355,7 @@ def providerChanged(app, win: Ui_MainWindow):
         try:
             names = provider.api_names()
             if names:
+                win.api_combobox.setEditable(provider.is_api_editable())
                 dname = provider.default_api()
                 if dname not in names:
                     dname = names[0]
@@ -504,6 +510,25 @@ def retranslate(app, win: Ui_MainWindow):
     else:
         showErrorMsg(app, f'Please inject the game first!')
         win.retranslate_button.setDisabled(True)
+
+
+@errorAspect
+def transDialogueChanged(app, win: Ui_MainWindow):
+    index = app.index.get()
+    if index:
+        index.dialogue_translatable(win.dialoguetran_check.isChecked())
+
+
+@errorAspect
+def transStringChanged(app, win: Ui_MainWindow):
+    index = app.index.get()
+    if index:
+        index.string_translatable(win.stringtran_check.isChecked())
+
+
+@errorAspect
+def reloadConfig(app, win: Ui_MainWindow):
+    default_config.reload()
 
 # def clearLog(app, win: Ui_MainWindow):
 #     win.log_text.clear()
