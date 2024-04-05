@@ -26,6 +26,7 @@ from util import strip_or_none, my_input, line_to_args
 class OpenAILibTranslator(CachedTranslatorTemplate):
     def __init__(self):
         super().__init__()
+        self._model = None
         self.trans_kwargs = None
         self.translator = None
         self._target = None
@@ -49,6 +50,19 @@ class OpenAILibTranslator(CachedTranslatorTemplate):
                         self._target = args[0]
                         return True
 
+    def determine_translation_model(self):
+        while True:
+            args = my_input(
+                'Please enter a mode name you want to use (The value of {target_lang} in prompt): ')
+            args = line_to_args(args.strip())
+            if len(args) >= 1:
+                if len(args) == 1:
+                    if args[0].lower() == 'q':
+                        return False
+                    else:
+                        self._model = args[0]
+                        return True
+
     def do_init(self, args, config: ProjzConfig):
         super().do_init(args, config)
         if self.args.auto:
@@ -61,8 +75,12 @@ class OpenAILibTranslator(CachedTranslatorTemplate):
             done = self.determine_translation_target()
             if not done:
                 return False
+            done = self.determine_translation_model()
+            if not done:
+                return False
             target_lang = self._target
-        self._open_ai = OpenAITranslator(target_lang=target_lang)
+            model = self._model
+        self._open_ai = OpenAITranslator(model=model, target_lang=target_lang)
         return True
 
     def translate(self, text: str):
