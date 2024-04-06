@@ -234,19 +234,23 @@ class Project:
             for name, injector in injections:
                 register_injections.append(tmp_instance.register_injection(name, injector))
             injection_chain += register_injections
-        # check and inject
-        if call_chain(injection_chain):
-            if test:
-                print(f'Trying to launch the game...')
-                try:
+        # inject and test
+        undo_done = False
+        try:
+            if call_chain(injection_chain):
+                if test:
+                    print(f'Trying to launch the game...')
                     # test injection
                     data = tmp_instance.launch_task(None, args=['--test-only'])
-                except Exception as e:
-                    logging.exception(e)
-                    undo_chain(injection_chain)
-                    raise
-                tmp_instance.set_game_info(data['game_info'])
-                print(f'All done! We have detected the game info: {tmp_instance.game_info}')
-            return tmp_instance
-        else:
-            raise RuntimeError('Injection failed')
+                    tmp_instance.set_game_info(data['game_info'])
+                    print(f'All done! We have detected the game info: {tmp_instance.game_info}')
+                return tmp_instance
+            else:
+                print('Injection failed! Undo injections...')
+                undo_done = True
+                undo_chain(injection_chain)
+        except Exception as e:
+            logging.exception(e)
+            if not undo_done:
+                undo_chain(injection_chain)
+            raise e

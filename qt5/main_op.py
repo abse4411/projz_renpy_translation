@@ -91,7 +91,6 @@ def undoInjection(app, win: Ui_MainWindow):
     index = app.index.get()
     if index:
         res = errorWrapper(app, lambda: index.undo_injection())
-        showInfoMsg(app, f'Undo injection result: {res}')
         if res:
             app.index.set(None)
             index.stop()
@@ -113,9 +112,10 @@ def undoInjection(app, win: Ui_MainWindow):
             win.totalnum_text.display(0)
         win.startgame_button.setDisabled(True)
         win.start_button.setDisabled(True)
+        showInfoMsg(app, f'Undo injection result: {res}')
     else:
-        showErrorMsg(app, f'Please inject the game first!')
         win.uninject_button.setDisabled(True)
+        showErrorMsg(app, f'Please inject the game first!')
 
 
 @errorAspect
@@ -126,7 +126,6 @@ def injectionGame(app, win: Ui_MainWindow):
                                                                         test_launching=launch_text))
         if index:
             app.index.set(index)
-            showInfoMsg(app, 'Injection succeed!')
             game_info = index.project.game_info
             win.gamename_text.setText(str(game_info.get('game_name', '')))
             win.gameversion_text.setText(str(game_info.get('game_version', '')))
@@ -149,6 +148,9 @@ def injectionGame(app, win: Ui_MainWindow):
             if font == 'Default':
                 font = None
             index.set_font(font)
+            showInfoMsg(app, 'Injection succeed!')
+        else:
+            showInfoMsg(app, 'Injection failed!')
     else:
         showErrorMsg(app, f'{win.gameroot_combox.currentText()} is not a valid dir!')
 
