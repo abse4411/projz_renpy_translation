@@ -94,8 +94,7 @@ def undoInjection(app, win: Ui_MainWindow):
         if res:
             app.index.set(None)
             index.stop()
-            win.translatorstatus_text.setText('Stopped')
-            win.translatorstatus_text.palette().setColor(QPalette.WindowText, win.label_2.palette().base().color())
+            updateTextState('Stopped', app, win.translatorstatus_text)
             win.translatorapply_button.setDisabled(True)
             win.uninject_button.setDisabled(True)
             win.savetrans_button.setDisabled(True)
@@ -186,18 +185,18 @@ class CollectServerInfoThread(QThread):
             time.sleep(1)
 
 
-def updateTextState(state: str, win: Ui_MainWindow, target):
+def updateTextState(state: str, app, target):
     def _set_color(t, c):
         t.setStyleSheet(f'color: {c}')
 
     if state == 'Running':
-        target.setText('Running')
+        target.setText(app.tr('Running'))
         _set_color(target, 'green')
     elif state == 'Error':
-        target.setText('Error')
+        target.setText(app.tr('Error'))
         _set_color(target, 'red')
     else:
-        target.setText(state)
+        target.setText(app.tr(state))
         target.setStyleSheet('')
 
 
@@ -209,8 +208,8 @@ def _stopServer(app, win: Ui_MainWindow, server: FlaskServer):
     win.stop_button.setDisabled(True)
     win.uninject_button.setEnabled(True)
     win.translatorapply_button.setDisabled(True)
-    updateTextState('Stopped', win, win.serverstatus_text)
-    updateTextState('Stopped', win, win.translatorstatus_text)
+    updateTextState('Stopped', app, win.serverstatus_text)
+    updateTextState('Stopped', app, win.translatorstatus_text)
 
 
 def _updateServerInfo(app, win: Ui_MainWindow, info):
@@ -226,11 +225,11 @@ def _updateServerInfo(app, win: Ui_MainWindow, info):
             win.stringnum_text.display(index_info['string'])
             win.totalnum_text.display(index_info['total'])
             if not translator_info['ok']:
-                updateTextState('Error', win, win.translatorstatus_text)
+                updateTextState('Error', app, win.translatorstatus_text)
                 showErrorMsg(app, f'Translator is crashed!')
                 logging.exception(translator_info['error'])
             # else:
-            #     updateTextState('Running', win, win.translatorstatus_text)
+            #     updateTextState('Running', app, win.translatorstatus_text)
 
 
 @errorAspect
@@ -262,7 +261,7 @@ def startServer(app, win: Ui_MainWindow):
                     win.stop_button.setEnabled(True)
                     win.uninject_button.setDisabled(True)
                     win.translatorapply_button.setEnabled(True)
-                    updateTextState('Running', win, win.serverstatus_text)
+                    updateTextState('Running', app, win.serverstatus_text)
                     applyTranslator(app, win)
                 else:
                     showErrorMsg(app, f'Launching server failed!')
@@ -404,7 +403,7 @@ def _updateTranslator(app, win: Ui_MainWindow, data: Tuple[Translator, str]):
             if server and not server.is_stopped():
                 if translator is not None:
                     server.set_translator(translator, font)
-                    updateTextState('Running', win, win.translatorstatus_text)
+                    updateTextState('Running', app, win.translatorstatus_text)
                 else:
                     showErrorMsg(app, f'Initializing translator failed!')
                 win.translatorapply_button.setEnabled(True)
@@ -412,7 +411,7 @@ def _updateTranslator(app, win: Ui_MainWindow, data: Tuple[Translator, str]):
                 if translator is not None:
                     translator.close()
                 showErrorMsg(app, f'Please make sure that the server is running!')
-                updateTextState('Stopped', win, win.translatorstatus_text)
+                updateTextState('Stopped', app, win.translatorstatus_text)
                 win.translatorapply_button.setDisabled(True)
     except Exception as e:
         logging.exception(e)
@@ -441,7 +440,7 @@ def applyTranslator(app, win: Ui_MainWindow):
             showErrorMsg(app, f'Invalid translator args!')
     else:
         showErrorMsg(app, f'Please make sure that the server is running!')
-        updateTextState('Stopped', win, win.translatorstatus_text)
+        updateTextState('Stopped', app, win.translatorstatus_text)
         win.translatorapply_button.setDisabled(True)
 
 

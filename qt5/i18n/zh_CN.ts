@@ -433,4 +433,17 @@ By doing this, you can use various commands for FileTranslationIndex to quickly 
         <translation type="unfinished">重新加载配置文件(&amp;R)</translation>
     </message>
 </context>
+<context>
+    <name>MainWindow</name>
+    <message>
+        <location filename="../main_op.py" line="193"/>
+        <source>Running</source>
+        <translation type="unfinished">运行中</translation>
+    </message>
+    <message>
+        <location filename="../main_op.py" line="196"/>
+        <source>Error</source>
+        <translation type="unfinished">出错</translation>
+    </message>
+</context>
 </TS>
