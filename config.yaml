@@ -62,8 +62,8 @@ projz:
     realtime:
       host: '127.0.0.1'
       port: 8888
-      retry_time: 10 # The retry time if server is crash
-      translator_wait_time: 0.5 # The max time to wait for translation result in server
+      retry_time: 10 # The retry time if server is crashed
+      translator_wait_time: 0.5 # The max time to wait for the translation result in server
       string_request_time_out: 0.8 # The max time to wait for the server response of translating string in game
       dialogue_request_time_out: 1.0 # The max time to wait for the server response of translating dialogue in game
       default_font: 'SourceHanSansLite.ttf'

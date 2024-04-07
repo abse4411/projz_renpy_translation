@@ -82,8 +82,8 @@ def startGame(app, win: Ui_MainWindow):
         else:
             showErrorMsg(app, f'{exe_file} not found!')
     else:
-        showErrorMsg(app, f'Please inject the game first!')
         win.uninject_button.setDisabled(True)
+        showErrorMsg(app, f'Please inject the game first!')
 
 
 @errorAspect
@@ -276,6 +276,7 @@ def startServer(app, win: Ui_MainWindow):
 
 @errorAspect
 def loadServerConfig(app, win: Ui_MainWindow):
+    win.start_button.setDisabled(True)
     try:
         sconfig = default_config['translator']['realtime']
         host = str(sconfig.get('host', '127.0.0.1')).strip()
@@ -286,7 +287,6 @@ def loadServerConfig(app, win: Ui_MainWindow):
     except Exception as e:
         logging.exception(e)
         showErrorMsg(app, 'Loading server config failed!')
-    win.start_button.setDisabled(True)
 
 
 @errorAspect
@@ -297,6 +297,9 @@ def loadFontConfig(app, win: Ui_MainWindow):
         # print(fconfig)
         font_list = [file_name(f) for f in set(fconfig['list'])]
         win.font_combobox.addItems(font_list)
+        default_font = fconfig.get('default', None)
+        if default_font and default_font in font_list:
+            win.font_combobox.setCurrentText(default_font)
     except Exception as e:
         logging.exception(e)
         showErrorMsg(app, 'Loading font config failed!')
@@ -408,11 +411,11 @@ def _updateTranslator(app, win: Ui_MainWindow, data: Tuple[Translator, str]):
                     showErrorMsg(app, f'Initializing translator failed!')
                 win.translatorapply_button.setEnabled(True)
             else:
+                win.translatorapply_button.setDisabled(True)
                 if translator is not None:
                     translator.close()
                 showErrorMsg(app, f'Please make sure that the server is running!')
                 updateTextState('Stopped', app, win.translatorstatus_text)
-                win.translatorapply_button.setDisabled(True)
     except Exception as e:
         logging.exception(e)
         showErrorMsg(app, f'Starting translator failed!')
@@ -441,7 +444,6 @@ def applyTranslator(app, win: Ui_MainWindow):
     else:
         showErrorMsg(app, f'Please make sure that the server is running!')
         updateTextState('Stopped', app, win.translatorstatus_text)
-        win.translatorapply_button.setDisabled(True)
 
 
 @errorAspect
@@ -457,9 +459,6 @@ def writeTranslations(app, win: Ui_MainWindow):
         if res:
             showInfoMsg(app, 'Save successfully!')
         win.savetrans_button.setEnabled(True)
-    else:
-        showErrorMsg(app, f'Please inject the game first!')
-        win.savetrans_button.setDisabled(True)
 
 
 @errorAspect
@@ -508,9 +507,6 @@ def retranslate(app, win: Ui_MainWindow):
         index.retranslate()
         showInfoMsg(app, 'Retranslation enabled!')
         win.retranslate_button.setEnabled(True)
-    else:
-        showErrorMsg(app, f'Please inject the game first!')
-        win.retranslate_button.setDisabled(True)
 
 
 @errorAspect
