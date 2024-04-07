@@ -23,10 +23,10 @@
 [](#use-openai-endpoint)
 There are two tools help you translate a RenPy Game:
 
-|        Name         | Features                                                                                                                                                                                                                     | Supported Translation Engines                                                                                                                                                                                                                                                                                                            |
-|:-------------------:|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| RealTime Translator | Translate what you see. Very easy to use. See [this](#realtime-translator-free-and-open-source).                                                                                                                             | ☑️[OpenAI Endpoint](#use-openai-endpoint), ☑️[UlionTse/translators](#use-uliontse-translators)                                                                                                                                                                                                                                           |
-| Commandline Toolkit | Translate all texts in the game. It take a few steps to translate. It is mainly used to manage translations among RenPy games. There are many use command to manage these translations. See [this](#before-getting-started). | ☑️[OpenAI Endpoint](#use-openai-endpoint), ☑️[UlionTse/translators](#use-uliontse-translators), ☑️[Google Translation](#use-web-translation)), ☑️[HTML translation](#fast-translating-with-savehtml-and-loadhtml), ☑️[EXCEL translation](#fast-translating-with-saveexcel-and-loadexcel), ☑️[AI Translation Models](#use-ai-translation) |
+|              Name               | Features                                                                                                                                                                                                                     | Supported Translation Engines                                                                                                                                                                                                                                                                                                           |
+|:-------------------------------:|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|       RealTime Translator       | Translate what you see. Very easy to use. See [this](#realtime-translator-free-and-open-source).                                                                                                                             | ☑️[OpenAI Endpoint](#use-openai-endpoint), ☑️[UlionTse/translators](#use-uliontse-translators)                                                                                                                                                                                                                                          |
+| Commandline Translation Toolkit | Translate all texts in the game. It take a few steps to translate. It is mainly used to manage translations among RenPy games. There are many use command to manage these translations. See [this](#before-getting-started). | ☑️[OpenAI Endpoint](#use-openai-endpoint), ☑️[UlionTse/translators](#use-uliontse-translators), ☑️[Google Translation](#use-web-translation), ☑️[HTML translation](#fast-translating-with-savehtml-and-loadhtml), ☑️[EXCEL translation](#fast-translating-with-saveexcel-and-loadexcel), ☑️[AI Translation Models](#use-ai-translation) |
 
 # ✨What's new
 
@@ -140,16 +140,100 @@ You can also save the current translation as a TranslationIndex by clicking the 
 
 # 👀Before getting started
 
-Note that, this commandline toolkit is not a one-button translator for RenPy games, and it still requires a few steps to translate. It is mainly used to manage translations among RenPy games, and to translate texts. The main functions are as follows：
+Note that, this Commandline Translation Toolkit is not a one-button translator for RenPy games, and it still requires a few steps to translate. It is mainly used to manage translations among RenPy games, and to translate texts. The main functions are as follows：
 
 - Import and generate translations without the RenPy SDK.
 - Manage translations of various languages among RenPy games.
+- Export your translations to a Excel/Json/HTML file.
 - Translate texts with free resources.
 - Inspect translated texts for finding lost variables, style tags, and escape characters. Learn more: [What's new 3](#whats-new).
 - Provide the I18n plugin to change language or font in game.
 - Customize your translation API. Learn more: [Customize your translation API](#customize-your-translation-api)
 - Reuse pre-translated string texts when importing translations. Learn more: [What's new 4](#whats-new)
 - Import translations from a single file generated by other translation tools (MTool, Translator++, and XUnity Auto Translator). Learn more: [What's new 7](#whats-new)
+
+All commands in this tool:
+```text
++------------------+---------------------------------------------------------------------------+
+|   Command name   |                                Description                                |
++------------------+---------------------------------------------------------------------------+
+|     new | n      |            Create a TranslationIndex from the given game path.            |
++------------------+---------------------------------------------------------------------------+
+|  new_file | nf   |          Create a FileTranslationIndex from the given file path.          |
++------------------+---------------------------------------------------------------------------+
+|    import | i    |   Import translations of the given language into this TranslationIndex.   |
+|                  |                         (Base injection required)                         |
++------------------+---------------------------------------------------------------------------+
+|   generate | g   |  Generate translations of the given language from this TranslationIndex.  |
+|                  |                         (Base injection required)                         |
++------------------+---------------------------------------------------------------------------+
+|    count | c     |        Print a count of missing translations of the given language.       |
+|                  |                         (Base injection required)                         |
++------------------+---------------------------------------------------------------------------+
+|     open | o     | Open the location of the RenPy game associated with the TranslationIndex. |
+|                  |                             (Windows OS Only)                             |
++------------------+---------------------------------------------------------------------------+
+|       lint       |                       Run lint for checking script.                       |
++------------------+---------------------------------------------------------------------------+
+|      launch      |        Launch the RenPy game associated with the TranslationIndex.        |
+|                  |                             (Windows OS Only)                             |
++------------------+---------------------------------------------------------------------------+
+|   inject | ij    |               Inject our code or i18n plugins into the game.              |
++------------------+---------------------------------------------------------------------------+
+|  translate | t   |             Translate untranslated lines of the give language             |
+|                  |                       using the specified translator.                     |
++------------------+---------------------------------------------------------------------------+
+|      ls | l      |                     List existing TranslationIndexes.                     |
++------------------+---------------------------------------------------------------------------+
+|       del        |                        Delete the TranslationIndex.                       |
++------------------+---------------------------------------------------------------------------+
+|      clear       |                    Clear all existing TranslationIndex.                   |
++------------------+---------------------------------------------------------------------------+
+|     discard      |                Discard translations of the given language.                |
++------------------+---------------------------------------------------------------------------+
+|      rename      |                  Rename a name of language translations.                  |
++------------------+---------------------------------------------------------------------------+
+|       copy       |                  Copy translations of the given language.                 |
++------------------+---------------------------------------------------------------------------+
+|       mark       |              Mark all untranslated lines as translated ones.              |
++------------------+---------------------------------------------------------------------------+
+|      unmark      |              Mark all translated lines as untranslated ones.              |
++------------------+---------------------------------------------------------------------------+
+|     upstats      |        Update translation stats of the specified TranslationIndex.        |
++------------------+---------------------------------------------------------------------------+
+|    merge | m     |  Merge translations of the given language from another TranslationIndex.  |
++------------------+---------------------------------------------------------------------------+
+|  savehtml | sh   |        Save untranslated lines of the give language to a html file.       |
++------------------+---------------------------------------------------------------------------+
+|  loadhtml | lh   |        Load translated lines of the give language from a html file.       |
++------------------+---------------------------------------------------------------------------+
+|  saveexcel | se  |       Save untranslated lines of the give language to a excel file.       |
++------------------+---------------------------------------------------------------------------+
+|  loadexcel | le  |       Load translated lines of the give language from a excel file.       |
++------------------+---------------------------------------------------------------------------+
+|  dumpexcel | de  |          Dump translations of the give language to a excel file.          |
++------------------+---------------------------------------------------------------------------+
+|     inspect      |         Inspect each translated line to find missing vars or tags,        |
+|                  |        then save these error lines to a excel file. You can use the       |
+|                  |       updateexcel command to update translations after you fix them.      |
++------------------+---------------------------------------------------------------------------+
+| updateexcel | ue |        Update translations of the give language from a excel file.        |
++------------------+---------------------------------------------------------------------------+
+|  savejson | sj   |        Save untranslated lines of the give language to a json file.       |
++------------------+---------------------------------------------------------------------------+
+|  loadjson | lj   |        Load translated lines of the give language from a json file.       |
++------------------+---------------------------------------------------------------------------+
+|     help | h     |                Print name and description of each command.                |
++------------------+---------------------------------------------------------------------------+
+|     quit | q     |                             Quit the program.                             |
++------------------+---------------------------------------------------------------------------+
+|     reconfig     |      Reload config from disk. It takes effect for most config items.      |
++------------------+---------------------------------------------------------------------------+
+|      about       |                                 About me.                                 |
++------------------+---------------------------------------------------------------------------+
+|       cls        |                               Clean screen.                               |
++------------------+---------------------------------------------------------------------------+
+```
 
 You should know how to translate RenPy games ([How to translate?](https://www.renpy.org/doc/html/translating_renpy.html)). And, as you are familiar with using this tool, you can translate RenPy games quickly.
 
