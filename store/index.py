@@ -544,7 +544,7 @@ class TranslationIndex:
         def _update_dialogue(identifier, block_i, new_code, block_type):
             nonlocal use_cnt
             block, doc_id = id_dblock_map.get((identifier, block_i), (None, None))
-            if block and block_type == block['type']:
+            if block and self._is_say_block(block):
                 block['new_code'] = new_code
                 updated_ddocids.add(doc_id)
                 use_cnt += 1
