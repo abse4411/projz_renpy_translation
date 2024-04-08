@@ -29,7 +29,8 @@ There are two tools help you translate a RenPy Game:
 | Commandline Translation Toolkit | Translate all texts in the game. It take a few steps to translate. It is mainly used to manage translations among RenPy games. There are many use command to manage these translations. See [this](#before-getting-started). | ☑️[OpenAI Endpoint](#use-openai-endpoint), ☑️[UlionTse/translators](#use-uliontse-translators), ☑️[Google Translation](#use-web-translation), ☑️[HTML translation](#fast-translating-with-savehtml-and-loadhtml), ☑️[EXCEL translation](#fast-translating-with-saveexcel-and-loadexcel), ☑️[AI Translation Models](#use-ai-translation) |
 
 # ✨What's new
-
+<details>
+<summary><b>Click to show</b></summary>
 1. [Web Translation](#use-web-translation), only supports google translation: `translate {index_or_name} -t web -n google -l {lang}`
 
 2. [AI Translation](#use-ai-translation): `translate {index_or_name} -t ai -n mbart50 -l {lang}`
@@ -89,6 +90,8 @@ There are two tools help you translate a RenPy Game:
 
 10. [0.4.4] Now you can use the OpenAI Endpoint to translate.  See [Use OpenAI Endpoint](#use-openai-endpoint).
 
+</details>
+
 # ✨RealTime Translator (Free and Open Source)
 
 Download 'projz Windows VX.X.X.7z' from [Release](https://github.com/abse4411/projz_renpy_translation/releases), then unzip it. Open the `server_ui.exe`.
@@ -137,6 +140,73 @@ To use the translation cache file, you need to reopen the game and close our tra
 At present, this translator is only a demo and will be integrated with our translation tools in the future.
 
 You can also save the current translation as a TranslationIndex by clicking the "Save as a TranslationIndex" button, so that you can use various commands for FileTranslationIndex to quickly process these translations.
+
+## Customize your translation API in RealTime Translator
+1. Create a py file in [translation_provider](translation_provider). Then, create your class which inherits from the `Provider` class in [base.py](translation_provider/base.py), and implements these following methods:
+```python
+from trans import Translator
+from typing import List, Tuple
+from trans.translators_api import TranslatorsTranslator
+from translation_provider.base import Provider, register_provider
+import translators as ts
+
+class TranslatorsApi(Provider):
+
+    def __init__(self):
+        super().__init__()
+        self.trans_kwargs = None
+        self.tconfig = None
+        self.reload_config()
+
+    def reload_config(self):
+        self.tconfig = self.config['translator']['translators']
+        self.trans_kwargs = self.tconfig.get('translate_text', {})
+
+    def api_names(self) -> List[str]:
+        return list(ts.translators_pool)
+
+    def default_api(self) -> str:
+        self.reload_config()
+        return self.tconfig.get('api_name', 'bing')
+
+    def default_source_lang(self) -> str:
+        self.reload_config()
+        return self.tconfig.get('from_language', 'auto')
+
+    def default_target_lang(self) -> str:
+        self.reload_config()
+        return self.tconfig['to_language']
+
+    def languages_of(self, api: str) -> Tuple[List[str], List[str]]:
+        langs = sorted(list(ts.get_languages(api).keys()))
+        return ['auto'] + langs, langs
+
+    def translator_of(self, api: str, source_lang: str, target_lang: str) -> Translator:
+        if api in self.api_names():
+            s, t = self.languages_of(api)
+            if source_lang in s and target_lang in t:
+                return TranslatorsTranslator(api, source_lang, target_lang, self.trans_kwargs)
+        return None
+
+# Register your translation API
+register_provider('translators', TranslatorsApi())
+```
+2. Import your py file in [__init__.py](translation_provider/__init__.py):
+```python
+import logging
+import translation_provider.base
+
+# You should import it with a try-except block
+try:
+    import translation_provider.translators
+except Exception as e:
+    logging.exception(e)
+try:
+    import translation_provider.closeapi
+except Exception as e:
+    logging.exception(e)
+```
+3. Run: `python3 server_ui.py`
 
 # 👀Before getting started
 

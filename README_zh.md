@@ -29,7 +29,8 @@
 | 命令行翻译工具 | 翻译所有的文本，您需要一些步骤才能翻译整个游戏。本工具主要用于管理多个RenPy游戏的翻译项目和机器翻译文本。 见[此](#开始之前)。 | ☑️[OpenAI Endpoint](#使用openai-endpoint翻译), ☑️[UlionTse/translators](#使用uliontse-translators翻译), ☑️[Google Translation](#使用web翻译), ☑️[HTML translation](#使用savehtml和loadhtml快速翻译), ☑️[EXCEL translation](#使用saveexcel和loadexcel快速翻译), ☑️[AI Translation Models](#使用ai翻译) |
 
 # ✨新增功能：
-
+<details>
+<summary><b>单机展开</b></summary>
 1. [Web翻译](#使用web翻译)，仅限google: `translate {index_or_name} -t web -n google -l {lang}`
 2. [AI翻译](#使用AI翻译): `translate {index_or_name} -t ai -n mbart50 -l {lang}`
 3. 翻译文本潜在错误检查:
@@ -76,6 +77,8 @@
 9. [0.4.3] 现在你可以保存RealTime Translator的翻译为TranslationIndex，这意味着你可以用我们翻译工具来处理这些翻译。
 10. [0.4.4] 现在，您可以使用OpenAI端点进行翻译。见[使用OpenAI Endpoint翻译](#使用openai-endpoint翻译)。
 
+</details>
+
 # ✨实时翻译功能支持(免费+开源)
 下载[Release](https://github.com/abse4411/projz_renpy_translation/releases)中的`projz-Winndows_VX.X.X.7z`，解压打开里面的`server_ui.exe`
 
@@ -121,6 +124,73 @@
 要使用翻译缓存文件您需要重新打开游戏，并关闭我们的翻译器。此外，我们的翻译器也会自动从游戏目录加载这个翻译缓存文件（在点击"Injection"按钮后），避免重复翻译。
 
 你还可以通过点击"Save as a TranslationIndex"按钮保存当前的翻译保存为TranslationIndex，这样您可以使用针对TranslationIndex各种命令来快速修改这些翻译。
+
+## 在RealTime Translator中自定义您的翻译API
+1. 在[translation_provider](translation_provider)中创建一个py文件。然后，创建一个类并继承[base.py](translation_provider/base.py)中的“Provider”类，实现以下方法：
+```python
+from trans import Translator
+from typing import List, Tuple
+from trans.translators_api import TranslatorsTranslator
+from translation_provider.base import Provider, register_provider
+import translators as ts
+
+class TranslatorsApi(Provider):
+
+    def __init__(self):
+        super().__init__()
+        self.trans_kwargs = None
+        self.tconfig = None
+        self.reload_config()
+
+    def reload_config(self):
+        self.tconfig = self.config['translator']['translators']
+        self.trans_kwargs = self.tconfig.get('translate_text', {})
+
+    def api_names(self) -> List[str]:
+        return list(ts.translators_pool)
+
+    def default_api(self) -> str:
+        self.reload_config()
+        return self.tconfig.get('api_name', 'bing')
+
+    def default_source_lang(self) -> str:
+        self.reload_config()
+        return self.tconfig.get('from_language', 'auto')
+
+    def default_target_lang(self) -> str:
+        self.reload_config()
+        return self.tconfig['to_language']
+
+    def languages_of(self, api: str) -> Tuple[List[str], List[str]]:
+        langs = sorted(list(ts.get_languages(api).keys()))
+        return ['auto'] + langs, langs
+
+    def translator_of(self, api: str, source_lang: str, target_lang: str) -> Translator:
+        if api in self.api_names():
+            s, t = self.languages_of(api)
+            if source_lang in s and target_lang in t:
+                return TranslatorsTranslator(api, source_lang, target_lang, self.trans_kwargs)
+        return None
+
+# 注册你的translation API
+register_provider('translators', TranslatorsApi())
+```
+2. 在[__init__.py](translation_provider/__init__.py)中导入您的py文件：
+```python
+import logging
+import translation_provider.base
+
+# 您应该使用try-except块导入它
+try:
+    import translation_provider.translators
+except Exception as e:
+    logging.exception(e)
+try:
+    import translation_provider.closeapi
+except Exception as e:
+    logging.exception(e)
+```
+3. 运行: `python3 server_ui.py`
 
 # 👀开始之前
 

@@ -27,21 +27,21 @@ class Provider:
 
     def default_api(self) -> str:
         """
-        return the default API name from the config file
+        return the default API name
         :return:
         """
         return None
 
     def default_source_lang(self) -> str:
         """
-        return the default source language from the config file
+        return the default source language for default_api()
         :return:
         """
         return None
 
     def default_target_lang(self) -> str:
         """
-        return the default target language from the config file
+        return the default target language for default_api()
         :return:
         """
         return None
