@@ -230,7 +230,11 @@ def count_missing(language, filter, min_priority, max_priority, common_only, say
                     filename=t.filename,
                     linenumber=t.linenumber,
                 )
-                for i, n in enumerate(t.block):
+                if TranslateSay_ref is not None and isinstance(t, TranslateSay_ref):
+                    block = [t]
+                else:
+                    block = t.block
+                for i, n in enumerate(block):
                     if not is_get_translatable_statement(n):
                         continue
                     if say_only and not is_say_statement(n):
