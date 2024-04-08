@@ -13,6 +13,13 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
+import logging
 
-import translator.api.translators_impl
-import translator.api.openai_impl
+try:
+    import translator.api.translators_impl
+except Exception as e:
+    logging.exception(e)
+try:
+    import translator.api.openai_impl
+except Exception as e:
+    logging.exception(e)
