@@ -298,6 +298,12 @@ init python:
         renpy.show_screen('projz_i18n_settings')
 
     def projz_reload_game():
+        if old_set_text is not None:
+            renpy.text.text.Text.set_text = old_set_text
+        if _old_prefix_suffix is not None:
+            renpy.character.ADVCharacter.prefix_suffix = _old_prefix_suffix
+        if _old_do_display is not None:
+            renpy.character.ADVCharacter.do_display = _old_do_display
         renpy.reload_script()
 
     config.underlay[0].keymap['projz_show_i18n_settings'] = projz_show_i18n_settings
