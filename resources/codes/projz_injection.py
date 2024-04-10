@@ -202,7 +202,65 @@ def close_tl_files_wrapper():
         open_tl_file(f).write(u'\n'+projz_banner+u'\n')
     close_tl_files()
 
+STRING_RE_UI = r"""(?x)
+\b(text|textbutton|label)\s*[uU]?(
+\"\"\"(?:\\.|\\\n|\"{1,2}|[^\\"])*?\"\"\"
+|'''(?:\\.|\\\n|\'{1,2}|[^\\'])*?'''
+|"(?:\\.|\\\n|[^\\"])*"
+|'(?:\\.|\\\n|[^\\'])*'
+)\s*
+"""
 
+def is_translatable(string):
+    if string:
+        for ch in string:
+            if ch not in u'1234567890+-*=_)(&^%$#@!`~<,>.?/:;"\'|\\}]{[【】“”、；：？《，》。！￥（）—\t \a\r\n\b\f\v\0':
+                return True
+        return False
+    return False
+
+def scan_extra_strings(filename):
+    from renpy.translation.scanstrings import String
+    import re
+    rv = [ ]
+
+    for _filename, lineno, text in renpy.parser.list_logical_lines(filename):
+
+        for m in re.finditer(STRING_RE_UI, text):
+            s = m.group(2)
+            s = s.replace('\\\n', "")
+            if s is not None:
+                s = s.strip()
+                s = "u" + s
+                s = eval(s)
+                if s:
+                    if (s.startswith('[') and s.endswith(']')) or not is_translatable(s):
+                        continue
+                    rv.append(String(filename, lineno, s, False))
+    return rv
+
+def projz_gamestring_scan(seen):
+    global proj_args
+    filenames = renpy.translation.generation.translate_list_files()
+    strings = [ ]
+    for filename in filenames:
+        filename = os.path.normpath(filename)
+        fn, common = shorten_filename(filename)
+        if common:
+            continue
+        if fn in proj_args.ignore:
+            continue
+        if not os.path.exists(filename):
+            continue
+        strings.extend(scan_extra_strings(filename))
+    strings.sort(key=lambda s : s.sort_key)
+    rv = [  ]
+    for s in strings:
+        if s.text in seen:
+            continue
+        seen.add(s.text)
+        rv.append(s)
+    return rv
 
 def count_missing(language, filter, min_priority, max_priority, common_only, say_only):
     """
@@ -395,7 +453,13 @@ def get_string_translation(language, filter, min_priority, max_priority, common_
     # change.
 
     strings = renpy.translation.scanstrings.scan(min_priority, max_priority, common_only)
-
+    extra_strings = []
+    try:
+        extra_strings = projz_gamestring_scan(set([s.text for s in strings]))
+        print('extra string size:', len(extra_strings))
+    except Exception as e:
+        print(e)
+    strings.extend(extra_strings)
     stringfiles = collections.defaultdict(list)
 
     for s in strings:
@@ -563,7 +627,13 @@ def generate_string_translation(projz_translator, language, filter, min_priority
     # change.
 
     strings = renpy.translation.scanstrings.scan(min_priority, max_priority, common_only)
-
+    extra_strings = []
+    try:
+        extra_strings = projz_gamestring_scan(set([s.text for s in strings]))
+        print('extra string size:', len(extra_strings))
+    except Exception as e:
+        print(e)
+    strings.extend(extra_strings)
     stringfiles = collections.defaultdict(list)
 
     missing_count = 0
