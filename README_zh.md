@@ -30,7 +30,7 @@
 
 # ✨新增功能：
 <details>
-<summary><b>单机展开</b></summary>
+<summary><b>点击展开</b></summary>
 1. [Web翻译](#使用web翻译)，仅限google: `translate {index_or_name} -t web -n google -l {lang}`
 2. [AI翻译](#使用AI翻译): `translate {index_or_name} -t ai -n mbart50 -l {lang}`
 3. 翻译文本潜在错误检查:
@@ -80,7 +80,7 @@
 </details>
 
 # ✨实时翻译功能支持(免费+开源)
-下载[Release](https://github.com/abse4411/projz_renpy_translation/releases)中的`projz-Winndows_VX.X.X.7z`，解压打开里面的`server_ui.exe`
+下载[Release](https://github.com/abse4411/projz_renpy_translation/releases)中的`exe.7z`和`libs.7z` ，解压打开里面的`server_ui.exe`
 
 你可看到以下界面：
 
@@ -862,7 +862,7 @@ except Exception as e:
 * UI 主题: Qt-Material, [BSD-2-Clause license](https://github.com/UN-GCPDS/qt-material?tab=BSD-2-Clause-1-ov-file)
 * 其他使用的python库见：[requirements_full.txt](./requirements_full.txt)
 
-## Star History
+# Star History
 
 <a href="https://star-history.com/#abse4411/projz_renpy_translation&Date">
   <picture>

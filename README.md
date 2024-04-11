@@ -21,7 +21,7 @@
 
 # Index
 [](#use-openai-endpoint)
-There are two tools help you translate a RenPy Game:
+There are two tools to help you translate a RenPy Game:
 
 |              Name               | Features                                                                                                                                                                                                                     | Supported Translation Engines                                                                                                                                                                                                                                                                                                           |
 |:-------------------------------:|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -94,7 +94,7 @@ There are two tools help you translate a RenPy Game:
 
 # ✨RealTime Translator (Free and Open Source)
 
-Download 'projz Windows VX.X.X.7z' from [Release](https://github.com/abse4411/projz_renpy_translation/releases), then unzip it. Open the `server_ui.exe`.
+Download `exe.7z` and `libs.7z` from [Release](https://github.com/abse4411/projz_renpy_translation/releases), then unzip them. Open the `server_ui.exe`.
 You can see the following UI:
 
 ![main_ui.png](imgs/main_ui.png)
@@ -939,7 +939,7 @@ This project is developed in my nonworking time. If you would like to support th
 
 </div>
 
-# 🗒Todo List:
+# 🗒Todo list:
 
 1. [x] Add English document
 2. [ ] GUI support
@@ -958,7 +958,7 @@ The codes or libs we use or refer to:
 * UI theme: Qt-Material, [BSD-2-Clause license](https://github.com/UN-GCPDS/qt-material?tab=BSD-2-Clause-1-ov-file)
 * Other python libs：[requirements_full.txt](./requirements_full.txt)
 
-## Star History
+# Star History
 
 <a href="https://star-history.com/#abse4411/projz_renpy_translation&Date">
   <picture>
