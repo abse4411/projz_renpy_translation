@@ -58,7 +58,6 @@ class TranslationIndex:
                                      f'projz_{self._nickname}_{self._tag}.db') if db_file is None else db_file
         self._extra_data = extra_data if extra_data is not None else {'index_type': index_type.BASE}
 
-
     @property
     def itype(self):
         # compatible for previous FileTranslationIndex
@@ -130,6 +129,8 @@ class TranslationIndex:
 
     @staticmethod
     def _is_say_block(data):
+        if isinstance(data, str):
+            return 'Say' in data
         return 'Say' in data.get('type', '')
 
     @staticmethod
@@ -544,7 +545,8 @@ class TranslationIndex:
         def _update_dialogue(identifier, block_i, new_code, block_type):
             nonlocal use_cnt
             block, doc_id = id_dblock_map.get((identifier, block_i), (None, None))
-            if block and self._is_say_block(block):
+            if block and ((self._is_say_block(block) and self._is_say_block(block_type))
+                          or block_type == block.get('type', None)):
                 block['new_code'] = new_code
                 updated_ddocids.add(doc_id)
                 use_cnt += 1
