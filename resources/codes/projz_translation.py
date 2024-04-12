@@ -203,6 +203,9 @@ def _should_translate(string):
 
 def is_translatable(string):
     if string:
+        string = string.strip()
+        if string == '' or (string.startswith('[') and string.endswith(']')):
+            return False
         for ch in string:
             if ch not in u'1234567890+-*=_)(&^%$#@!`~<,>.?/:;"\'|\\}]{[【】“”、；：？《，》。！￥（）—\t \a\r\n\b\f\v\0':
                 return True
@@ -211,10 +214,8 @@ def is_translatable(string):
 
 
 def projz_prefix_suffix(self, thing, prefix, body, suffix):
-    # if thing != 'what':
-    #     return _old_prefix_suffix(self, thing, prefix, body, suffix)
     res = _old_prefix_suffix(self, thing, prefix, body, suffix)
-    if body is None or body.strip() == '' or not is_translatable(body):
+    if body is None or not is_translatable(body):
         return res
     new_text = None
     if thing == 'what':
@@ -247,8 +248,7 @@ def projz_set_text(self, text, scope=None, substitute=False, update=True):
         return res
     old_text = text[0]
     striped_text = old_text.strip()
-    if len(striped_text) <= 1 or (not _should_translate(old_text)) or (
-            striped_text.startswith('[') and striped_text.endswith(']')) or not is_translatable(striped_text):
+    if len(striped_text) <= 1 or (not is_translatable(striped_text)) or (not _should_translate(old_text)):
         return res
     if substitute is None and '{#' in striped_text:
         return res
@@ -280,7 +280,7 @@ def projz_call(self, what, **kwargs):
 def projz_do_display(self, who, what, **display_args):
     global _tid_what, _old_do_display
     new_what = None
-    if what is not None and what.strip() != '' and is_translatable(what):
+    if what is not None and is_translatable(what):
         context = renpy.game.context()
         tid, raw_what = _tid_what
         node = renpy.game.script.lookup(context.current)
@@ -292,7 +292,7 @@ def projz_do_display(self, who, what, **display_args):
                                            node.filename,
                                            node.linenumber, code_str, self.name)
     new_who = None
-    if who is not None and who.strip() != '' and is_translatable(who):
+    if who is not None and is_translatable(who):
         new_who, subed = translation_post(who, renpy.game.preferences.language, 'String', self.name, who)
     if new_who is not None:
         who = new_who
