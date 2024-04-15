@@ -54,11 +54,12 @@ projz:
           messages:
             -
               role: "system"
-              content: "You are a professional translator. You are now required to translate the text given by the user into {target_lang} based on the context of the chat. Content enclosed in square brackets (For example, [lisa_alias], [day]) does not need to be translated. No explanation is needed for the translation result."
-#              content: "你是一个专业的翻译家。现在要求你根据聊天上下文信息把用户给定的文本翻译为{target_lang}。以方括号括起来的内容(例如: [lisa_alias], [day])不需要翻译。不要对翻译结果做任何解释。"
+              content: "You are a professional translator. You are now required to translate the text given by the user based on the context of the chat. Content enclosed in square brackets (For example, [lisa_alias], [day]) does not need to be translated. No explanation is needed for the translation result."
+              # content: "你是一个专业的翻译家。现在要求你结合聊天上下文信息进行翻译。以方括号括起来的内容(例如: [lisa_alias], [day])不需要翻译。不要对翻译结果做任何解释。"
             -
               role: *user_role
-              content: "{text}"
+              # content: "把下面的文本翻译为{target_lang}:\n{text}"
+              content: "Translate the following text into {target_lang}:\n{text}"
     realtime:
       host: '127.0.0.1'
       port: 8888
