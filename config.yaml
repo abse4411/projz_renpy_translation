@@ -73,6 +73,8 @@ projz:
     level: 'ERROR' # log level: 'CRITICAL','FATAL','ERROR','WARN', 'WARNING', 'INFO', 'DEBUG', 'NOTSET'
     path: './projz/logs' # path for logging
   index:
+    # scan more strings if found
+    extra_scan: True
     # strip tags before translating texts
     strip_tag: False # This will reduce parsing errors when loading scripts
     write_cache_size: 2000 # large number of write operations will improves speed of read/write translations by reducing disk I/O.

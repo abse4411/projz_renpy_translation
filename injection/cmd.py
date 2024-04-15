@@ -23,7 +23,7 @@ from injection import Project
 
 
 def _get_base_args(lang: str = None, translated_only: bool = True, say_only: bool = False, strings_only: bool = False,
-                   common_only: bool = False, ignore=None, **kwargs):
+                   common_only: bool = False, ignore=None, extra_scan=False, **kwargs):
     args = []
     kwargs.pop('lang', None)
     kwargs.pop('translated_only', None)
@@ -31,6 +31,7 @@ def _get_base_args(lang: str = None, translated_only: bool = True, say_only: boo
     kwargs.pop('strings_only', None)
     kwargs.pop('common_only', None)
     kwargs.pop('ignore', None)
+    kwargs.pop('extra_scan', None)
     if lang:
         args.append(f'--language')
         args.append(f'{lang}')
@@ -46,6 +47,8 @@ def _get_base_args(lang: str = None, translated_only: bool = True, say_only: boo
         args.append(f'--ignore')
         for i in ignore:
             args.append(i)
+    if extra_scan:
+        args.append('--extra-scan')
     return args, kwargs
 
 

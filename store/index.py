@@ -687,7 +687,7 @@ class TranslationIndex:
                 dao.update_blocks(table_name, ids, blocks)
 
     @db_context
-    def import_translations(self, lang: str, translated_only: bool = True, say_only: bool = True):
+    def import_translations(self, lang: str, translated_only: bool = True, say_only: bool = True, **kwargs):
         lang = assert_not_blank(lang, 'lang')
         if translated_only:
             # check if there exists the 'game/tl/{language}'
@@ -697,7 +697,7 @@ class TranslationIndex:
                 return
         data, msg = _get_task_result(get_translations(self._project, None, lang,
                                                       ignore=default_config['index']['ignore'],
-                                                      translated_only=translated_only, say_only=say_only))
+                                                      translated_only=translated_only, say_only=say_only, **kwargs))
         dialogue_data = data['dialogues']
         string_data = data['strings']
         if dialogue_data or string_data:
@@ -713,7 +713,7 @@ class TranslationIndex:
         print(msg)
 
     @db_context
-    def export_translations(self, lang: str, translated_only: bool = True, say_only: bool = True):
+    def export_translations(self, lang: str, translated_only: bool = True, say_only: bool = True, **kwargs):
         lang = assert_not_blank(lang, 'lang')
         if not self.exists_lang(lang):
             print(f'No {lang} translations to export')
@@ -746,7 +746,8 @@ class TranslationIndex:
         affected_files, msg = _get_task_result(generate_translations(self._project, {
             'dialogues': new_dialogue_data,
             'strings': new_string_data,
-        }, lang, translated_only=translated_only, say_only=say_only, ignore=default_config['index']['ignore']))
+        }, lang, translated_only=translated_only, say_only=say_only, ignore=default_config['index']['ignore'],
+                                                                     **kwargs))
         if affected_files:
             print('We have written translations to these following files:')
             for f in affected_files:

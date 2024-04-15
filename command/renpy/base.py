@@ -99,10 +99,11 @@ class ImportTranslationCmd(BaseLangIndexCmd):
 
     def invoke(self):
         index = self.get_translation_index()
-        index.import_translations(self.args.lang, self.args.translated_only, say_only=self.config.say_only)
+        index.import_translations(self.args.lang, self.args.translated_only, say_only=self.config.say_only,
+                                  extra_scan=self.config['index']['extra_scan'])
         if not self.args.not_reuse:
             tl_dir = os.path.join(self.config['index']['recycle_dir'], self.args.lang)
-            update_string(index, tl_dir, self.args.lang, say_only=self.config.say_only, discord_blank=False)
+            update_string(index, tl_dir, self.args.lang, say_only=self.config.say_only, discord_blank=True)
 
 
 class GenerateTranslationCmd(BaseLangIndexCmd):
@@ -124,7 +125,8 @@ class GenerateTranslationCmd(BaseLangIndexCmd):
             for r in rpy_files:
                 print(f'Deleting {r}')
                 os.remove(r)
-        index.export_translations(self.args.lang, not self.args.all, say_only=self.config.say_only)
+        index.export_translations(self.args.lang, not self.args.all, say_only=self.config.say_only,
+                                  extra_scan=self.config['index']['extra_scan'])
 
 
 class CountTranslationCmd(BaseLangIndexCmd):

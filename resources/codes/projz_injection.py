@@ -210,6 +210,14 @@ STRING_RE_UI = r"""(?x)
 |'(?:\\.|\\\n|[^\\'])*'
 )\s*
 """
+STRING_RE_INPUT = r"""(?x)
+\b(renpy.input)\s*\(\s*[uU]?(
+\"\"\"(?:\\.|\\\n|\"{1,2}|[^\\"])*?\"\"\"
+|'''(?:\\.|\\\n|\'{1,2}|[^\\'])*?'''
+|"(?:\\.|\\\n|[^\\"])*"
+|'(?:\\.|\\\n|[^\\'])*'
+)\s*\)
+"""
 
 def is_translatable(string):
     if string:
@@ -227,6 +235,17 @@ def scan_extra_strings(filename):
     for _filename, lineno, text in renpy.parser.list_logical_lines(filename):
 
         for m in re.finditer(STRING_RE_UI, text):
+            s = m.group(2)
+            s = s.replace('\\\n', "")
+            if s is not None:
+                s = s.strip()
+                s = "u" + s
+                s = eval(s)
+                if s:
+                    if (s.startswith('[') and s.endswith(']')) or not is_translatable(s):
+                        continue
+                    rv.append(String(filename, lineno, s, False))
+        for m in re.finditer(STRING_RE_INPUT, text):
             s = m.group(2)
             s = s.replace('\\\n', "")
             if s is not None:
@@ -453,13 +472,13 @@ def get_string_translation(language, filter, min_priority, max_priority, common_
     # change.
 
     strings = renpy.translation.scanstrings.scan(min_priority, max_priority, common_only)
-    extra_strings = []
-    try:
-        extra_strings = projz_gamestring_scan(set([s.text for s in strings]))
-        print('extra string size:', len(extra_strings))
-    except Exception as e:
-        print(e)
-    strings.extend(extra_strings)
+    if proj_args.extra_scan:
+        try:
+            extra_strings = projz_gamestring_scan(set([s.text for s in strings]))
+            strings.extend(extra_strings)
+            print('extra string size:', len(extra_strings))
+        except Exception as e:
+            print(e)
     stringfiles = collections.defaultdict(list)
 
     for s in strings:
@@ -627,13 +646,13 @@ def generate_string_translation(projz_translator, language, filter, min_priority
     # change.
 
     strings = renpy.translation.scanstrings.scan(min_priority, max_priority, common_only)
-    extra_strings = []
-    try:
-        extra_strings = projz_gamestring_scan(set([s.text for s in strings]))
-        print('extra string size:', len(extra_strings))
-    except Exception as e:
-        print(e)
-    strings.extend(extra_strings)
+    if proj_args.extra_scan:
+        try:
+            extra_strings = projz_gamestring_scan(set([s.text for s in strings]))
+            strings.extend(extra_strings)
+            print('extra string size:', len(extra_strings))
+        except Exception as e:
+            print(e)
     stringfiles = collections.defaultdict(list)
 
     missing_count = 0
@@ -773,6 +792,8 @@ def projz_inject_command():
     ap.add_argument("--count", help="Instead of generating files, print a count of missing translations.", dest="count",
                     action="store_true")
     ap.add_argument("--generate", help="Generate translations with given input file.", dest="generate",
+                    action="store_true")
+    ap.add_argument("--extra-scan", help="Scan extra strings.", dest="extra_scan",
                     action="store_true")
     ap.add_argument("--min-priority", help="Translate strings with more than this priority.", dest="min_priority",
                     default=0, type=int)
