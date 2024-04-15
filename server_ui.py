@@ -18,6 +18,7 @@ import sys
 import time
 from typing import Tuple, List
 
+from PyQt5 import QtCore
 from PyQt5.QtWidgets import QApplication, QMainWindow
 
 from qt5.main import Ui_MainWindow
@@ -65,7 +66,7 @@ register_provider('Foo', FakeProvider())
 # package cmd: pyinstaller -i imgs/proz_icon_simple.ico server_ui.py
 if __name__ == "__main__":
     import log
-
+    QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
     app = QApplication(sys.argv)
     apply_stylesheet(app, theme='default_dark.xml')
     # print(qt_material.list_themes())
