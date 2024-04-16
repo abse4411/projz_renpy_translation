@@ -95,8 +95,7 @@ class XUnityConvertor(FileTranslationConvertor):
     def save_to(self, fn: str, tran_map: Dict[str, str]):
         with default_write(fn) as f:
             for k, v in tran_map.items():
-                k = k.replace('\n', '')
-                v = v.replace('\n', '')
+                v = v.replace('\n', '\\n').replace('\r', '\\r')
                 f.write(f'{k}={v}\n')
 
 
@@ -200,7 +199,7 @@ class FileTranslationIndex(TranslationIndex):
             raise ValueError(f'Unable to cast {index.to_dict()} into a FileTranslationIndex')
 
     @db_context
-    def import_translations(self, lang: str, translated_only: bool = True, say_only: bool = True):
+    def import_translations(self, lang: str, translated_only: bool = True, say_only: bool = True, **kwargs):
         lang = assert_not_blank(lang, 'lang')
         data = _CONVERTORS[self.project.executable_path][0](self.project_path).get_text_map()
         if data:
@@ -219,7 +218,7 @@ class FileTranslationIndex(TranslationIndex):
         print(f'{lang}: 0 dialogue translations and {len(data)} string translations found')
 
     @db_context
-    def export_translations(self, lang: str, translated_only: bool = True, say_only: bool = True):
+    def export_translations(self, lang: str, translated_only: bool = True, say_only: bool = True, **kwargs):
         lang = assert_not_blank(lang, 'lang')
         if not self.exists_lang(lang):
             print(f'No {lang} translations to export')
