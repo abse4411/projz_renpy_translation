@@ -31,6 +31,7 @@ There are two tools to help you translate a RenPy Game:
 # ✨What's new
 <details>
 <summary><b>Click to show</b></summary>
+
 1. [Web Translation](#use-web-translation), only supports google translation: `translate {index_or_name} -t web -n google -l {lang}`
 
 2. [AI Translation](#use-ai-translation): `translate {index_or_name} -t ai -n mbart50 -l {lang}`
@@ -142,7 +143,7 @@ At present, this translator is only a demo and will be integrated with our trans
 You can also save the current translation as a TranslationIndex by clicking the "Save as a TranslationIndex" button, so that you can use various commands for FileTranslationIndex to quickly process these translations.
 
 ## Customize your translation API in RealTime Translator
-1. Create a py file in [translation_provider](translation_provider). Then, create your class which inherits from the `Provider` class in [base.py](translation_provider/base.py), and implements these following methods:
+1. Create a py file in [translation_provider](translation_provider). Then, create your class which inherits the `Provider` class in [base.py](translation_provider/base.py), and implements these following methods (`reload_config()` is not a member method in `Provider` class, which is used to reload config to get the newest values if `Reload config file` button is clicked.):
 ```python
 from trans import Translator
 from typing import List, Tuple
@@ -335,7 +336,7 @@ You can download a packaged exe file for Windows to run this tool without instal
 ## 1.Startup (Optional)
 
 > **🚨Note🚨**<br />
-> Yon can get an EXE file from projz-Winndows_VX.X.X.zip in [Release](https://github.com/abse4411/projz_renpy_translation/releases). It only works on Windows OS.
+> Yon can get an main.exe in [Release](https://github.com/abse4411/projz_renpy_translation/releases) to run this tool. It only works on Windows OS.
 
 After installing python 3.8, use pip to install the dependencies:
 
@@ -500,7 +501,7 @@ It outputs like:
 schinese: dialogue translation: using 856 and missing 84, string translation: using 377 and missing 7
 ```
 
-Note that, if there exists rpy files in `game/tl/{lang}`, existing translations in these files wouldn't be overwritten. `generate` command only append translations that don't exist in the game by default. If you want to apply all TranslationIndex's translated texts that exist in these rpy files, please append the `-f` option to `generate` command. That will delete all rpy/rpyc files in `game/tl/{lang}`.
+Note that, if there exists rpy files in `game/tl/{lang}`, existing translations in these files will not be overwritten. `generate` command only append translations that don't exist in the game by default. If you want to apply all TranslationIndex's translated texts that exist in these rpy files, please append the `-f` option to `generate` command. That will delete all rpy/rpyc files in `game/tl/{lang}`.
 
 ## 5.Inject our I18N plugin
 

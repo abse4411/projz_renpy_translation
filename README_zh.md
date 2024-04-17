@@ -31,6 +31,7 @@
 # ✨新增功能：
 <details>
 <summary><b>点击展开</b></summary>
+
 1. [Web翻译](#使用web翻译)，仅限google: `translate {index_or_name} -t web -n google -l {lang}`
 2. [AI翻译](#使用AI翻译): `translate {index_or_name} -t ai -n mbart50 -l {lang}`
 3. 翻译文本潜在错误检查:
@@ -126,7 +127,7 @@
 你还可以通过点击"Save as a TranslationIndex"按钮保存当前的翻译保存为TranslationIndex，这样您可以使用针对TranslationIndex各种命令来快速修改这些翻译。
 
 ## 在RealTime Translator中自定义您的翻译API
-1. 在[translation_provider](translation_provider)中创建一个py文件。然后，创建一个类并继承[base.py](translation_provider/base.py)中的“Provider”类，实现以下方法：
+1. 在[translation_provider](translation_provider)中创建一个py文件。然后，创建一个类并继承[base.py](translation_provider/base.py)中的“Provider”类，实现以下方法(`reload_config()`并不是`Provider`类的成员函数，它主要用于再用户点击`重新加载配置文件`按钮后重新获取最新的配置值)：
 ```python
 from trans import Translator
 from typing import List, Tuple
@@ -313,7 +314,7 @@ translate chinese scene_01_5f0ee2360:
 
 ## 1.启动(可选)
 > **🚨注意🚨**<br />
-> 你可以在[Release](https://github.com/abse4411/projz_renpy_translation/releases)下载projz-Winndows_VX.X.X.zip，解压后直接运行，仅限Windows平台。
+> 你可以在[Release](https://github.com/abse4411/projz_renpy_translation/releases)下载exe，解压后直接运行，仅限Windows平台。
 
 安装python3.8后，使用pip安装依赖：
 ```bash
