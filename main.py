@@ -34,6 +34,7 @@ ________  ________  ________        ___  ________
     \|__|     \|__|\|__|\|_______|\|________|\|_______|   V{__VERSION__}
 RenPy机翻工具 - A translator for RenPy games. This project is under the GPL-3.0 license.
 By abse4411.  Source code: https://github.com/abse4411/projz_renpy_translation, License: https://github.com/abse4411/projz_renpy_translation?tab=GPL-3.0-1-ov-file
+
 # 🔗Acknowledgement
 The codes or libs we use or refer to:
 * Previous code of Web translation: [Maooookai(Mirage)](https://github.com/Maooookai/WebTranslator), [DrDRR](https://github.com/drdrr/RenPy-WebTranslator)
@@ -44,6 +45,11 @@ The codes or libs we use or refer to:
 * UI: PyQt5, it contains dual licenses: the GNU GPL v3 and the Riverbank Commercial License. See [here](https://www.riverbankcomputing.com/software/pyqt/).
 * UI theme: Qt-Material, [BSD-2-Clause license](https://github.com/UN-GCPDS/qt-material?tab=BSD-2-Clause-1-ov-file)
 * Other python libs：[requirements_full.txt](./requirements_full.txt)
+
+## 😘Thanks to my sponsors:
+- 799190761
+- ansan
+To become a sponsor, see [this](https://github.com/abse4411/projz_renpy_translation?tab=readme-ov-file#sponsor).
 ''')
 
 

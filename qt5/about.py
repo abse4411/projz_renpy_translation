@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_AboutDialogue(object):
     def setupUi(self, AboutDialogue):
         AboutDialogue.setObjectName("AboutDialogue")
-        AboutDialogue.resize(693, 669)
+        AboutDialogue.resize(704, 753)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("imgs/proz_icon_simple.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         AboutDialogue.setWindowIcon(icon)
@@ -64,6 +64,7 @@ class Ui_AboutDialogue(object):
         font = QtGui.QFont()
         font.setPointSize(12)
         self.label_5.setFont(font)
+        self.label_5.setTextFormat(QtCore.Qt.MarkdownText)
         self.label_5.setWordWrap(True)
         self.label_5.setOpenExternalLinks(True)
         self.label_5.setObjectName("label_5")
@@ -101,14 +102,16 @@ class Ui_AboutDialogue(object):
         self.label_2.setText(_translate("AboutDialogue", "<html><head/><body><h2>Projz - RenyPy Translation Toolkit</h2></body></html>"))
         self.label_3.setText(_translate("AboutDialogue", "Github: <a href=\"https://github.com/abse4411/projz_renpy_translation\">projz_renpy_translation</a>"))
         self.label_4.setText(_translate("AboutDialogue", "Licence: <a href=\"https://github.com/abse4411/projz_renpy_translation?tab=GPL-3.0-1-ov-file\">GPL-3.0</a>"))
-        self.label_5.setText(_translate("AboutDialogue", "<html><head/><body><h2>🔗Acknowledgement</h2><p><ul dir=\"auto\">\n"
-"<li>Previous code of Web translation: <a href=\"https://github.com/Maooookai/WebTranslator\">Maooookai(Mirage)</a>, <a href=\"https://github.com/drdrr/RenPy-WebTranslator\">DrDRR</a></li>\n"
-"<li>AI translation: <a href=\"https://github.com/xhluca/dl-translate\">dl-translate</a>, <a href=\"https://github.com/xhluca/dl-translate?tab=MIT-1-ov-file\">MIT License</a></li>\n"
-"<li><a href=\"https://github.com/UlionTse/translators\">UlionTse/translators</a>, <a href=\"https://github.com/UlionTse/translators?tab=GPL-3.0-1-ov-file\">GPL-3.0 License</a></li>\n"
-"<li>Pre-translated RPY file: <a href=\"https://github.com/renpy/renpy/tree/master/launcher/game/tl\">RenPy</a>, <a href=\"https://www.renpy.org/doc/html/license.html\" rel=\"nofollow\">MIT License for these rpy files</a></li>\n"
-"<li><a href=\"/abse4411/projz_renpy_translation/blob/devp_tmp/resources/codes/projz_injection.py\">resources/codes/projz_injection.py</a>: <a href=\"https://github.com/renpy/renpy/blob/master/renpy/translation/generation.py\">RenPy</a>, <a href=\"https://www.renpy.org/doc/html/license.html\" rel=\"nofollow\">MIT License for the code file</a></li>\n"
-"<li>UI: PyQt5, it contains dual licenses: the GNU GPL v3 and the Riverbank Commercial License. See <a href=\"https://www.riverbankcomputing.com/software/pyqt/\" rel=\"nofollow\">here</a>.</li>\n"
-"<li>UI theme: Qt-Material, <a href=\"https://github.com/UN-GCPDS/qt-material?tab=BSD-2-Clause-1-ov-file\">BSD-2-Clause license</a></li>\n"
-"<li>Other python libs：<a href=\"https://github.com/abse4411/projz_renpy_translation/blob/devp/requirements_full.txt\">requirements_full.txt</a></li>\n"
-"</ul></p></body></html>"))
+        self.label_5.setText(_translate("AboutDialogue", "# 🔗Acknowledgement\n"
+"\n"
+"The codes or libs we use or refer to:\n"
+"\n"
+"* Previous code of Web translation: [Maooookai(Mirage)](https://github.com/Maooookai/WebTranslator), [DrDRR](https://github.com/drdrr/RenPy-WebTranslator)\n"
+"* AI translation: [dl-translate](https://github.com/xhluca/dl-translate), [MIT License](https://github.com/xhluca/dl-translate?tab=MIT-1-ov-file)\n"
+"* [UlionTse/translators](https://github.com/UlionTse/translators), [GPL-3.0 License](https://github.com/UlionTse/translators?tab=GPL-3.0-1-ov-file)\n"
+"* Pre-translated RPY file: [RenPy](https://github.com/renpy/renpy/tree/master/launcher/game/tl), [MIT License for these rpy files](https://www.renpy.org/doc/html/license.html)\n"
+"* [resources/codes/projz_injection.py](resources/codes/projz_injection.py): [RenPy](https://github.com/renpy/renpy/blob/master/renpy/translation/generation.py), [MIT License for the code file](https://www.renpy.org/doc/html/license.html)\n"
+"* UI: PyQt5, it contains dual licenses: the GNU GPL v3 and the Riverbank Commercial License. See [here](https://www.riverbankcomputing.com/software/pyqt/).\n"
+"* UI theme: Qt-Material, [BSD-2-Clause license](https://github.com/UN-GCPDS/qt-material?tab=BSD-2-Clause-1-ov-file)\n"
+"* Other python libs：[requirements_full.txt](./requirements_full.txt)"))
         self.pushButton.setText(_translate("AboutDialogue", "Close"))

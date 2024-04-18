@@ -1454,7 +1454,7 @@ By doing this, you can use various commands for FileTranslationIndex to quickly 
      <x>0</x>
      <y>0</y>
      <width>813</width>
-     <height>23</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuHelp">
@@ -1462,6 +1462,7 @@ By doing this, you can use various commands for FileTranslationIndex to quickly 
      <string>&amp;Help</string>
     </property>
     <addaction name="actionAbout"/>
+    <addaction name="actionSponsors"/>
     <addaction name="actionReloadConfig"/>
    </widget>
    <widget class="QMenu" name="menuTheme">
@@ -1673,6 +1674,11 @@ By doing this, you can use various commands for FileTranslationIndex to quickly 
   <action name="actionReloadConfig">
    <property name="text">
     <string>&amp;Reload config file</string>
+   </property>
+  </action>
+  <action name="actionSponsors">
+   <property name="text">
+    <string>Sponsors</string>
    </property>
   </action>
  </widget>

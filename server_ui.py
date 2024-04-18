@@ -15,17 +15,13 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import sys
-import time
 from typing import Tuple, List
 
 from PyQt5 import QtCore
-from PyQt5.QtWidgets import QApplication, QMainWindow
-
-from qt5.main import Ui_MainWindow
-from qt5.main_ui import MainWindow, setThemeAction
-import qt_material
+from PyQt5.QtWidgets import QApplication
 from qt_material import apply_stylesheet
 
+from qt5.main_ui import MainWindow, _theme_xml
 from trans import Translator
 from translation_provider.base import Provider, register_provider
 
@@ -68,7 +64,7 @@ if __name__ == "__main__":
     import log
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
     app = QApplication(sys.argv)
-    apply_stylesheet(app, theme='default_dark.xml')
+    apply_stylesheet(app, theme=_theme_xml)
     # print(qt_material.list_themes())
     main_window = MainWindow()
     main_window.show()

@@ -24,32 +24,36 @@
         <translation type="unfinished">许可证: &lt;a href=&quot;https://github.com/abse4411/projz_renpy_translation?tab=GPL-3.0-1-ov-file&quot;&gt;GPL-3.0&lt;/a&gt;</translation>
     </message>
     <message>
-        <location filename="../about.ui" line="105"/>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;h2&gt;🔗Acknowledgement&lt;/h2&gt;&lt;p&gt;&lt;ul dir=&quot;auto&quot;&gt;
-&lt;li&gt;Previous code of Web translation: &lt;a href=&quot;https://github.com/Maooookai/WebTranslator&quot;&gt;Maooookai(Mirage)&lt;/a&gt;, &lt;a href=&quot;https://github.com/drdrr/RenPy-WebTranslator&quot;&gt;DrDRR&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;AI translation: &lt;a href=&quot;https://github.com/xhluca/dl-translate&quot;&gt;dl-translate&lt;/a&gt;, &lt;a href=&quot;https://github.com/xhluca/dl-translate?tab=MIT-1-ov-file&quot;&gt;MIT License&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://github.com/UlionTse/translators&quot;&gt;UlionTse/translators&lt;/a&gt;, &lt;a href=&quot;https://github.com/UlionTse/translators?tab=GPL-3.0-1-ov-file&quot;&gt;GPL-3.0 License&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Pre-translated RPY file: &lt;a href=&quot;https://github.com/renpy/renpy/tree/master/launcher/game/tl&quot;&gt;RenPy&lt;/a&gt;, &lt;a href=&quot;https://www.renpy.org/doc/html/license.html&quot; rel=&quot;nofollow&quot;&gt;MIT License for these rpy files&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;/abse4411/projz_renpy_translation/blob/devp_tmp/resources/codes/projz_injection.py&quot;&gt;resources/codes/projz_injection.py&lt;/a&gt;: &lt;a href=&quot;https://github.com/renpy/renpy/blob/master/renpy/translation/generation.py&quot;&gt;RenPy&lt;/a&gt;, &lt;a href=&quot;https://www.renpy.org/doc/html/license.html&quot; rel=&quot;nofollow&quot;&gt;MIT License for the code file&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;UI: PyQt5, it contains dual licenses: the GNU GPL v3 and the Riverbank Commercial License. See &lt;a href=&quot;https://www.riverbankcomputing.com/software/pyqt/&quot; rel=&quot;nofollow&quot;&gt;here&lt;/a&gt;.&lt;/li&gt;
-&lt;li&gt;UI theme: Qt-Material, &lt;a href=&quot;https://github.com/UN-GCPDS/qt-material?tab=BSD-2-Clause-1-ov-file&quot;&gt;BSD-2-Clause license&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Other python libs：&lt;a href=&quot;https://github.com/abse4411/projz_renpy_translation/blob/devp/requirements_full.txt&quot;&gt;requirements_full.txt&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;h2&gt;🔗致谢&lt;/h2&gt;&lt;p&gt;&lt;ul dir=&quot;auto&quot;&gt;
-&lt;li&gt;Previous code of Web translation: &lt;a href=&quot;https://github.com/Maooookai/WebTranslator&quot;&gt;Maooookai(Mirage)&lt;/a&gt;, &lt;a href=&quot;https://github.com/drdrr/RenPy-WebTranslator&quot;&gt;DrDRR&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;AI translation: &lt;a href=&quot;https://github.com/xhluca/dl-translate&quot;&gt;dl-translate&lt;/a&gt;, &lt;a href=&quot;https://github.com/xhluca/dl-translate?tab=MIT-1-ov-file&quot;&gt;MIT License&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://github.com/UlionTse/translators&quot;&gt;UlionTse/translators&lt;/a&gt;, &lt;a href=&quot;https://github.com/UlionTse/translators?tab=GPL-3.0-1-ov-file&quot;&gt;GPL-3.0 License&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Pre-translated RPY file: &lt;a href=&quot;https://github.com/renpy/renpy/tree/master/launcher/game/tl&quot;&gt;RenPy&lt;/a&gt;, &lt;a href=&quot;https://www.renpy.org/doc/html/license.html&quot; rel=&quot;nofollow&quot;&gt;MIT License for these rpy files&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;/abse4411/projz_renpy_translation/blob/devp_tmp/resources/codes/projz_injection.py&quot;&gt;resources/codes/projz_injection.py&lt;/a&gt;: &lt;a href=&quot;https://github.com/renpy/renpy/blob/master/renpy/translation/generation.py&quot;&gt;RenPy&lt;/a&gt;, &lt;a href=&quot;https://www.renpy.org/doc/html/license.html&quot; rel=&quot;nofollow&quot;&gt;MIT License for the code file&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;UI: PyQt5, it contains dual licenses: the GNU GPL v3 and the Riverbank Commercial License. See &lt;a href=&quot;https://www.riverbankcomputing.com/software/pyqt/&quot; rel=&quot;nofollow&quot;&gt;here&lt;/a&gt;.&lt;/li&gt;
-&lt;li&gt;UI theme: Qt-Material, &lt;a href=&quot;https://github.com/UN-GCPDS/qt-material?tab=BSD-2-Clause-1-ov-file&quot;&gt;BSD-2-Clause license&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Other python libs：&lt;a href=&quot;https://github.com/abse4411/projz_renpy_translation/blob/devp/requirements_full.txt&quot;&gt;requirements_full.txt&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <location filename="../about.ui" line="180"/>
+        <location filename="../about.ui" line="185"/>
         <source>Close</source>
         <translation type="unfinished">关闭</translation>
+    </message>
+    <message>
+        <location filename="../about.ui" line="105"/>
+        <source># 🔗Acknowledgement
+
+The codes or libs we use or refer to:
+
+* Previous code of Web translation: [Maooookai(Mirage)](https://github.com/Maooookai/WebTranslator), [DrDRR](https://github.com/drdrr/RenPy-WebTranslator)
+* AI translation: [dl-translate](https://github.com/xhluca/dl-translate), [MIT License](https://github.com/xhluca/dl-translate?tab=MIT-1-ov-file)
+* [UlionTse/translators](https://github.com/UlionTse/translators), [GPL-3.0 License](https://github.com/UlionTse/translators?tab=GPL-3.0-1-ov-file)
+* Pre-translated RPY file: [RenPy](https://github.com/renpy/renpy/tree/master/launcher/game/tl), [MIT License for these rpy files](https://www.renpy.org/doc/html/license.html)
+* [resources/codes/projz_injection.py](resources/codes/projz_injection.py): [RenPy](https://github.com/renpy/renpy/blob/master/renpy/translation/generation.py), [MIT License for the code file](https://www.renpy.org/doc/html/license.html)
+* UI: PyQt5, it contains dual licenses: the GNU GPL v3 and the Riverbank Commercial License. See [here](https://www.riverbankcomputing.com/software/pyqt/).
+* UI theme: Qt-Material, [BSD-2-Clause license](https://github.com/UN-GCPDS/qt-material?tab=BSD-2-Clause-1-ov-file)
+* Other python libs：[requirements_full.txt](./requirements_full.txt)</source>
+        <translation type="unfinished"># 🔗Acknowledgement
+
+我们参考或调用代码：
+
+* 早期项目代码（Web翻译）参考：[Maooookai(Mirage)](https://github.com/Maooookai/WebTranslator), [DrDRR](https://github.com/drdrr/RenPy-WebTranslator)
+* 使用的AI翻译库：[dl-translate](https://github.com/xhluca/dl-translate), [MIT License](https://github.com/xhluca/dl-translate?tab=MIT-1-ov-file)
+* [UlionTse/translators](https://github.com/UlionTse/translators), [GPL-3.0 License](https://github.com/UlionTse/translators?tab=GPL-3.0-1-ov-file)
+* 预翻译RPY文件来源：[RenPy](https://github.com/renpy/renpy/tree/master/launcher/game/tl), [MIT License for these rpy files](https://www.renpy.org/doc/html/license.html)
+* [resources/codes/projz_injection.py](resources/codes/projz_injection.py): [RenPy](https://github.com/renpy/renpy/blob/master/renpy/translation/generation.py), [MIT License for the code file](https://www.renpy.org/doc/html/license.html)
+* UI: PyQt5, 包含两个License: the GNU GPL v3 and the Riverbank Commercial License, 见[这里](https://www.riverbankcomputing.com/software/pyqt/).
+* UI 主题: Qt-Material, [BSD-2-Clause license](https://github.com/UN-GCPDS/qt-material?tab=BSD-2-Clause-1-ov-file)
+* 其他使用的python库见：[requirements_full.txt](./requirements_full.txt)</translation>
     </message>
 </context>
 <context>
@@ -215,112 +219,112 @@
         <translation type="unfinished">取消注入</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1473"/>
+        <location filename="../main.ui" line="1474"/>
         <source>Light</source>
         <translation type="unfinished">亮</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1495"/>
+        <location filename="../main.ui" line="1496"/>
         <source>Dark</source>
         <translation type="unfinished">暗</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1615"/>
+        <location filename="../main.ui" line="1616"/>
         <source>Amber</source>
         <translation type="unfinished">Amber</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1620"/>
+        <location filename="../main.ui" line="1621"/>
         <source>Blue</source>
         <translation type="unfinished">Blue</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1540"/>
+        <location filename="../main.ui" line="1541"/>
         <source>Blue_500</source>
         <translation type="unfinished">Blue_500</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1625"/>
+        <location filename="../main.ui" line="1626"/>
         <source>Cyan</source>
         <translation type="unfinished">Cyan</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1550"/>
+        <location filename="../main.ui" line="1551"/>
         <source>Cyan_500</source>
         <translation type="unfinished">Cyan_500</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1630"/>
+        <location filename="../main.ui" line="1631"/>
         <source>Lightgreen</source>
         <translation type="unfinished">Lightgreen</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1560"/>
+        <location filename="../main.ui" line="1561"/>
         <source>Lightgreen_500</source>
         <translation type="unfinished">Lightgreen_500</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1565"/>
+        <location filename="../main.ui" line="1566"/>
         <source>Orange</source>
         <translation type="unfinished">Orange</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1640"/>
+        <location filename="../main.ui" line="1641"/>
         <source>Pink</source>
         <translation type="unfinished">Pink</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1575"/>
+        <location filename="../main.ui" line="1576"/>
         <source>Pink_500</source>
         <translation type="unfinished">Pink_500</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1645"/>
+        <location filename="../main.ui" line="1646"/>
         <source>Purple</source>
         <translation type="unfinished">Purple</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1585"/>
+        <location filename="../main.ui" line="1586"/>
         <source>Purple_500</source>
         <translation type="unfinished">Purple_500</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1650"/>
+        <location filename="../main.ui" line="1651"/>
         <source>Red</source>
         <translation type="unfinished">Red</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1595"/>
+        <location filename="../main.ui" line="1596"/>
         <source>Red_500</source>
         <translation type="unfinished">Red_500</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1655"/>
+        <location filename="../main.ui" line="1656"/>
         <source>Teal</source>
         <translation type="unfinished">Teal</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1605"/>
+        <location filename="../main.ui" line="1606"/>
         <source>Teal_500</source>
         <translation type="unfinished">Teal_500</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1660"/>
+        <location filename="../main.ui" line="1661"/>
         <source>Yellow</source>
         <translation type="unfinished">Yellow</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1635"/>
+        <location filename="../main.ui" line="1636"/>
         <source>Medical</source>
         <translation type="unfinished">Medical</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1665"/>
+        <location filename="../main.ui" line="1666"/>
         <source>English</source>
         <translation type="unfinished">英语</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1670"/>
+        <location filename="../main.ui" line="1671"/>
         <source>Simplified Chinese</source>
         <translation type="unfinished">简体中文</translation>
     </message>
@@ -330,17 +334,17 @@
         <translation type="unfinished">帮助(&amp;H)</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1469"/>
+        <location filename="../main.ui" line="1470"/>
         <source>&amp;Theme</source>
         <translation type="unfinished">主题(&amp;T)</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1513"/>
+        <location filename="../main.ui" line="1514"/>
         <source>&amp;Language</source>
         <translation type="unfinished">语言(&amp;L)</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1525"/>
+        <location filename="../main.ui" line="1526"/>
         <source>&amp;About</source>
         <translation type="unfinished">关于(&amp;A)</translation>
     </message>
@@ -428,22 +432,50 @@ By doing this, you can use various commands for FileTranslationIndex to quickly 
         <translation type="unfinished">保存TranslationIndex</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1675"/>
+        <location filename="../main.ui" line="1676"/>
         <source>&amp;Reload config file</source>
         <translation type="unfinished">重新加载配置文件(&amp;R)</translation>
     </message>
-</context>
-<context>
-    <name>MainWindow</name>
     <message>
         <location filename="../main_op.py" line="193"/>
         <source>Running</source>
-        <translation type="unfinished">运行中</translation>
+        <translation type="obsolete">运行中</translation>
     </message>
     <message>
         <location filename="../main_op.py" line="196"/>
         <source>Error</source>
-        <translation type="unfinished">出错</translation>
+        <translation type="obsolete">出错</translation>
+    </message>
+    <message>
+        <location filename="../main.ui" line="1681"/>
+        <source>Sponsors</source>
+        <translation type="unfinished">赞助者</translation>
+    </message>
+</context>
+<context>
+    <name>SponsorsDialog</name>
+    <message>
+        <location filename="../sponsor.ui" line="14"/>
+        <source>Sponsors</source>
+        <translation type="unfinished">赞助者</translation>
+    </message>
+    <message>
+        <location filename="../sponsor.ui" line="82"/>
+        <source>## 😘Thanks to my sponsors:
+- 799190761
+- ansan
+
+To become a sponsor, see [this](https://github.com/abse4411/projz_renpy_translation?tab=readme-ov-file#sponsor).</source>
+        <translation type="unfinished">## 😘感谢我的赞助者们：
+- 799190761
+- ansan
+
+要成为一位赞助者，见[此](https://github.com/abse4411/projz_renpy_translation?tab=readme-ov-file#sponsor)。</translation>
+    </message>
+    <message>
+        <location filename="../sponsor.ui" line="142"/>
+        <source>Close</source>
+        <translation type="unfinished">关闭</translation>
     </message>
 </context>
 </TS>

@@ -937,8 +937,13 @@ To see complete implementation of DlTranslator, please see [translator/ai/impl.p
 This project is developed in my nonworking time. If you would like to support this project, just give me a star⭐, or sponsor me by [![](https://img.shields.io/badge/CN-WeChat-lightgreen)](imgs/sponsor/weixin.png), [![](https://img.shields.io/badge/Intl.-PayPal-blue)](https://www.paypal.com/paypalme/abse4411).
 
 </h3>
-
 </div>
+
+## 😘Thanks to my sponsors:
+- 799190761
+- ansan
+
+If you find your name missed in this list, please accept my apologies and email me at 1834674034@qq.com to add it.
 
 # 🗒Todo list:
 

@@ -429,5 +429,7 @@ screen projz_i18n_settings():
             label _("Note that")
             text _("If there exists the font configuration in game/tl/language/style.rpy, it will disable our font setting because of its higher priority. For more information, please see {a=https://www.renpy.org/doc/html/translation.html#style-translations}this{/a}.")
             null height 10
+            text _("Thanks to my sponsors:\n- 799190761\n- ansan\nTo become a sponsor, see {a=https://github.com/abse4411/projz_renpy_translation?tab=readme-ov-file#sponsor}this{a}.")
+            null height 10
             text _("This plugin is injected by the {a=https://github.com/abse4411/projz_renpy_translation}projz_renpy_translation{/a} project under the {a=https://github.com/abse4411/projz_renpy_translation?tab=GPL-3.0-1-ov-file}GPL-3.0 license{/a}.") xalign 1.0
             null height 60

@@ -15,10 +15,10 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import sys
 import time
+from functools import partial
 from queue import Queue
 
-from PyQt5.QtCore import QObject, pyqtSignal, Qt, QThread, QTranslator
-from PyQt5.QtGui import QTextCursor
+from PyQt5.QtCore import QObject, pyqtSignal, QThread, QTranslator
 from PyQt5.QtWidgets import QMainWindow, QDialog, QApplication
 from qt_material import QtStyleTools
 
@@ -30,31 +30,16 @@ from qt5.main_op import loadServerConfig, startServer, undoInjection, injectionG
     stopServer, applyTranslator, providerChanged, apiChanged, loadFontConfig, writeTranslations, fontChanged, \
     loadGameRootDirs, saveTranslationIndex, errorWrapper, retranslate, transDialogueChanged, transStringChanged, \
     reloadConfig
+from qt5.sponsor import Ui_SponsorsDialog
 from translation_provider.base import registered_providers
 
-
-class AboutWindows(QDialog):
-    def __init__(self):
-        super().__init__()
-        self.main = Ui_AboutDialogue()
-        self.main.setupUi(self)
+_theme_xml = 'default_dark.xml'
 
 
-def openAboutDialog():
-    d = AboutWindows()
-    d.exec()
-
-
-from functools import partial
-
-
-def to_xml(s):
-    return f'{s}.xml'
-
-
-class xmlStr:
-    def __init__(self, xml: str):
-        self.xml = xml
+def _set_theme(app: QtStyleTools, xml):
+    global _theme_xml
+    _theme_xml = xml
+    app.apply_stylesheet(app, xml)
 
 
 def setThemeAction(app, obj):
@@ -62,7 +47,33 @@ def setThemeAction(app, obj):
         if k.startswith('actionLight') or k.startswith('actionDark'):
             action_name = v.objectName()
             main = action_name[6:].lower()
-            v.triggered.connect(partial(app.apply_stylesheet, app, f'{main}.xml'))
+            v.triggered.connect(partial(_set_theme, app, f'{main}.xml'))
+
+
+class AboutWindow(QDialog, QtStyleTools):
+    def __init__(self):
+        super().__init__()
+        self.apply_stylesheet(self, _theme_xml)
+        self.main = Ui_AboutDialogue()
+        self.main.setupUi(self)
+
+
+def openAboutDialog():
+    d = AboutWindow()
+    d.exec()
+
+
+class SponsorsWindow(QDialog, QtStyleTools):
+    def __init__(self):
+        super().__init__()
+        self.apply_stylesheet(self, _theme_xml)
+        self.main = Ui_SponsorsDialog()
+        self.main.setupUi(self)
+
+
+def openSponsorsDialog():
+    d = SponsorsWindow()
+    d.exec()
 
 
 # class TextSignal(QObject):
@@ -152,6 +163,8 @@ class MainWindow(QMainWindow, QtStyleTools):
 
         # About page
         self.main.actionAbout.triggered.connect(openAboutDialog)
+        # Sponsors page
+        self.main.actionSponsors.triggered.connect(openSponsorsDialog)
 
         # Theme
         setThemeAction(self, self.main)
