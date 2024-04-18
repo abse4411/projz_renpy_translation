@@ -22,6 +22,7 @@ from PyQt5.QtCore import pyqtSignal, QThread, Qt
 from PyQt5.QtGui import QPalette, QColor
 from PyQt5.QtWidgets import QFileDialog, QMessageBox
 
+from qt5.ui_config import uconfig
 from store import TranslationIndex, index_type
 from trans import Translator
 from translation_provider.base import get_provider
@@ -148,6 +149,8 @@ def injectionGame(app, win: Ui_MainWindow):
                 font = None
             index.set_font(font)
             showInfoMsg(app, 'Injection succeed!')
+            new_dirs = uconfig.list_of('dir_history', [])
+            uconfig.put_and_save('dir_history', list(set(new_dirs+[win.gameroot_combox.currentText()])))
         else:
             showInfoMsg(app, 'Injection failed!')
     else:
@@ -407,6 +410,7 @@ def _updateTranslator(app, win: Ui_MainWindow, data: Tuple[Translator, str]):
                 if translator is not None:
                     server.set_translator(translator, font)
                     updateTextState('Running', app, win.translatorstatus_text)
+                    win.statusbar.showMessage('Applied.', 2000)
                 else:
                     showErrorMsg(app, f'Initializing translator failed!')
                 win.translatorapply_button.setEnabled(True)
@@ -433,7 +437,9 @@ def applyTranslator(app, win: Ui_MainWindow):
         font = strip_or_none(win.font_combobox.currentText())
         if font == 'Default':
             font = None
-        print(f'Apply a translator: {provider}/{api}, translation target: {source}->{target}')
+        status_str = f'Apply a translator: {provider}/{api}, translation target: {source}->{target}'
+        print(status_str)
+        win.statusbar.showMessage(status_str, 2000)
         if provider and api and source and target:
             initThread = InitTranslator(provider, api, source, target, font)
             initThread.trigger.connect(lambda x: _updateTranslator(app, win, x))
@@ -487,16 +493,13 @@ def saveTranslationIndex(app, win: Ui_MainWindow):
 
 @errorAspect
 def loadGameRootDirs(app, win: Ui_MainWindow):
+    dirs = []
     try:
-        dirs = []
-        indexes = TranslationIndex.list_indexes()
-        for _, index in indexes:
-            if index.itype == index_type.WEB:
-                dirs.append(index.project_path)
-        win.gameroot_combox.addItems(list(set(dirs)))
+        dirs.extend(uconfig.list_of('dir_history', []))
     except Exception as e:
         logging.exception(e)
-        showErrorMsg(app, 'Loading TranslationIndex list failed!')
+    win.gameroot_combox.addItems(list(set(dirs)))
+
 
 
 @errorAspect
@@ -526,6 +529,7 @@ def transStringChanged(app, win: Ui_MainWindow):
 @errorAspect
 def reloadConfig(app, win: Ui_MainWindow):
     default_config.reload()
+    win.statusbar.showMessage('Config file was reloaded.', 2000)
 
 # def clearLog(app, win: Ui_MainWindow):
 #     win.log_text.clear()

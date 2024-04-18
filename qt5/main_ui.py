@@ -31,6 +31,7 @@ from qt5.main_op import loadServerConfig, startServer, undoInjection, injectionG
     loadGameRootDirs, saveTranslationIndex, errorWrapper, retranslate, transDialogueChanged, transStringChanged, \
     reloadConfig
 from qt5.sponsor import Ui_SponsorsDialog
+from qt5.ui_config import uconfig
 from translation_provider.base import registered_providers
 
 _theme_xml = 'default_dark.xml'
@@ -39,6 +40,7 @@ _theme_xml = 'default_dark.xml'
 def _set_theme(app: QtStyleTools, xml):
     global _theme_xml
     _theme_xml = xml
+    uconfig.put_and_save('theme', _theme_xml)
     app.apply_stylesheet(app, xml)
 
 
@@ -171,6 +173,7 @@ class MainWindow(QMainWindow, QtStyleTools):
 
         # Language
         self.trans = QTranslator()
+        self.changeLang(get_lang_ts())
 
         # Log
         # self._std_color = self.main.startgame_button.palette().button().color()
@@ -248,6 +251,7 @@ class MainWindow(QMainWindow, QtStyleTools):
         self.trans.load(get_lang_ts())
         _app.installTranslator(self.trans)
         self.main.retranslateUi(self)
+        uconfig.put_and_save('language', lang)
 
     def closeEvent(self, event):
         # sys.stderr = self._stderr
