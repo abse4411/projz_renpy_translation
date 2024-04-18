@@ -54,9 +54,9 @@ def errorWrapper(app, func, returnRes: bool = True, defaultRes=None):
 
 
 def errorAspect(func):
-    def wrapper(app, win: Ui_MainWindow):
+    def wrapper(app, win: Ui_MainWindow, *args, **kwargs):
         try:
-            return func(app, win)
+            return func(app, win, *args, **kwargs)
         except Exception as e:
             logging.exception(e)
             showErrorMsg(app, str(e))
@@ -100,6 +100,9 @@ def undoInjection(app, win: Ui_MainWindow):
             win.uninject_button.setDisabled(True)
             win.savetrans_button.setDisabled(True)
             win.retranslate_button.setDisabled(True)
+            win.emptyDialogue_button.setDisabled(True)
+            win.emptyString_button.setDisabled(True)
+            win.emptyQueue_button.setDisabled(True)
             win.saveindex_button.setDisabled(True)
             win.inject_button.setEnabled(True)
             win.selectdir_button.setEnabled(True)
@@ -136,6 +139,9 @@ def injectionGame(app, win: Ui_MainWindow):
             win.startgame_button.setEnabled(True)
             win.savetrans_button.setEnabled(True)
             win.retranslate_button.setEnabled(True)
+            win.emptyDialogue_button.setEnabled(True)
+            win.emptyString_button.setEnabled(True)
+            win.emptyQueue_button.setEnabled(True)
             win.saveindex_button.setEnabled(True)
             win.selectdir_button.setDisabled(True)
             win.clearhistoty_button.setDisabled(True)
@@ -538,6 +544,32 @@ def clearHistory(app, win: Ui_MainWindow):
     win.gameroot_combox.clear()
     win.statusbar.showMessage('History of game dirs was clear.', 2000)
     uconfig.put_and_save('dir_history', [])
+
+
+@errorAspect
+def clearTranslations(app, win: Ui_MainWindow, data_type: str):
+    index = app.index.get()
+    if index:
+        if data_type == 'queue':
+            win.emptyQueue_button.setDisabled(True)
+            index.empty_queue()
+            win.statusbar.showMessage('Queue is now empty.', 2000)
+            win.emptyQueue_button.setEnabled(True)
+            win.queue_text.display(0)
+        elif data_type == 'string':
+            win.emptyString_button.setDisabled(True)
+            index.empty_strings()
+            win.statusbar.showMessage('Strings are now empty.', 2000)
+            win.emptyString_button.setEnabled(True)
+            win.stringnum_text.display(0)
+            win.totalnum_text.display(win.dialoguenum_text.intValue() + win.stringnum_text.intValue())
+        elif data_type == 'dialogue':
+            win.emptyDialogue_button.setDisabled(True)
+            index.empty_dialogue()
+            win.statusbar.showMessage('Dialogues are now empty.', 2000)
+            win.emptyDialogue_button.setEnabled(True)
+            win.dialoguenum_text.display(0)
+            win.totalnum_text.display(win.dialoguenum_text.intValue()+win.stringnum_text.intValue())
 
 # def clearLog(app, win: Ui_MainWindow):
 #     win.log_text.clear()

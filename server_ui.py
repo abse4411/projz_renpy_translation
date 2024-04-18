@@ -21,7 +21,6 @@ from PyQt5 import QtCore
 from PyQt5.QtWidgets import QApplication
 from qt_material import apply_stylesheet
 
-from qt5.lang import set_lang
 import qt5.main_ui
 from qt5.main_ui import MainWindow
 from qt5.ui_config import uconfig
@@ -68,7 +67,6 @@ if __name__ == "__main__":
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
     app = QApplication(sys.argv)
     qt5.main_ui._theme_xml = uconfig.str_of('theme', 'default_dark.xml')
-    set_lang(uconfig.str_of('language', 'en'))
     apply_stylesheet(app, theme=qt5.main_ui._theme_xml)
     # print(qt_material.list_themes())
     main_window = MainWindow()

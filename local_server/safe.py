@@ -39,6 +39,10 @@ class SafeDict(dict):
         with self._lock:
             return super().copy()
 
+    def clear(self):
+        with self._lock:
+            return super().clear()
+
     def __contains__(self, item):
         with self._lock:
             return super().__contains__(item)

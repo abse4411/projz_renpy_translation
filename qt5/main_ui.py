@@ -29,7 +29,7 @@ from qt5.main import Ui_MainWindow
 from qt5.main_op import loadServerConfig, startServer, undoInjection, injectionGame, selectRenpyDir, startGame, \
     stopServer, applyTranslator, providerChanged, apiChanged, loadFontConfig, writeTranslations, fontChanged, \
     loadGameRootDirs, saveTranslationIndex, errorWrapper, retranslate, transDialogueChanged, transStringChanged, \
-    reloadConfig, clearHistory
+    reloadConfig, clearHistory, clearTranslations
 from qt5.sponsor import Ui_SponsorsDialog
 from qt5.ui_config import uconfig
 from translation_provider.base import registered_providers
@@ -154,6 +154,9 @@ class MainWindow(QMainWindow, QtStyleTools):
         self.initThread = None
 
         # Button state
+        self.main.emptyDialogue_button.setDisabled(True)
+        self.main.emptyString_button.setDisabled(True)
+        self.main.emptyQueue_button.setDisabled(True)
         self.main.retranslate_button.setDisabled(True)
         self.main.uninject_button.setDisabled(True)
         self.main.startgame_button.setDisabled(True)
@@ -173,7 +176,9 @@ class MainWindow(QMainWindow, QtStyleTools):
 
         # Language
         self.trans = QTranslator()
-        self.changeLang(get_lang_ts())
+        lang = uconfig.str_of('language', 'en')
+        set_lang(lang)
+        self.changeLang(uconfig.put_and_save('language', lang))
 
         # Log
         # self._std_color = self.main.startgame_button.palette().button().color()
@@ -232,6 +237,9 @@ class MainWindow(QMainWindow, QtStyleTools):
         self.main.stringtran_check.stateChanged.connect(lambda: transStringChanged(self, self.main))
         self.main.actionReloadConfig.triggered.connect(lambda: reloadConfig(self, self.main))
         self.main.clearhistoty_button.clicked.connect(lambda: clearHistory(self, self.main))
+        self.main.emptyQueue_button.clicked.connect(lambda: clearTranslations(self, self.main, 'queue'))
+        self.main.emptyString_button.clicked.connect(lambda: clearTranslations(self, self.main, 'string'))
+        self.main.emptyDialogue_button.clicked.connect(lambda: clearTranslations(self, self.main, 'dialogue'))
 
         # Select provider
         if providers:

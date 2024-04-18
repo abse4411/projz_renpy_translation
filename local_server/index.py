@@ -265,6 +265,18 @@ class _WebTranslationIndex:
         with self._set_lock:
             self._golobal_ids.clear()
 
+    def empty_queue(self):
+        while not self._queue.empty():
+            self._queue.get()
+
+    def empty_strings(self):
+        with self._set_lock:
+            self._strings.clear()
+
+    def empty_dialogue(self):
+        with self._set_lock:
+            self._dialogue.clear()
+
     def save_translations(self):
         save_json = os.path.join(self._project.project_path, 'projz_translations.json')
         print(f'Writing translations to: {save_json}')
