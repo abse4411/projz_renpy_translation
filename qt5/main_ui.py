@@ -29,7 +29,7 @@ from qt5.main import Ui_MainWindow
 from qt5.main_op import loadServerConfig, startServer, undoInjection, injectionGame, selectRenpyDir, startGame, \
     stopServer, applyTranslator, providerChanged, apiChanged, loadFontConfig, writeTranslations, fontChanged, \
     loadGameRootDirs, saveTranslationIndex, errorWrapper, retranslate, transDialogueChanged, transStringChanged, \
-    reloadConfig
+    reloadConfig, clearHistory
 from qt5.sponsor import Ui_SponsorsDialog
 from qt5.ui_config import uconfig
 from translation_provider.base import registered_providers
@@ -231,6 +231,7 @@ class MainWindow(QMainWindow, QtStyleTools):
         self.main.dialoguetran_check.stateChanged.connect(lambda: transDialogueChanged(self, self.main))
         self.main.stringtran_check.stateChanged.connect(lambda: transStringChanged(self, self.main))
         self.main.actionReloadConfig.triggered.connect(lambda: reloadConfig(self, self.main))
+        self.main.clearhistoty_button.clicked.connect(lambda: clearHistory(self, self.main))
 
         # Select provider
         if providers:

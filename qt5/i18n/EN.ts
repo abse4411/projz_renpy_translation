@@ -68,192 +68,192 @@ The codes or libs we use or refer to:
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="131"/>
+        <location filename="../main.ui" line="144"/>
         <source>Select</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="151"/>
+        <location filename="../main.ui" line="164"/>
         <source>Info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="205"/>
+        <location filename="../main.ui" line="218"/>
         <source>Name:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="359"/>
+        <location filename="../main.ui" line="372"/>
         <source>None</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="269"/>
+        <location filename="../main.ui" line="282"/>
         <source>Version:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="335"/>
+        <location filename="../main.ui" line="348"/>
         <source>RenPy version:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="391"/>
+        <location filename="../main.ui" line="404"/>
         <source>Detect the game info while injecting. If yes, it will result in longer injection time.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="394"/>
+        <location filename="../main.ui" line="407"/>
         <source>Detect game info:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="407"/>
+        <location filename="../main.ui" line="420"/>
         <source>Yes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="426"/>
+        <location filename="../main.ui" line="439"/>
         <source>No</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="984"/>
+        <location filename="../main.ui" line="997"/>
         <source>Start</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="497"/>
+        <location filename="../main.ui" line="510"/>
         <source>Inject</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="527"/>
+        <location filename="../main.ui" line="540"/>
         <source>Undo injecion</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="546"/>
+        <location filename="../main.ui" line="559"/>
         <source>Translator</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="588"/>
+        <location filename="../main.ui" line="601"/>
         <source>Provider:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="616"/>
+        <location filename="../main.ui" line="629"/>
         <source>API:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="651"/>
+        <location filename="../main.ui" line="664"/>
         <source>Source language:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="687"/>
+        <location filename="../main.ui" line="700"/>
         <source>Target language:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="948"/>
+        <location filename="../main.ui" line="961"/>
         <source>Status:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="969"/>
+        <location filename="../main.ui" line="982"/>
         <source>Stopped</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="760"/>
+        <location filename="../main.ui" line="773"/>
         <source>Apply</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="824"/>
+        <location filename="../main.ui" line="837"/>
         <source>Translation Server</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="866"/>
+        <location filename="../main.ui" line="879"/>
         <source>Host:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="896"/>
+        <location filename="../main.ui" line="909"/>
         <source>Port:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="996"/>
+        <location filename="../main.ui" line="1009"/>
         <source>Stop</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1010"/>
+        <location filename="../main.ui" line="1023"/>
         <source>Translations</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1044"/>
+        <location filename="../main.ui" line="1057"/>
         <source>Queuing:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1099"/>
+        <location filename="../main.ui" line="1112"/>
         <source>Translated strings:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1154"/>
+        <location filename="../main.ui" line="1167"/>
         <source>Translated dialogues:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1209"/>
+        <location filename="../main.ui" line="1222"/>
         <source>Total:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1259"/>
+        <location filename="../main.ui" line="1272"/>
         <source>Setttings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1303"/>
+        <location filename="../main.ui" line="1316"/>
         <source>Translate strings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1310"/>
+        <location filename="../main.ui" line="1323"/>
         <source>Translate dialogues</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1342"/>
+        <location filename="../main.ui" line="1355"/>
         <source>Font:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1355"/>
+        <location filename="../main.ui" line="1368"/>
         <source>The font used to display text or save translations</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1367"/>
+        <location filename="../main.ui" line="1380"/>
         <source>Re-Translate once if requesting.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1370"/>
+        <location filename="../main.ui" line="1383"/>
         <source>Re-tranlsate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1391"/>
+        <location filename="../main.ui" line="1404"/>
         <source>Save current translations to the game root.
 By doing this, even if you close the translator, you can still load translations from the translation cache. 
 This translation cache file `projz_translations.json` will be saved to the game root.
@@ -261,164 +261,174 @@ Please note that, do not click the &quot;Undo injection&quot; button as this wil
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1397"/>
+        <location filename="../main.ui" line="1410"/>
         <source>Save translations</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1404"/>
+        <location filename="../main.ui" line="1417"/>
         <source>Save the current translation as a TranslationIndex.
 By doing this, you can use various commands for FileTranslationIndex to quickly process these translations.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1408"/>
+        <location filename="../main.ui" line="1421"/>
         <source>Save TranslationIndex</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1419"/>
+        <location filename="../main.ui" line="1432"/>
         <source>New updates are coming!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1462"/>
+        <location filename="../main.ui" line="1475"/>
         <source>&amp;Help</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1470"/>
+        <location filename="../main.ui" line="1483"/>
         <source>&amp;Theme</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1474"/>
+        <location filename="../main.ui" line="1487"/>
         <source>Light</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1496"/>
+        <location filename="../main.ui" line="1509"/>
         <source>Dark</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1514"/>
+        <location filename="../main.ui" line="1527"/>
         <source>&amp;Language</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1526"/>
+        <location filename="../main.ui" line="1539"/>
         <source>&amp;About</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1616"/>
+        <location filename="../main.ui" line="1629"/>
         <source>Amber</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1621"/>
+        <location filename="../main.ui" line="1634"/>
         <source>Blue</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1541"/>
+        <location filename="../main.ui" line="1554"/>
         <source>Blue_500</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1626"/>
+        <location filename="../main.ui" line="1639"/>
         <source>Cyan</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1551"/>
+        <location filename="../main.ui" line="1564"/>
         <source>Cyan_500</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1631"/>
+        <location filename="../main.ui" line="1644"/>
         <source>Lightgreen</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1561"/>
+        <location filename="../main.ui" line="1574"/>
         <source>Lightgreen_500</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1566"/>
+        <location filename="../main.ui" line="1579"/>
         <source>Orange</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1641"/>
+        <location filename="../main.ui" line="1654"/>
         <source>Pink</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1576"/>
+        <location filename="../main.ui" line="1589"/>
         <source>Pink_500</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1646"/>
+        <location filename="../main.ui" line="1659"/>
         <source>Purple</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1586"/>
+        <location filename="../main.ui" line="1599"/>
         <source>Purple_500</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1651"/>
+        <location filename="../main.ui" line="1664"/>
         <source>Red</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1596"/>
+        <location filename="../main.ui" line="1609"/>
         <source>Red_500</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1656"/>
+        <location filename="../main.ui" line="1669"/>
         <source>Teal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1606"/>
+        <location filename="../main.ui" line="1619"/>
         <source>Teal_500</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1661"/>
+        <location filename="../main.ui" line="1674"/>
         <source>Yellow</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1636"/>
+        <location filename="../main.ui" line="1649"/>
         <source>Medical</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1666"/>
+        <location filename="../main.ui" line="1679"/>
         <source>English</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1671"/>
+        <location filename="../main.ui" line="1684"/>
         <source>Simplified Chinese</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1676"/>
+        <location filename="../main.ui" line="1689"/>
         <source>&amp;Reload config file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1681"/>
+        <location filename="../main.ui" line="1694"/>
         <source>Sponsors</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../main.ui" line="126"/>
+        <source>Clear history</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../main.ui" line="784"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;You can also try &lt;a href=&quot;https://github.com/abse4411/projz_renpy_translation&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;RenyPy Translation Toolkit&lt;/span&gt;&lt;/a&gt; for translating the whole game.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

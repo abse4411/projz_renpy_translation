@@ -103,6 +103,7 @@ def undoInjection(app, win: Ui_MainWindow):
             win.saveindex_button.setDisabled(True)
             win.inject_button.setEnabled(True)
             win.selectdir_button.setEnabled(True)
+            win.clearhistoty_button.setEnabled(True)
             win.gamename_text.setText(None)
             win.gameversion_text.setText(None)
             win.renpyversion_text.setText(None)
@@ -137,6 +138,7 @@ def injectionGame(app, win: Ui_MainWindow):
             win.retranslate_button.setEnabled(True)
             win.saveindex_button.setEnabled(True)
             win.selectdir_button.setDisabled(True)
+            win.clearhistoty_button.setDisabled(True)
             win.inject_button.setDisabled(True)
             win.gameroot_combox.setDisabled(True)
             lend = index.dialogue_size
@@ -150,7 +152,7 @@ def injectionGame(app, win: Ui_MainWindow):
             index.set_font(font)
             showInfoMsg(app, 'Injection succeed!')
             new_dirs = uconfig.list_of('dir_history', [])
-            uconfig.put_and_save('dir_history', list(set(new_dirs+[win.gameroot_combox.currentText()])))
+            uconfig.put_and_save('dir_history', list(set(new_dirs + [win.gameroot_combox.currentText()])))
         else:
             showInfoMsg(app, 'Injection failed!')
     else:
@@ -501,7 +503,6 @@ def loadGameRootDirs(app, win: Ui_MainWindow):
     win.gameroot_combox.addItems(list(set(dirs)))
 
 
-
 @errorAspect
 def retranslate(app, win: Ui_MainWindow):
     win.retranslate_button.setDisabled(True)
@@ -530,6 +531,13 @@ def transStringChanged(app, win: Ui_MainWindow):
 def reloadConfig(app, win: Ui_MainWindow):
     default_config.reload()
     win.statusbar.showMessage('Config file was reloaded.', 2000)
+
+
+@errorAspect
+def clearHistory(app, win: Ui_MainWindow):
+    win.gameroot_combox.clear()
+    win.statusbar.showMessage('History of game dirs was clear.', 2000)
+    uconfig.put_and_save('dir_history', [])
 
 # def clearLog(app, win: Ui_MainWindow):
 #     win.log_text.clear()
