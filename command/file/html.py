@@ -71,20 +71,21 @@ class LoadHtmlCmd(LoadFileBaseCmd):
         for p in p_tags_with_tid:
             tid = p.get('tid')
             new_text = p.get_text()
-            if TranslationIndex.is_valid_tid(tid):
-                raw_text = tid_map.get(tid, None)
-                if raw_text is not None:
-                    if new_text == raw_text:
-                        if verbose:
-                            print(f'Discard untranslated line[tid: {tid}]: {raw_text}')
-                    else:
-                        if new_text.strip() == '' and not accept_blank:
+            if tid is not None and new_text is not None:
+                if TranslationIndex.is_valid_tid(tid):
+                    raw_text = tid_map.get(tid, None)
+                    if raw_text is not None:
+                        if new_text == raw_text:
                             if verbose:
-                                print(f'Discard blank line[tid: {tid}]: {raw_text}')
+                                print(f'Discard untranslated line[tid: {tid}]: {raw_text}')
                         else:
-                            use_cnt += 1
-                            tids_and_texts.append([tid, new_text])
-                            continue
-                discord_cnt += 1
+                            if new_text.strip() == '' and not accept_blank:
+                                if verbose:
+                                    print(f'Discard blank line[tid: {tid}]: {raw_text}')
+                            else:
+                                use_cnt += 1
+                                tids_and_texts.append([tid, new_text])
+                                continue
+                    discord_cnt += 1
         print(f'Find {use_cnt} translated lines, and discord {discord_cnt} lines')
         return tids_and_texts

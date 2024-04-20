@@ -56,7 +56,7 @@ class FileBaseCmd(BaseLangIndexCmd):
             accept_blank = self.args.accept_blank
             if tids_and_texts:
                 for tid, raw_text in tids_and_texts:
-                    if raw_text.strip() == '' and not accept_blank:
+                    if (raw_text is None or raw_text.strip() == '') and not accept_blank:
                         continue
                     res.append((tid, raw_text))
         if len(res) == 0:

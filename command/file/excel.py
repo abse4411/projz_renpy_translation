@@ -64,21 +64,22 @@ class LoadExcelCmd(LoadFileBaseCmd):
         verbose = self.args.verbose
         for i, (tid, new_text) in enumerate(zip(df[TID_STR], df[RAW_TEXT_STR]), 2):
             tid, new_text = str(tid).strip(), str(new_text)
-            if TranslationIndex.is_valid_tid(tid):
-                raw_text = tid_map.get(tid, None)
-                if raw_text is not None:
-                    if new_text == raw_text:
-                        if verbose:
-                            print(f'Discard untranslated line[Line {i}]: {raw_text}')
-                    else:
-                        if new_text.strip() == '' and not accept_blank:
+            if tid is not None and new_text is not None:
+                if TranslationIndex.is_valid_tid(tid):
+                    raw_text = tid_map.get(tid, None)
+                    if raw_text is not None:
+                        if new_text == raw_text:
                             if verbose:
-                                print(f'Discard blank line[Line {i}]: {new_text}')
+                                print(f'Discard untranslated line[Line {i}]: {raw_text}')
                         else:
-                            use_cnt += 1
-                            tids_and_texts.append([tid, new_text])
-                            continue
-                discord_cnt += 1
+                            if new_text.strip() == '' and not accept_blank:
+                                if verbose:
+                                    print(f'Discard blank line[Line {i}]: {new_text}')
+                            else:
+                                use_cnt += 1
+                                tids_and_texts.append([tid, new_text])
+                                continue
+                    discord_cnt += 1
         print(f'Find {use_cnt} translated lines, and discord {discord_cnt} lines')
         return tids_and_texts
 
@@ -196,20 +197,21 @@ class UpdateExcelCmd(UpdateFromFileBaseCmd):
             sheet_data = df[sheet]
             for i, (tid, new_text) in enumerate(zip(sheet_data['tid'], sheet_data['new_text']), 1):
                 tid, new_text = str(tid), str(new_text)
-                if TranslationIndex.is_valid_tid(tid):
-                    raw_text = tid_map.get(tid, None)
-                    if raw_text is not None:
-                        if new_text == raw_text:
-                            if verbose:
-                                print(f'Discard untranslated line[{sheet}, Line {i}]: {raw_text}')
-                        else:
-                            if new_text.strip() == '' and not accept_blank:
+                if tid is not None and new_text is not None:
+                    if TranslationIndex.is_valid_tid(tid):
+                        raw_text = tid_map.get(tid, None)
+                        if raw_text is not None:
+                            if new_text == raw_text:
                                 if verbose:
-                                    print(f'Discard blank line[{sheet}, Line {i}]: {new_text}')
+                                    print(f'Discard untranslated line[{sheet}, Line {i}]: {raw_text}')
                             else:
-                                use_cnt += 1
-                                tids_and_texts.append([tid, new_text])
-                                continue
-                    discord_cnt += 1
+                                if new_text.strip() == '' and not accept_blank:
+                                    if verbose:
+                                        print(f'Discard blank line[{sheet}, Line {i}]: {new_text}')
+                                else:
+                                    use_cnt += 1
+                                    tids_and_texts.append([tid, new_text])
+                                    continue
+                        discord_cnt += 1
         print(f'Find {use_cnt} translated lines, and discord {discord_cnt} lines')
         return tids_and_texts
