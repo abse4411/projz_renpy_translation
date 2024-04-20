@@ -447,7 +447,7 @@ class TranslationIndex:
         for v in dialogue_data:
             ddocid_map[v.doc_id] = v['block']
             for i, b in enumerate(v['block']):
-                if b['new_code'] is None:
+                if b['new_code'] is None or b['what'] is None:
                     continue
                 if not self._is_say_block(b) and say_only:
                     continue
