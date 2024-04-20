@@ -177,8 +177,7 @@ class MainWindow(QMainWindow, QtStyleTools):
         # Language
         self.trans = QTranslator()
         lang = uconfig.str_of('language', 'en')
-        set_lang(lang)
-        self.changeLang(uconfig.put_and_save('language', lang))
+        self.changeLang(lang)
 
         # Log
         # self._std_color = self.main.startgame_button.palette().button().color()

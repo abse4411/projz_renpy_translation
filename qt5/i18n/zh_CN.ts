@@ -439,12 +439,12 @@ By doing this, you can use various commands for FileTranslationIndex to quickly 
     <message>
         <location filename="../main_op.py" line="193"/>
         <source>Running</source>
-        <translation type="obsolete">运行中</translation>
+        <translation type="unfinished">运行中</translation>
     </message>
     <message>
         <location filename="../main_op.py" line="196"/>
         <source>Error</source>
-        <translation type="obsolete">出错</translation>
+        <translation type="unfinished">出错</translation>
     </message>
     <message>
         <location filename="../main.ui" line="1734"/>

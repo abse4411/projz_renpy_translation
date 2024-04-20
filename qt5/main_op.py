@@ -16,20 +16,18 @@
 import logging
 import os
 import time
-from typing import List, Tuple
+from typing import Tuple
 
-from PyQt5.QtCore import pyqtSignal, QThread, Qt
-from PyQt5.QtGui import QPalette, QColor
+from PyQt5.QtCore import pyqtSignal, QThread
 from PyQt5.QtWidgets import QFileDialog, QMessageBox
 
-from qt5.ui_config import uconfig
-from store import TranslationIndex, index_type
-from trans import Translator
-from translation_provider.base import get_provider
 from config import default_config
 from local_server.index import _WebTranslationIndex
 from local_server.server import FlaskServer
 from qt5.main import Ui_MainWindow
+from qt5.ui_config import uconfig
+from trans import Translator
+from translation_provider.base import get_provider
 from util import exists_dir, strip_or_none, open_item, exists_file, file_name
 
 
@@ -156,6 +154,8 @@ def injectionGame(app, win: Ui_MainWindow):
             if font == 'Default':
                 font = None
             index.set_font(font)
+            index.dialogue_translatable(win.dialoguetran_check.isChecked())
+            index.string_translatable(win.stringtran_check.isChecked())
             showInfoMsg(app, 'Injection succeed!')
             new_dirs = uconfig.list_of('dir_history', [])
             uconfig.put_and_save('dir_history', list(set(new_dirs + [win.gameroot_combox.currentText()])))
