@@ -19,6 +19,12 @@
 
 </div>
 
+## 🚨Warning🚨
+
+- It is currently under development, and the stored data of this version is not compatible with that before V0.4.0. To use the old version, please go [here](https://github.com/abse4411/projz_renpy_translation/tree/9e257770e9b30011b1053da28634c41d958d0fc5).
+- We DO NOT provide any RenPy game files, and the program is designed only for the convenience of developers to manage translations. The user shall be held responsible for all the consequences arising from using this program.
+
+
 # Index
 [](#use-openai-endpoint)
 There are two tools to help you translate a RenPy Game:
@@ -26,7 +32,7 @@ There are two tools to help you translate a RenPy Game:
 |              Name               | Features                                                                                                                                                                                                                     | Supported Translation Engines                                                                                                                                                                                                                                                                                                           |
 |:-------------------------------:|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 |       RealTime Translator       | Translate what you see. Very easy to use. See [this](#realtime-translator-free-and-open-source).                                                                                                                             | ☑️[OpenAI Endpoint](#use-openai-endpoint), ☑️[UlionTse/translators](#use-uliontse-translators)                                                                                                                                                                                                                                          |
-| Commandline Translation Toolkit | Translate all texts in the game. It take a few steps to translate. It is mainly used to manage translations among RenPy games. There are many use command to manage these translations. See [this](#before-getting-started). | ☑️[OpenAI Endpoint](#use-openai-endpoint), ☑️[UlionTse/translators](#use-uliontse-translators), ☑️[Google Translation](#use-web-translation), ☑️[HTML translation](#fast-translating-with-savehtml-and-loadhtml), ☑️[EXCEL translation](#fast-translating-with-saveexcel-and-loadexcel), ☑️[AI Translation Models](#use-ai-translation) |
+| Commandline Translation Toolkit | Translate all texts in the game. It take a few steps to translate. It is mainly used to manage translations among RenPy games. There are many use command to manage these translations. See [this](#before-getting-started). | ☑️[OpenAI Endpoint](#use-openai-endpoint), ☑️[UlionTse/translators](#use-uliontse-translators), ☑️[Google Translation](#use-web-translation), ☑️[HTML Translation](#fast-translating-with-savehtml-and-loadhtml), ☑️[Excel Translation](#fast-translating-with-saveexcel-and-loadexcel), ☑️[AI Translation Models](#use-ai-translation) |
 
 # ✨What's new
 <details>
@@ -321,11 +327,6 @@ translate chinese scene_01_5f0ee2360:
 ```
 
 For the above translation rpy, only `a "translated text"` will be extracted. To enable extracting `voice "path/to/file"`, please set `index.say_only` as `False` in [config.yaml](config.yaml).
-
-## 🚨Note🚨
-
-- It is currently under development, and the stored data of this version is not compatible with that before V0.4.0. To use the old version, please go [here](https://github.com/abse4411/projz_renpy_translation/tree/9e257770e9b30011b1053da28634c41d958d0fc5).
-- We DO NOT provide any RenPy game files, and the program is designed only for the convenience of developers to manage translations. The user shall be held responsible for all the consequences arising from using this program.
 
 # ✨Standalone EXE for Windows
 
