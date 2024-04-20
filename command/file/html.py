@@ -19,6 +19,8 @@ from typing import Dict, List, Tuple
 from command.file.base import SaveFileBaseCmd, LoadFileBaseCmd
 from store import TranslationIndex
 from util import default_write, default_read
+from bs4 import BeautifulSoup
+import html
 
 HTML_TEMPLATE = '''
 <!DOCTYPE html>
@@ -36,9 +38,8 @@ HTML_TEMPLATE = '''
 </body>
 </html>
 '''
-DIV_TEMPLATE = '<!--{id}#PROJZ#--><div>{text}</div><!--PROJZ-->\n'
+DIV_TEMPLATE = '<p tid="{tid}">{text}</p>\n'
 HTML_TAG = re.compile(r'<[^>]+>', re.S)
-
 
 class SaveHtmlCmd(SaveFileBaseCmd):
     def __init__(self):
@@ -47,7 +48,7 @@ class SaveHtmlCmd(SaveFileBaseCmd):
     def save(self, save_file: str, index: TranslationIndex, tids_and_texts: List[Tuple[str, str]]):
         div_arr = []
         for tid, raw_text in tids_and_texts:
-            div_arr.append(DIV_TEMPLATE.format(id=tid, text=raw_text))
+            div_arr.append(DIV_TEMPLATE.format(tid=tid, text=html.escape(raw_text)))
         save_html = HTML_TEMPLATE.format(filler=''.join(div_arr))
         with default_write(save_file) as f:
             f.write(save_html)
@@ -59,35 +60,31 @@ class LoadHtmlCmd(LoadFileBaseCmd):
 
     def get_translated_texts(self, tid_map: Dict[str, str], save_file: str):
         with default_read(save_file) as f:
-            lines = f.readlines()
+            html_doc = f.read()
         use_cnt = 0
         discord_cnt = 0
         tids_and_texts = []
         accept_blank = self.args.accept_blank
         verbose = self.args.verbose
-        for i, l in enumerate(lines):
-            l = l.strip()
-            if l:
-                if l.startswith('<!--') and l.endswith('<!--PROJZ-->'):
-                    tid_from = len('<!--')
-                    tid_end = l.find('#PROJZ#-->')
-                    if tid_from < tid_end:
-                        tid = l[tid_from:tid_end]
-                        new_text = HTML_TAG.sub('', l[tid_end + len('#PROJZ#-->'):])
-                        if TranslationIndex.is_valid_tid(tid):
-                            raw_text = tid_map.get(tid, None)
-                            if raw_text is not None:
-                                if new_text == raw_text:
-                                    if verbose:
-                                        print(f'Discard untranslated line[Line {i}]: {raw_text}')
-                                else:
-                                    if new_text.strip() == '' and not accept_blank:
-                                        if verbose:
-                                            print(f'Discard blank line[Line {i}]: {raw_text}')
-                                    else:
-                                        use_cnt += 1
-                                        tids_and_texts.append([tid, new_text])
-                                        continue
-                            discord_cnt += 1
+        soup = BeautifulSoup(html_doc, 'html.parser')
+        p_tags_with_tid = soup.find_all('p', attrs={'tid': True})
+        for p in p_tags_with_tid:
+            tid = p.get('tid')
+            new_text = p.get_text()
+            if TranslationIndex.is_valid_tid(tid):
+                raw_text = tid_map.get(tid, None)
+                if raw_text is not None:
+                    if new_text == raw_text:
+                        if verbose:
+                            print(f'Discard untranslated line[tid: {tid}]: {raw_text}')
+                    else:
+                        if new_text.strip() == '' and not accept_blank:
+                            if verbose:
+                                print(f'Discard blank line[tid: {tid}]: {raw_text}')
+                        else:
+                            use_cnt += 1
+                            tids_and_texts.append([tid, new_text])
+                            continue
+                discord_cnt += 1
         print(f'Find {use_cnt} translated lines, and discord {discord_cnt} lines')
         return tids_and_texts
