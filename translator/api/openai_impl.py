@@ -53,7 +53,7 @@ class OpenAILibTranslator(CachedTranslatorTemplate):
     def determine_translation_model(self):
         while True:
             args = my_input(
-                'Please enter a mode name you want to use (The value of {target_lang} in prompt): ')
+                'Please enter a mode name you want to use: ')
             args = line_to_args(args.strip())
             if len(args) >= 1:
                 if len(args) == 1:
