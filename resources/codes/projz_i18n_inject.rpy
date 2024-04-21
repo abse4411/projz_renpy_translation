@@ -172,23 +172,23 @@ init python:
 
     try:
         _DialogueTextTags_ref = renpy.character.DialogueTextTags
-    except Exception as e:
-        print(e)
+    except Exception as projz_ex:
+        print(projz_ex)
     try:
         old_set_text = renpy.text.text.Text.set_text
         renpy.text.text.Text.set_text = global_set_text
-    except Exception as e:
-        print(e)
+    except Exception as projz_ex:
+        print(projz_ex)
     try:
         _old_prefix_suffix = renpy.character.ADVCharacter.prefix_suffix
         renpy.character.ADVCharacter.prefix_suffix = global_prefix_suffix
-    except Exception as e:
-        print(e)
+    except Exception as projz_ex:
+        print(projz_ex)
         try:
             _old_do_display = renpy.character.ADVCharacter.do_display
             renpy.character.ADVCharacter.do_display = global_do_display
-        except Exception as e:
-            print(e)
+        except Exception as projz_ex:
+            print(projz_ex)
 
 
     from store import persistent, Action, DictEquality
