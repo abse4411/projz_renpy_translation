@@ -254,3 +254,4 @@ class Project:
             if not undo_done:
                 undo_chain(injection_chain)
             raise e
+        return None
