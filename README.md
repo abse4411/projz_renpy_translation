@@ -136,7 +136,7 @@ Then perform the following steps to translate a RenPy game:
 
 You will also find that the translation result is not displayed when playing game for the first time. This is because a large number of translated texts are currently in the queue, so you need to wait for the value of the queue reduced to 0 and re-enter the game scene.
 
-Finally, you can save the current translation results to the game by clicking the "Save translations to the game" button. By doing this, even if you close the translator, you can still load translations from the translation cache.
+Finally, you can save the current translation results to the game by clicking the "Save translations" button. By doing this, even if you close the translator, you can still load translations from the translation cache.
 
    ![main_ui.png](imgs/ui_s7.png)
 
@@ -146,7 +146,7 @@ To use the translation cache file, you need to reopen the game and close our tra
 
 At present, this translator is only a demo and will be integrated with our translation tools in the future.
 
-You can also save the current translation as a TranslationIndex by clicking the "Save as a TranslationIndex" button, so that you can use various commands for FileTranslationIndex to quickly process these translations.
+You can also save the current translation as a TranslationIndex by clicking the "Save TranslationIndex" button, so that you can use various commands for FileTranslationIndex to quickly process these translations in our Commandline Translation Toolkit.
 
 ## Customize your translation API in RealTime Translator
 1. Create a py file in [translation_provider](translation_provider). Then, create your class which inherits the `Provider` class in [base.py](translation_provider/base.py), and implements these following methods (`reload_config()` is not a member method in `Provider` class, which is used to reload config to get the newest values if `Reload config file` button is clicked.):

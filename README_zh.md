@@ -122,14 +122,14 @@
 
 您还会发现第一次进入界面，并没有显示翻译结果。这是由于目前大量翻译文本排队中，因此你需要等待Queueing的数值归零，重新进入即可。
 
-最后，你可以通过点击"Save translations to the game"按钮保存当前的翻译结果到游戏中。这样即使你关闭该翻译器后，也能从翻译缓存中加载翻译。
+最后，你可以通过点击"Save translations"按钮保存当前的翻译结果到游戏中。这样即使你关闭该翻译器后，也能从翻译缓存中加载翻译。
 这个翻译缓存文件`projz_translations.json`会保存到游戏根目录中。注意，请勿点击"Undo injection"按钮，这会使得我们翻译代码失效。
 
    ![main_ui.png](imgs/ui_s7.png)
 
 要使用翻译缓存文件您需要重新打开游戏，并关闭我们的翻译器。此外，我们的翻译器也会自动从游戏目录加载这个翻译缓存文件（在点击"Injection"按钮后），避免重复翻译。
 
-你还可以通过点击"Save as a TranslationIndex"按钮保存当前的翻译保存为TranslationIndex，这样您可以使用针对TranslationIndex各种命令来快速修改这些翻译。
+你还可以通过点击"Save TranslationIndex"按钮保存当前的翻译保存为TranslationIndex，这样您可以在我们的命令行翻译工具中使用针对TranslationIndex各种命令来快速修改这些翻译。
 
 ## 在RealTime Translator中自定义您的翻译API
 1. 在[translation_provider](translation_provider)中创建一个py文件。然后，创建一个类并继承[base.py](translation_provider/base.py)中的“Provider”类，实现以下方法(`reload_config()`并不是`Provider`类的成员函数，它主要用于再用户点击`重新加载配置文件`按钮后重新获取最新的配置值)：
