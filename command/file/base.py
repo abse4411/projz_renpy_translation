@@ -74,7 +74,7 @@ class FileBaseCmd(BaseLangIndexCmd):
 
 class SaveFileBaseCmd(FileBaseCmd):
     def __init__(self, name: str, file_type: str, file_ext: str):
-        description = f'Save untranslated lines of the give language to a {file_type} file.'
+        description = f'Save untranslated lines of the given language to a {file_type} file.'
         super().__init__(name, description, file_type, file_ext)
         save_filename = os.path.join(self.config.project_path, file_type, f'nickname_tag_lang.{file_ext}')
         self._parser.add_argument("-f", "--file", required=False, type=str, metavar=f'{file_type}_file',
@@ -106,7 +106,7 @@ class SaveFileBaseCmd(FileBaseCmd):
 
 class DumpToFileBaseCmd(FileBaseCmd):
     def __init__(self, name: str, file_type: str, file_ext: str):
-        description = f'Dump translations of the give language to a {file_type} file.'
+        description = f'Dump translations of the given language to a {file_type} file.'
         super().__init__(name, description, file_type, file_ext)
         save_filename = os.path.join(self.config.project_path, file_type, f'nickname_tag_lang_dump.{file_ext}')
         self._parser.add_argument("-f", "--file", required=False, type=str, metavar=f'{file_type}_file',
@@ -147,7 +147,7 @@ class DumpToFileBaseCmd(FileBaseCmd):
 
 class LoadFileBaseCmd(FileBaseCmd):
     def __init__(self, name: str, file_type: str, file_ext: str):
-        description = f'Load translated lines of the give language from a {file_type} file.'
+        description = f'Load translated lines of the given language from a {file_type} file.'
         super().__init__(name, description, file_type, file_ext)
         save_filename = os.path.join(self.config.project_path, file_type, f'nickname_tag_lang.{file_ext}')
         self._parser.add_argument("-f", "--file", required=False, type=str, metavar=f'{file_type}_file',
@@ -177,7 +177,7 @@ class LoadFileBaseCmd(FileBaseCmd):
 
 class UpdateFromFileBaseCmd(FileBaseCmd):
     def __init__(self, name: str, file_type: str, file_ext: str):
-        description = f'Update translations of the give language from a {file_type} file.'
+        description = f'Update translations of the given language from a {file_type} file.'
         super().__init__(name, description, file_type, file_ext)
         save_filename = os.path.join(self.config.project_path, file_type, f'nickname_tag_lang_dump.{file_ext}')
         self._parser.add_argument("-f", "--file", required=False, type=str, metavar=f'{file_type}_file',

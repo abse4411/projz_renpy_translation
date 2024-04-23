@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import argparse
+from typing import Tuple
 
 from config import default_config
 from store import TranslationIndex
@@ -45,7 +46,7 @@ class BaseIndexCmd(BaseCmd):
         self._nick_name = None
 
     @staticmethod
-    def parse_index_or_name(index_or_name: str):
+    def parse_index_or_name(index_or_name: str) -> Tuple[int, str]:
         index = None
         try:
             index = int(index_or_name)
@@ -58,7 +59,7 @@ class BaseIndexCmd(BaseCmd):
         super().parse_args(text)
         self._index, self._nick_name = self.parse_index_or_name(self.args.index_or_name)
 
-    def get_translation_index(self):
+    def get_translation_index(self) -> TranslationIndex:
         res = TranslationIndex.from_docid_or_nickname(self._index, self._nick_name)
         assert res is not None, \
             (f'Could\'n load this TranslationIndex with "{self.args.index_or_name}". '

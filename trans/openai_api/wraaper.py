@@ -39,6 +39,9 @@ class SimpleMessageManager:
         if len(self._msgs) // 2 > self._max_turns:
             self._msgs = self._msgs[2:]
 
+    def clear(self):
+        self._msgs.clear()
+
     def __len__(self):
         return len(self._sys_msg) + len(self._msgs)
 

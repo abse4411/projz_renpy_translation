@@ -124,6 +124,7 @@ register(InjectionCmd(), short_name='ij')
 
 # Translator
 register(TranslateCmd(), short_name='t')
+register(LLMAugmentTranslateCmd(), short_name='lt')
 
 # Operations for TranslationIndex
 register(ListTranslationIndexCmd(), short_name='l')

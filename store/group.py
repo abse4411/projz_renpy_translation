@@ -61,6 +61,7 @@ def group_translations_by(field_name: str, sorted_by: str, scope: str, index: Tr
             res['old_text'] = res['code']
             res['new_text'] = res['new_code']
         # we pop items that may confuse the user
+        res.pop('block')
         res.pop('new_code')
         res.pop('who')
         res.pop('what')

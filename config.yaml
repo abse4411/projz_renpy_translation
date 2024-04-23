@@ -35,6 +35,7 @@ projz:
     open_ai:
       target_lang: 'Chinese'
       user_role: &user_role 'user'
+      assistant_role: &assistant_role 'assistant'
       max_turns: 8 # Specify the maximum number of rounds for the conversation.
       langs: ['Afrikaans','Albanian','Amharic','Arabic','Armenian','Asturian','Azerbaijani','Bashkir','Belarusian','Bengali','Bosnian','Breton','Bulgarian','Burmese','Catalan','Cebuano','Central Khmer','Chinese','Croatian','Czech','Danish','Dutch','English','Estonian','Finnish','Flemish','French','Fulah','Gaelic','Galician','Ganda','Georgian','German','Greek','Gujarati','Haitian','Haitian Creole','Hausa','Hebrew','Hindi','Hungarian','Icelandic','Igbo','Iloko','Indonesian','Irish','Italian','Japanese','Javanese','Kannada','Kazakh','Khmer','Korean','Lao','Latvian','Letzeburgesch','Lingala','Lithuanian','Luxembourgish','Macedonian','Malagasy','Malay','Malayalam','Marathi','Moldavian','Moldovan','Mongolian','Nepali','Northern Sotho','Norwegian','Occitan','Oriya','Panjabi','Pashto','Persian','Polish','Portuguese','Punjabi','Pushto','Romanian','Russian','Scottish Gaelic','Serbian','Sindhi','Sinhala','Sinhalese','Slovak','Slovenian','Somali','Spanish','Sundanese','Swahili','Swati','Swedish','Tagalog','Tamil','Thai','Tswana','Turkish','Ukrainian','Urdu','Uzbek','Valencian','Vietnamese','Welsh','Western Frisian','Wolof','Xhosa','Yiddish','Yoruba','Zulu']
       models: ['qwen:0.5b','qwen:1.8b', 'qwen:4b', 'qwen:7b', 'qwen:14b', 'qwen:72b', 'gpt-4','gpt-4-0314','gpt-4-32k','gpt-4-32k-0314','gpt-3.5-turbo','gpt-3.5-turbo-0301']

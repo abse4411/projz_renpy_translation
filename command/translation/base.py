@@ -37,7 +37,7 @@ class TranslateCmd(BaseLangIndexCmd):
         self.reinit()
 
     def reinit(self):
-        super().__init__('translate', 'Translate untranslated lines of the give language\n using '
+        super().__init__('translate', 'Translate untranslated lines of the given language\n using '
                                       'the specified translator.')
         self._parser.add_argument("-t", "--translator", type=str, choices=list(_TRANSLATOR.keys()), required=True,
                                   help="The translator to use.")
@@ -54,7 +54,7 @@ class TranslateCmd(BaseLangIndexCmd):
             tids_and_texts = tids_and_texts[:self.args.limit]
             print(f'The max number of lines is set to {self.args.limit}.')
         if not tids_and_texts:
-            print('No untranslated lines to update.')
+            print('No untranslated lines to translate.')
         else:
             res = []
             if tids_and_texts:
@@ -121,11 +121,10 @@ class TranslateCmd(BaseLangIndexCmd):
                                         print(f'Discard blank line: {raw_text}')
                                     else:
                                         use_cnt += 1
-                                        new_tlist.append([tid, new_text])
+                                        new_tlist.append((tid, new_text))
                                         continue
                     print(f'Find {use_cnt} translated lines, and discord {len(tlist) - use_cnt} lines')
                     index.update_translations(self.args.lang, new_tlist,
                                               untranslated_only=True, discord_blank=accept_blank,
                                               say_only=self.config.say_only)
-
             self._translator.invoke(tids_and_texts, _update)

@@ -3,7 +3,7 @@
   <img src="imgs/projz_icon.ico" />
   <br />
 
-[![](https://img.shields.io/badge/projz_renpy_translation-0.4.4-brightgreen.svg)](https://github.com/abse4411/projz_renpy_translation)
+[![](https://img.shields.io/badge/projz_renpy_translation-0.4.5-brightgreen.svg)](https://github.com/abse4411/projz_renpy_translation)
 ![Github Stars](https://img.shields.io/github/stars/abse4411/projz_renpy_translation)
 [![](https://img.shields.io/badge/license-GPLv3-blue)](https://github.com/abse4411/projz_renpy_translation/blob/devp/LICENSE)
 ![](https://img.shields.io/badge/python-3.8-blue)
@@ -82,6 +82,7 @@
    ```
 9. [0.4.3] 现在你可以保存RealTime Translator的翻译为TranslationIndex，这意味着你可以用我们翻译工具来处理这些翻译。
 10. [0.4.4] 现在，您可以使用OpenAI端点进行翻译。见[使用OpenAI Endpoint翻译](#使用openai-endpoint翻译)。
+11. [0.4.5] 新命令`llm_translate`，使用OpenAI Endpoint翻译来提高翻译质量，并减少翻译错误。用法:`llm_translate {index_or_name} -l {lang} -m qwen:4b -t Chinese`，或者使用默认配置：`llm_translate {index or name} -l {lang} -a`
 
 </details>
 
@@ -212,85 +213,88 @@ except Exception as e:
 
 本工具包含的全部命令:
 ```text
-+------------------+---------------------------------------------------------------------------+
-|   Command name   |                                Description                                |
-+------------------+---------------------------------------------------------------------------+
-|     new | n      |            Create a TranslationIndex from the given game path.            |
-+------------------+---------------------------------------------------------------------------+
-|  new_file | nf   |          Create a FileTranslationIndex from the given file path.          |
-+------------------+---------------------------------------------------------------------------+
-|    import | i    |   Import translations of the given language into this TranslationIndex.   |
-|                  |                         (Base injection required)                         |
-+------------------+---------------------------------------------------------------------------+
-|   generate | g   |  Generate translations of the given language from this TranslationIndex.  |
-|                  |                         (Base injection required)                         |
-+------------------+---------------------------------------------------------------------------+
-|    count | c     |        Print a count of missing translations of the given language.       |
-|                  |                         (Base injection required)                         |
-+------------------+---------------------------------------------------------------------------+
-|     open | o     | Open the location of the RenPy game associated with the TranslationIndex. |
-|                  |                             (Windows OS Only)                             |
-+------------------+---------------------------------------------------------------------------+
-|       lint       |                       Run lint for checking script.                       |
-+------------------+---------------------------------------------------------------------------+
-|      launch      |        Launch the RenPy game associated with the TranslationIndex.        |
-|                  |                             (Windows OS Only)                             |
-+------------------+---------------------------------------------------------------------------+
-|   inject | ij    |               Inject our code or i18n plugins into the game.              |
-+------------------+---------------------------------------------------------------------------+
-|  translate | t   |             Translate untranslated lines of the give language             |
-|                  |                       using the specified translator.                     |
-+------------------+---------------------------------------------------------------------------+
-|      ls | l      |                     List existing TranslationIndexes.                     |
-+------------------+---------------------------------------------------------------------------+
-|       del        |                        Delete the TranslationIndex.                       |
-+------------------+---------------------------------------------------------------------------+
-|      clear       |                    Clear all existing TranslationIndex.                   |
-+------------------+---------------------------------------------------------------------------+
-|     discard      |                Discard translations of the given language.                |
-+------------------+---------------------------------------------------------------------------+
-|      rename      |                  Rename a name of language translations.                  |
-+------------------+---------------------------------------------------------------------------+
-|       copy       |                  Copy translations of the given language.                 |
-+------------------+---------------------------------------------------------------------------+
-|       mark       |              Mark all untranslated lines as translated ones.              |
-+------------------+---------------------------------------------------------------------------+
-|      unmark      |              Mark all translated lines as untranslated ones.              |
-+------------------+---------------------------------------------------------------------------+
-|     upstats      |        Update translation stats of the specified TranslationIndex.        |
-+------------------+---------------------------------------------------------------------------+
-|    merge | m     |  Merge translations of the given language from another TranslationIndex.  |
-+------------------+---------------------------------------------------------------------------+
-|  savehtml | sh   |        Save untranslated lines of the give language to a html file.       |
-+------------------+---------------------------------------------------------------------------+
-|  loadhtml | lh   |        Load translated lines of the give language from a html file.       |
-+------------------+---------------------------------------------------------------------------+
-|  saveexcel | se  |       Save untranslated lines of the give language to a excel file.       |
-+------------------+---------------------------------------------------------------------------+
-|  loadexcel | le  |       Load translated lines of the give language from a excel file.       |
-+------------------+---------------------------------------------------------------------------+
-|  dumpexcel | de  |          Dump translations of the give language to a excel file.          |
-+------------------+---------------------------------------------------------------------------+
-|     inspect      |         Inspect each translated line to find missing vars or tags,        |
-|                  |        then save these error lines to a excel file. You can use the       |
-|                  |       updateexcel command to update translations after you fix them.      |
-+------------------+---------------------------------------------------------------------------+
-| updateexcel | ue |        Update translations of the give language from a excel file.        |
-+------------------+---------------------------------------------------------------------------+
-|  savejson | sj   |        Save untranslated lines of the give language to a json file.       |
-+------------------+---------------------------------------------------------------------------+
-|  loadjson | lj   |        Load translated lines of the give language from a json file.       |
-+------------------+---------------------------------------------------------------------------+
-|     help | h     |                Print name and description of each command.                |
-+------------------+---------------------------------------------------------------------------+
-|     quit | q     |                             Quit the program.                             |
-+------------------+---------------------------------------------------------------------------+
-|     reconfig     |      Reload config from disk. It takes effect for most config items.      |
-+------------------+---------------------------------------------------------------------------+
-|      about       |                                 About me.                                 |
-+------------------+---------------------------------------------------------------------------+
-|       cls        |                               Clean screen.                               |
-+------------------+---------------------------------------------------------------------------+
++--------------------+---------------------------------------------------------------------------+
+|    Command name    |                                Description                                |
++--------------------+---------------------------------------------------------------------------+
+|      new | n       |            Create a TranslationIndex from the given game path.            |
++--------------------+---------------------------------------------------------------------------+
+|   new_file | nf    |          Create a FileTranslationIndex from the given file path.          |
++--------------------+---------------------------------------------------------------------------+
+|     import | i     |   Import translations of the given language into this TranslationIndex.   |
+|                    |                         (Base injection required)                         |
++--------------------+---------------------------------------------------------------------------+
+|    generate | g    |  Generate translations of the given language from this TranslationIndex.  |
+|                    |                         (Base injection required)                         |
++--------------------+---------------------------------------------------------------------------+
+|     count | c      |        Print a count of missing translations of the given language.       |
+|                    |                         (Base injection required)                         |
++--------------------+---------------------------------------------------------------------------+
+|      open | o      | Open the location of the RenPy game associated with the TranslationIndex. |
+|                    |                             (Windows OS Only)                             |
++--------------------+---------------------------------------------------------------------------+
+|        lint        |                       Run lint for checking script.                       |
++--------------------+---------------------------------------------------------------------------+
+|       launch       |        Launch the RenPy game associated with the TranslationIndex.        |
+|                    |                             (Windows OS Only)                             |
++--------------------+---------------------------------------------------------------------------+
+|    inject | ij     |               Inject our code or i18n plugins into the game.              |
++--------------------+---------------------------------------------------------------------------+
+|   translate | t    |             Translate untranslated lines of the given language            |
+|                    |                       using the specified translator.                     |
++--------------------+---------------------------------------------------------------------------+
+| llm_translate | lt |             Translate untranslated lines of the given language            |
+|                    |                     using the LLM Augment Translating.                    |
++--------------------+---------------------------------------------------------------------------+
+|       ls | l       |                     List existing TranslationIndexes.                     |
++--------------------+---------------------------------------------------------------------------+
+|        del         |                        Delete the TranslationIndex.                       |
++--------------------+---------------------------------------------------------------------------+
+|       clear        |                    Clear all existing TranslationIndex.                   |
++--------------------+---------------------------------------------------------------------------+
+|      discard       |                Discard translations of the given language.                |
++--------------------+---------------------------------------------------------------------------+
+|       rename       |                  Rename a name of language translations.                  |
++--------------------+---------------------------------------------------------------------------+
+|        copy        |                  Copy translations of the given language.                 |
++--------------------+---------------------------------------------------------------------------+
+|        mark        |              Mark all untranslated lines as translated ones.              |
++--------------------+---------------------------------------------------------------------------+
+|       unmark       |              Mark all translated lines as untranslated ones.              |
++--------------------+---------------------------------------------------------------------------+
+|      upstats       |        Update translation stats of the specified TranslationIndex.        |
++--------------------+---------------------------------------------------------------------------+
+|     merge | m      |  Merge translations of the given language from another TranslationIndex.  |
++--------------------+---------------------------------------------------------------------------+
+|   savehtml | sh    |       Save untranslated lines of the given language to a html file.       |
++--------------------+---------------------------------------------------------------------------+
+|   loadhtml | lh    |       Load translated lines of the given language from a html file.       |
++--------------------+---------------------------------------------------------------------------+
+|   saveexcel | se   |       Save untranslated lines of the given language to a excel file.      |
++--------------------+---------------------------------------------------------------------------+
+|   loadexcel | le   |       Load translated lines of the given language from a excel file.      |
++--------------------+---------------------------------------------------------------------------+
+|   dumpexcel | de   |          Dump translations of the given language to a excel file.         |
++--------------------+---------------------------------------------------------------------------+
+|      inspect       |         Inspect each translated line to find missing vars or tags,        |
+|                    |        then save these error lines to a excel file. You can use the       |
+|                    |       updateexcel command to update translations after you fix them.      |
++--------------------+---------------------------------------------------------------------------+
+|  updateexcel | ue  |        Update translations of the given language from a excel file.       |
++--------------------+---------------------------------------------------------------------------+
+|   savejson | sj    |       Save untranslated lines of the given language to a json file.       |
++--------------------+---------------------------------------------------------------------------+
+|   loadjson | lj    |       Load translated lines of the given language from a json file.       |
++--------------------+---------------------------------------------------------------------------+
+|      help | h      |                Print name and description of each command.                |
++--------------------+---------------------------------------------------------------------------+
+|      quit | q      |                             Quit the program.                             |
++--------------------+---------------------------------------------------------------------------+
+|      reconfig      |      Reload config from disk. It takes effect for most config items.      |
++--------------------+---------------------------------------------------------------------------+
+|       about        |                                 About me.                                 |
++--------------------+---------------------------------------------------------------------------+
+|        cls         |                               Clean screen.                               |
++--------------------+---------------------------------------------------------------------------+
 ```
 
 本工具要求您熟悉一定RenPy翻译流程，通过合理利用此工具可以实现快速翻译，并节省大量资源和时间。
@@ -785,8 +789,13 @@ open_ai:
 ### 开始使用
 #### 针对命令翻译工具
 ```bash
-t {index_or_name} -t openai -n {API_name} -l {lang}
+t {index_or_name} -t openai -l {lang}
 ```
+> **⭐建议⭐**<br />
+> 这里我们强烈建议您使用使用`llm_translate`命令代替以上翻译命令。如要使用`llm_translate`命令：
+> `lt {index or name} -l {lang} -m qwen:0.5b -t Chinese`或者
+> `lt {index or name} -l {lang} -a`
+
 #### 针对实时翻译
 在UI界面的provider列表选择"CloseAI"。
 
