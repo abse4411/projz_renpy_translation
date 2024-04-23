@@ -218,16 +218,21 @@ screen preferences():
         lang_map = {i['tl_name']: i for i in default_config['renpy']['lang_map']}
         if languages is None:
             languages = _list_tl_names(project_path)
-        for k, v in lang_map.items():
-            if k in languages:
+        simple_languages = []
+        for k in languages:
+            if k in lang_map:
+                v = lang_map[k]
                 valid_lang_map[k] = v
                 font_list.append(v['font'])
+            else:
+                simple_languages.append(k)
 
         # projz_i18n_inject template
         with default_read(r'resources/codes/projz_i18n_inject.rpy') as f:
             rpy_template = f.read()
         lang_content = ','.join(
             [f'"{k}":("{v["title"]}","{file_name(v["font"])}")' for k, v in valid_lang_map.items()])
+        slang_content = ','.join([f'"{k}"' for k in simple_languages])
         font_content = ','.join(f'"{file_name(f)}"' for f in set(font_list))
         mconfig = default_config['renpy']
         font_dir = mconfig['font']['save_dir']
@@ -239,6 +244,7 @@ screen preferences():
                         .replace("{projz_fonts_dir}", str(font_dir))
                         .replace("{projz_enable_developer_content}", str(enable_developer))
                         .replace("{projz_lang_content}", lang_content)
+                        .replace("{projz_slang_content}", slang_content)
                         .replace("{projz_shortcut_key}", shortcut_key)
                         .replace("{projz_font_content}", font_content))
         injection_rpy = os.path.join(project_path, RENPY_GAME_DIR, 'projz_i18n_inject.rpy')

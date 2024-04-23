@@ -120,6 +120,8 @@ define gui.main_font = projz_dget(projz_sgui_vars[6])
 
 # define projz_languages = {"korean": ("한국어", "SourceHanSansLite.ttf"), "japanese": ("日本語","SourceHanSansLite.ttf"), "french":("Русский","DejaVuSans.ttf"), "chinese": ("简体中文","SourceHanSansLite.ttf")}
 define projz_languages = {{projz_lang_content}}
+# define projz_simple_languages = ["cn", "en"]
+define projz_simple_languages = [{projz_slang_content}]
 #define projz_fonts = ["DejaVuSans.ttf", "KMKDSP.ttf", "SourceHanSansLite.ttf"]
 define projz_fonts = [{projz_font_content}]
 # Note that: fonts should be placed in "game/projz_fonts"
@@ -322,6 +324,8 @@ screen projz_i18n_settings():
                     textbutton _("Default") action [Function(projz_set_font, None), Language(None)]
                     for k,v in projz_languages.items():
                         textbutton v[0] text_font projz_font_dir+v[1] action [Function(projz_set_font, projz_font_dir+v[1]), Language(k)]
+                    for k in projz_simple_languages:
+                        textbutton k action Language(k)
                 ################### Make font vars dynamic by our implementation ###################
                 vbox:
                     style_prefix "radio"

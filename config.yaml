@@ -67,7 +67,6 @@ projz:
       translator_wait_time: 0.5 # The max time to wait for the translation result in server
       string_request_time_out: 0.8 # The max time to wait for the server response of translating string in game
       dialogue_request_time_out: 1.0 # The max time to wait for the server response of translating dialogue in game
-      default_font: 'SourceHanSansLite.ttf'
   log:
     enable: False # enable logging
     console: True # log to console
@@ -97,12 +96,11 @@ projz:
     # you can find download links in resources/fonts/readme.txt
     font:
       save_dir: 'projz_fonts/' # font dir in your_game/game, The dir should end with '/'.
-      default: 'SourceHanSansLite.ttf' # the default font to use.
+      default: 'SourceHanSansLite.ttf' # the default font to use (in realtime translator).
       list:
         - 'resources/fonts/Roboto-Light.ttf'
         - 'resources/fonts/SourceHanSansLite.ttf'
         - 'resources/fonts/DejaVuSans.ttf'
-
     # the final languages listed in the i18n menu is determined by dirs in your_game/game/tl except "None"
     lang_map:
       - tl_name: 'indonesian'
