@@ -328,12 +328,6 @@ python main.py
 
 ## 2.创建TranslationIndex
 
-> **🚨注意🚨**<br />
-> 在运行该命令前，请确保游戏中所有rpa文件被解压(使用[rpatool](https://github.com/Shizmob/rpatool)或
-[UnRPA](https://github.com/Lattyware/unrpa))，rpyc转为rpy文件(
-> 必须的，不然有些大部分rpy文件无法扫描，使用[unrpyc](https://github.com/CensoredUsername/unrpyc)工具)。
-> 或者使用这个集成unrpa和unrypc的工具：[UnRen](https://github.com/VepsrP/UnRen-Gideon-mod-)。
-
 启动主程序后，控制台输入：
 ```bash
 n D:\games\renpy_game_demo -n my_game
@@ -364,6 +358,12 @@ Note that: Translation Stats list translated/untranslated lines of dialogue and 
 注意`Injection state`中的`Base   True`，这表示我们成功识别并注入该游戏。
 
 ## 3.导入一个语言的翻译
+
+> **🚨注意🚨**<br />
+> 在运行该命令前，请确保游戏中所有rpa文件被解压(使用[rpatool](https://github.com/Shizmob/rpatool)或
+[UnRPA](https://github.com/Lattyware/unrpa))，rpyc转为rpy文件(
+> 必须的，不然有些大部分rpy文件无法扫描，使用[unrpyc](https://github.com/CensoredUsername/unrpyc)工具)。
+> 或者使用这个集成unrpa和unrypc的工具：[UnRen](https://github.com/VepsrP/UnRen-Gideon-mod-)。
 
 接着，控制台输入：
 
@@ -456,6 +456,42 @@ Note that: Translation Stats list translated/untranslated lines of dialogue and 
 > 
 > 各个翻译命令的翻译文本质量目前无法评估。
 
+## 3.5 检查翻译结果
+
+由于我们只是将原始文本发送给翻译器，因此翻译结果可能包含一些错误翻译内容，这些内容在运行游戏产生运行时错误。例如，以下原始文本：
+```text
+Today are [day].
+```
+翻译为（中文）后为：
+```text
+今天是[天]。
+```
+这里存在一个明显的错误，即变量`[day]`被错误地翻译为`[天]`. 因此，您将在运行游戏时收到一个KeyError。
+
+翻译结果中还有一些其他类型的错误会在运行游戏时产生运行时错误：
+```text
+1. You can set it to a {size=30}fixed size{/size}.
+ ->你可以将其设置为{大小=30}固定大小{/大小}。
+Error: `{大小=30}` and `{/大小}` should be `{size=30}` and `{/size}`, respectively.
+
+2. I have 100%% confidence.
+ ->我有100%的信心。
+Error: `100%` should be `100%%`.
+
+...
+```
+要查找这些潜在的错误，我们可以使用`inspect`命令将这些错误导出到Excel文件:
+```bash
+inspect 1 -l schinese
+```
+然后，打开它，在`new_text`列中手动更正这些错误：
+![inspect_page.png](imgs/inspect_page.png)
+`message`列显示与`raw_text`相比，`new_text`中缺少的标签\变量\转义字符。
+修复后，使用`updateexcel`命令更新翻译：
+```bash
+up 1 -l schinese
+```
+
 ## 4.生成翻译rpy
 
 然后使用`generate`命令来生成翻译rpy文件到游戏：
@@ -473,8 +509,7 @@ schinese: dialogue translation: using 856 and missing 84, string translation: us
 ```
 
 需要注意的是，如果`game/tl/{lang}`已经有rpy文件，里面包含翻译文本不会被覆盖，一般`generate`只会添加rpy文件没有的
-翻译文本(追加模式)。如果您在TranslationIndex项目中修改了rpy文件已经存在翻译，要把TranslationIndex最新翻译应用
-到rpy文件中，请添加`-f`参数，这将删除`game/tl/{lang}`所有rpy/rpyc文件。
+翻译文本(追加模式)。如果您在TranslationIndex项目中修改了rpy文件已经存在翻译，要把TranslationIndex最新翻译应用到rpy文件中，请添加`-f`参数，这将删除`game/tl/{lang}`所有rpy/rpyc文件。
 
 ## 5.注入我们的I18N插件
 

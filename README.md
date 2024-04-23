@@ -353,10 +353,6 @@ python main.py
 
 ## 2.Create a TranslationIndex
 
-> **🚨Note🚨**<br />
-> Before running this command, please make sure that all files are extracted from rpa files in the game dir (by useing [rpatool](https://github.com/Shizmob/rpatool) or
-> [UnRPA](https://github.com/Lattyware/unrpa)). And all rpyc file have converted into rpy files (Otherwise, most of the translations cannot be scanned. You can use  [unrpyc](https://github.com/CensoredUsername/unrpyc)). This tool integrates unrpa and unrypc: [UnRen](https://github.com/VepsrP/UnRen-Gideon-mod-).
-
 After starting the main program, run the following command in the opened console:
 
 ```bash
@@ -395,6 +391,10 @@ Note that: Translation Stats list translated/untranslated lines of dialogue and 
 Note that the `Base   True` in `Injection state` means that we have successfully identified and injected the game.
 
 ## 3.Import translations of a language
+
+> **🚨Note🚨**<br />
+> Before running this command, please make sure that all files are extracted from rpa files in the game dir (by useing [rpatool](https://github.com/Shizmob/rpatool) or
+> [UnRPA](https://github.com/Lattyware/unrpa)). And all rpyc file have converted into rpy files (Otherwise, most of the translations cannot be scanned. You can use  [unrpyc](https://github.com/CensoredUsername/unrpyc)). This tool integrates unrpa and unrypc: [UnRen](https://github.com/VepsrP/UnRen-Gideon-mod-).
 
 Next, run the command:
 
@@ -485,6 +485,42 @@ Note that: Translation Stats list translated/untranslated lines of dialogue and 
 > 5. AI Translation (automatically): `translate 1 -t ai -n mbart50 -l {lang}` Use deep network models to translate (with GPU resources).
 > 
 > It's still difficult to assess the translation quality of each translation command.
+
+## 3.5 Inspect translation result
+
+Since we just send the raw text to the translator, the translation result may contain some content that cause a runtime error when playing game. For example, the following raw text:
+```text
+Today are [day].
+```
+may be translated (into Chinese) as:
+```text
+今天是[天]。
+```
+There exists an obvious error that the variable `[day]` is translated incorrectly as `[天]`. As a result, you will receive a KeyError when playing.
+
+There also some other kinds of error in translation result that raise a runtime error when playing:
+```text
+1. You can set it to a {size=30}fixed size{/size}.
+ ->你可以将其设置为{大小=30}固定大小{/大小}。
+Error: `{大小=30}` and `{/大小}` should be `{size=30}` and `{/size}`, respectively.
+
+2. I have 100%% confidence.
+ ->我有100%的信心。
+Error: `100%` should be `100%%`.
+
+...
+```
+To find these potential error, we can use `inspect` command to export these errors to an Excel file by:
+```bash
+inspect 1 -l schinese
+```
+Then, open it to correct these errors manually in the `new_text` column:
+![inspect_page.png](imgs/inspect_page.png)
+The column `message` show the missing tags\variables\escape chars in `new_text` compared to the `raw_text`.
+After fixing them, use the `updateexcel` command to update translations:
+```bash
+up 1 -l schinese
+```
 
 ## 4.Generate translation rpys
 
