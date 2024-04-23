@@ -50,16 +50,6 @@ def block_of(
     }
 
 
-def strip_tags(text: str):
-    if text:
-        tags = list_tags(text)
-        if tags:
-            for t in tags.keys():
-                text = text.replace(t, '')
-        return text
-    return ''
-
-
 def quote_with_fonttag(font_dir, font, text):
     if font:
         return f'{{font={font_dir}{font}}}{text}{{/font}}'

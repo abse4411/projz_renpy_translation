@@ -24,8 +24,9 @@ from store import TranslationIndex, index_type
 from store.database.base import db_context
 from store.index import extra_data_of
 from store.index_type import register_index
-from store.misc import ast_of, block_of, strip_tags, quote_with_fonttag
+from store.misc import ast_of, block_of, quote_with_fonttag
 from util import exists_file, assert_not_blank, default_read, default_write
+from util.renpy import strip_tags
 
 
 class WebTranslationIndex(TranslationIndex):

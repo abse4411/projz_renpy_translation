@@ -880,7 +880,7 @@ open_ai:
 t {index_or_name} -t openai -n {API_name} -l {lang}
 ```
 > **⭐Suggestion⭐**<br />
-> We strongly recommended using the 'llm_translate' command instead of the above translation command. To use `llm_translate` command:
+> We strongly recommend that using the 'llm_translate' command instead of the above translation command. To use `llm_translate` command:
 > `lt {index or name} -l {lang} -m qwen:0.5b -t Chinese` or
 > `lt {index or name} -l {lang} -a`
 > 

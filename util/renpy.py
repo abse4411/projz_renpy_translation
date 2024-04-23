@@ -76,9 +76,13 @@ def list_escape_chars(text: str):
 
 
 def strip_tags(text: str):
-    if text is not None:
-        return regex_tag.sub('', text)
-    return text
+    if text:
+        tags = list_tags(text)
+        if tags:
+            for t in tags.keys():
+                text = text.replace(t, '')
+        return text
+    return ''
 
 
 def contain_alpha(text: str):

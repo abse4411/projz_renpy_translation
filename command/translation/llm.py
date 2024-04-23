@@ -21,9 +21,9 @@ from command import BaseLangIndexCmd
 from config import default_config
 from store.database.base import flush
 from store.group import group_translations_by, ALL
-from store.misc import strip_tags
 from trans.openai_api import OpenAITranslator
 from util import strip_or_none
+from util.renpy import strip_tags
 
 
 class _InnerTranslator(OpenAITranslator):

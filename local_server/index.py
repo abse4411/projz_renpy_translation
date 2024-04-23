@@ -27,10 +27,11 @@ from injection import Project
 from injection.base.base import UndoOnFailedCallInjector, undo_chain
 from injection.default import FontInjection, OnlinePyInjection
 from local_server.safe import SafeDict
-from store.misc import strip_tags, quote_with_fonttag
+from store.misc import quote_with_fonttag
 from store.web_index import WebTranslationIndex
 from trans import Translator
 from util import strip_or_none, exists_file
+from util.renpy import strip_tags
 
 
 class TranslationRunner(threading.Thread):
@@ -61,15 +62,21 @@ class TranslationRunner(threading.Thread):
                 self._close_translator()
                 print('Translator is stopped by the user.')
                 return
-            packs, texts = [], []
+            packs, texts, passed_packs = [], [], []
             try:
                 while not self._queue.empty():
                     p = self._queue.get()
                     t = p['substituted']
-                    packs.append(p)
-                    texts.append(strip_tags(t))
+                    s_text = strip_tags(t)
+                    if strip_or_none(s_text) is not None:
+                        texts.append(s_text)
+                        packs.append(p)
+                    else:
+                        p['new_text'] = t
+                        passed_packs.append(p)
                     if len(packs) == self._batch_size:
                         break
+                self._update_func(passed_packs)
                 new_texts = self._translator.translate_batch(texts)
                 for p, t in zip(packs, new_texts):
                     p['new_text'] = t

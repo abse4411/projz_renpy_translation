@@ -18,7 +18,6 @@ from argparse import ArgumentParser
 from command.translation.base import register_cmd_translator
 from config.base import ProjzConfig
 from trans.openai_api import OpenAITranslator
-from store.misc import strip_tags
 from translator.base import CachedTranslatorTemplate
 from util import strip_or_none, my_input, line_to_args
 

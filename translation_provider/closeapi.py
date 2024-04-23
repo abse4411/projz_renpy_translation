@@ -14,10 +14,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 from trans.openai_api import OpenAITranslator
-from store.misc import strip_tags
 from trans import Translator
 from translation_provider.base import Provider, register_provider
 from util import strip_or_none
+from util.renpy import strip_tags
 
 
 class _InnerTranslator(Translator):
