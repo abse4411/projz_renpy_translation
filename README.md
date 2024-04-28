@@ -198,7 +198,7 @@ class TranslatorsApi(Provider):
 # Register your translation API
 register_provider('translators', TranslatorsApi())
 ```
-2. Import your py file in [__init__.py](translation_provider/__init__.py):
+2. Import your py file in [\_\_init\_\_.py](translation_provider/__init__.py):
 ```python
 import logging
 import translation_provider.base
@@ -988,7 +988,7 @@ This project is developed in my nonworking time. If you would like to support th
 - 799190761
 - ansan
 
-If you find your name missed in this list, please accept my apologies and email me at 1834674034@qq.com to add it.
+If you find your name missed in this list, please accept my apologies and email [me](mailto:1834674034@qq.com) to add it.
 
 # 🗒Todo list:
 

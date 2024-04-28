@@ -182,7 +182,7 @@ class TranslatorsApi(Provider):
 # 注册你的translation API
 register_provider('translators', TranslatorsApi())
 ```
-2. 在[__init__.py](translation_provider/__init__.py)中导入您的py文件：
+2. 在[\_\_init\_\_.py](translation_provider/__init__.py)中导入您的py文件：
 ```python
 import logging
 import translation_provider.base
@@ -893,7 +893,7 @@ except Exception as e:
 - 799190761
 - ansan
 
-如果你发现你的名字在这个列表中遗漏了，请接受我的道歉，并给我发电子邮件1834674034@qq.com以添加它。
+如果你发现你的名字在这个列表中遗漏了，请接受我的道歉，并给[我](mailto:1834674034@qq.com)发电子邮件以添加它。
 
 # 🗒Todo List:
 
