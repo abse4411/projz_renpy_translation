@@ -369,6 +369,24 @@ Note that: Translation Stats list translated/untranslated lines of dialogue and 
 > 必须的，不然有些大部分rpy文件无法扫描，使用[unrpyc](https://github.com/CensoredUsername/unrpyc)工具)。
 > 或者使用这个集成unrpa和unrypc的工具：[UnRen](https://github.com/VepsrP/UnRen-Gideon-mod-)。
 
+### 解包你的RenPy游戏 (如果需要的话)
+
+如果在你游戏的根目录的game的目录下有`.rpa`文件 (例如：`D:\games\renpy_game_demo\game`), 或者只有rpyc文件而没有对应同名的rpy文件，那你需要解包你的RenPy游戏。
+![unren1.png](imgs/unren1.png)
+
+1. 从[UnRen Releases](https://github.com/VepsrP/UnRen-Gideon-mod-/releases)下载`UnRen-forall.bat`:
+   ![unren2.png](imgs/unren2.png)
+   解压，然后把里面的`UnRen-forall.bat`放在你的游戏根目录:
+   ![unren3.png](imgs/unren3.png)
+2. 运行它，然后输入: 回车, 8, 回车:
+   ![unren4.png](imgs/unren4.png)
+   然后输入: y:
+   ![unren5.png](imgs/unren5.png)
+   等待操作完成，然后就可以关了:
+   ![unren6.png](imgs/unren6.png)
+
+### 现在回到import命令
+
 接着，控制台输入：
 
 ```bash

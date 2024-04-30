@@ -399,6 +399,24 @@ Note that the `Base   True` in `Injection state` means that we have successfully
 > Before running this command, please make sure that all files are extracted from rpa files in the game dir (by useing [rpatool](https://github.com/Shizmob/rpatool) or
 > [UnRPA](https://github.com/Lattyware/unrpa)). And all rpyc file have converted into rpy files (Otherwise, most of the translations cannot be scanned. You can use  [unrpyc](https://github.com/CensoredUsername/unrpyc)). This tool integrates unrpa and unrypc: [UnRen](https://github.com/VepsrP/UnRen-Gideon-mod-).
 
+### Unren your RenPy game (If needed)
+
+If you find files whose name end with `.rpa` in your `your_game_root`/`game` dir (e.g, `D:\games\renpy_game_demo\game`), or there exists only rpyc files without corresponding rpy files which have same filenames, you should unren the game.
+![unren1.png](imgs/unren1.png)
+
+1. Download `UnRen-forall.bat` from [UnRen Releases](https://github.com/VepsrP/UnRen-Gideon-mod-/releases):
+   ![unren2.png](imgs/unren2.png)
+   Unzip it, you will get a `UnRen-forall.bat`, then put it into your game root dir:
+   ![unren3.png](imgs/unren3.png)
+2. Click it to run, and input: Enter key, 8, Enter key:
+   ![unren4.png](imgs/unren4.png)
+   Then, input: y:
+   ![unren5.png](imgs/unren5.png)
+   Just wait to be done, and you can close it:
+   ![unren6.png](imgs/unren6.png)
+
+### Now, return to the import command
+
 Next, run the command:
 
 ```bash
