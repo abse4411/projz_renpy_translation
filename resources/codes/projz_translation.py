@@ -203,10 +203,12 @@ def _should_translate(string):
 def is_translatable(string):
     if string:
         string = string.strip()
+        for ch in u'1234567890+-*=_)(&^%$#@!`~<,>.…·?/:;"\'|\\}{【】“”、；：？《，》。！￥（）—\t \a\r\n\b\f\v\0':
+            string = string.replace(ch, '')
         if string == '' or (string.startswith('[') and string.endswith(']')):
             return False
         for ch in string:
-            if ch not in u'1234567890+-*=_)(&^%$#@!`~<,>.?/:;"\'|\\}]{[【】“”、；：？《，》。！￥（）—\t \a\r\n\b\f\v\0':
+            if ch not in u'1234567890+-*=_)(&^%$#@!`~<,>.…·?/:;"\'|\\}]{[【】“”、；：？《，》。！￥（）—\t \a\r\n\b\f\v\0':
                 return True
         return False
     return False

@@ -21,6 +21,7 @@ from store import TranslationIndex
 from store.database.base import db_context
 from store.group import ALL, TRANS, UNTRANS, group_translations_by, GROUPBY_FIELDS, SORTBY_FIELDS
 from util import exists_file, mkdir, open_and_select
+from util.renpy import is_translatable
 
 
 class FileBaseCmd(BaseLangIndexCmd):
@@ -51,12 +52,15 @@ class FileBaseCmd(BaseLangIndexCmd):
     def check_untranslated_lines(self, filename_suffix: str=None, check_existing: bool = False):
         save_file, index = self.check_savefile_and_index(filename_suffix, check_existing)
         tids_and_texts = index.get_untranslated_lines(self.args.lang, say_only=self.config.say_only)
+        ignore_meaningless_text = self.config['index']['ignore_meaningless_text']
         res = []
         if tids_and_texts:
             accept_blank = self.args.accept_blank
             if tids_and_texts:
                 for tid, raw_text in tids_and_texts:
                     if (raw_text is None or raw_text.strip() == '') and not accept_blank:
+                        continue
+                    if ignore_meaningless_text and not is_translatable(raw_text):
                         continue
                     res.append((tid, raw_text))
         if len(res) == 0:

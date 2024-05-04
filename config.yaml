@@ -78,6 +78,7 @@ projz:
     extra_scan: True
     # strip tags before translating texts
     strip_tag: False # This will reduce parsing errors when loading scripts
+    ignore_meaningless_text: True # Filter texts that are not need to be translated when exporting (in sh, sj, se cmd), like: ..., !!!, etc.
     write_cache_size: 2000 # large number of write operations will improves speed of read/write translations by reducing disk I/O.
     say_only: True # only import or export saystatements for dialogues
     # Rpy files to ignore when import or generate. ['options.rpy', 'common.rpy', 'projz_i18n_inject.rpy', 'screens.rpy']
