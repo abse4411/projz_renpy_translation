@@ -31,7 +31,7 @@ from store.misc import quote_with_fonttag
 from store.web_index import WebTranslationIndex
 from trans import Translator
 from util import strip_or_none, exists_file
-from util.renpy import strip_tags
+from util.renpy import strip_tags, is_translatable
 
 
 class TranslationRunner(threading.Thread):
@@ -68,7 +68,7 @@ class TranslationRunner(threading.Thread):
                     p = self._queue.get()
                     t = p['substituted']
                     s_text = strip_tags(t)
-                    if strip_or_none(s_text) is not None:
+                    if strip_or_none(s_text) is not None and is_translatable(s_text):
                         texts.append(s_text)
                         packs.append(p)
                     else:

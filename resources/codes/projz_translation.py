@@ -205,6 +205,7 @@ def is_translatable(string):
         string = string.strip()
         for ch in u'1234567890+-*=_)(&^%$#@!`~<,>.…·?/:;"\'|\\}{【】“”、；：？《，》。！￥（）—\t \a\r\n\b\f\v\0':
             string = string.replace(ch, '')
+        string = string.strip()
         if string == '' or (string.startswith('[') and string.endswith(']')):
             return False
         for ch in string:
@@ -216,7 +217,7 @@ def is_translatable(string):
 
 def projz_prefix_suffix(self, thing, prefix, body, suffix):
     res = _old_prefix_suffix(self, thing, prefix, body, suffix)
-    if body is None or not is_translatable(body):
+    if body is None or not is_translatable(res):
         return res
     new_text = None
     if thing == 'what':
