@@ -19,9 +19,9 @@
 
 </div>
 
-## 🚨警告🚨
-- 现在正在开发中,该版本不兼容V0.4.0之前的数据，要使用旧版本请到[这里](https://github.com/abse4411/projz_renpy_translation/tree/9e257770e9b30011b1053da28634c41d958d0fc5)。
-- 我们不提供任何RenPy游戏文件，该程序仅为方便开发人员管理翻译文件。任何因使用本程序产生的后果由使用者负责。
+> [!CAUTION]
+> - 现在正在开发中,该版本不兼容V0.4.0之前的数据，要使用旧版本请到[这里](https://github.com/abse4411/projz_renpy_translation/tree/9e257770e9b30011b1053da28634c41d958d0fc5)。
+> - 我们不提供任何RenPy游戏文件，该程序仅为方便开发人员管理翻译文件。任何因使用本程序产生的后果由使用者负责。
 
 
 # 索引
@@ -318,7 +318,7 @@ translate chinese scene_01_5f0ee2360:
 # 🛫快速开始
 
 ## 1.启动(可选)
-> **🚨注意🚨**<br />
+> [!NOTE]  
 > 你可以在[Release](https://github.com/abse4411/projz_renpy_translation/releases)下载exe，解压后直接运行，仅限Windows平台。
 
 安装python3.8后，使用pip安装依赖：
@@ -339,7 +339,7 @@ n D:\games\renpy_game_demo -n my_game
 - `D:\games\renpy_game_demo` 是您的RenPy游戏根目录。
 - `-n my_game`是可选的，您可以指定该TranslationIndex的别名，因此您可以使用别名代替序号，如果没有指定`-n`参数将会随机生成一个随机的别名。您还可以使用`-t 1.0`定义一个标签，这也是可选的，如果没有指定`-t`参数，默认的标签为`None`。
 - `n`是`new`命令的缩写，我们为常用命令定义了命令缩写，您可以输入`help -u`命令打印所有命令的详细信息（包括它们的缩写）
-> **🚨注意🚨**<br />
+> [!NOTE]  
 > 如果RenPy游戏目录中含有空格，请用半角单双引号（或单引号）括起来，例如：new "D:\games\renpy game_demo" -n my_game
 
 然后输入`ls`命令查看我们创建的TranslationIndex：
@@ -363,7 +363,7 @@ Note that: Translation Stats list translated/untranslated lines of dialogue and 
 
 ## 3.导入一个语言的翻译
 
-> **🚨注意🚨**<br />
+> [!NOTE]  
 > 在运行该命令前，请确保游戏中所有rpa文件被解压(使用[rpatool](https://github.com/Shizmob/rpatool)或
 [UnRPA](https://github.com/Lattyware/unrpa))，rpyc转为rpy文件(
 > 必须的，不然有些大部分rpy文件无法扫描，使用[unrpyc](https://github.com/CensoredUsername/unrpyc)工具)。
@@ -573,17 +573,17 @@ Note that: Translation Stats list translated/untranslated lines of dialogue and 
 ![i18n.png](imgs/i18n.png)
 ![i18n.png](imgs/i18n_1.png)
 
-> **💡额外内容💡**<br />
+> [!TIP]
 > 您可以在[config.yaml](config.yaml)文件配置生成I18N插件语言设置和字体内容，`inject`命令
 > 生成的语言取决于`game/tl`下的非`None`文件夹与[config.yaml](config.yaml)的`lang_map`配置的语言交集
 > 
 > 字体可以在[config.yaml](config.yaml)的`fonts`添加
 > 
 > 如果`game/tl/{lang}`目录下存在对字体的配置（例如style.rpy）,我们的字体设置将会被覆盖而无效，这些字体配置类似：
-```text
-translate schinese python:
-    gui.system_font = gui.main_font = gui.text_font = gui.name_text_font = gui.interface_text_font = gui.button_text_font = gui.choice_button_text_font = "SourceHanSansLite.ttf"
-```
+> ```text
+> translate schinese python:
+>     gui.system_font = gui.main_font = gui.text_font = gui.name_text_font = gui.interface_text_font = gui.button_text_font = gui.choice_button_text_font = "SourceHanSansLite.ttf"
+> ```
 > 如果存在以上配置，您将无法通过我们的插件修改字体。
 > 
 > 开发者模式（Developer Mode）和调试控制台（Debug Console）的配置更改后需要重新加载游戏才能生效。
@@ -809,7 +809,7 @@ open_ai:
 ```bash
 t {index_or_name} -t openai -l {lang}
 ```
-> **⭐建议⭐**<br />
+> [!TIP]
 > 这里我们强烈建议您使用使用`llm_translate`命令代替以上翻译命令。如要使用`llm_translate`命令：
 > `lt {index or name} -l {lang} -m qwen:0.5b -t Chinese`或者
 > `lt {index or name} -l {lang} -a`
