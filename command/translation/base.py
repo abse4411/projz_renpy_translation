@@ -18,6 +18,7 @@ from command import BaseLangIndexCmd
 from config import default_config
 from store import TranslationIndex
 from util import line_to_args
+from util.renpy import is_translatable
 
 _TRANSLATOR = dict()
 
@@ -58,11 +59,10 @@ class TranslateCmd(BaseLangIndexCmd):
         else:
             res = []
             if tids_and_texts:
-                if tids_and_texts:
-                    for tid, raw_text in tids_and_texts:
-                        if raw_text.strip() == '':
-                            continue
-                        res.append([tid, raw_text])
+                for tid, raw_text in tids_and_texts:
+                    if not is_translatable(raw_text):
+                        continue
+                    res.append([tid, raw_text])
             tids_and_texts = res
         return tids_and_texts, index
 

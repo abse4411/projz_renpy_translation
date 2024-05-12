@@ -23,7 +23,7 @@ from store.database.base import flush
 from store.group import group_translations_by, ALL
 from trans.openai_api import OpenAITranslator
 from util import strip_or_none
-from util.renpy import strip_tags
+from util.renpy import strip_tags, is_translatable
 
 
 class _InnerTranslator(OpenAITranslator):
@@ -82,7 +82,7 @@ class LLMAugmentTranslateCmd(BaseLangIndexCmd):
                                           say_only=self.config.say_only)
         for g in group_map.values():
             for d in g:
-                if d['new_text'] is None and strip_or_none(strip_tags(d['old_text'])) is not None:
+                if d['new_text'] is None and is_translatable(d['old_text']):
                     n_untrans += 1
         if n_untrans == 0:
             print('No untranslated lines to translate.')
@@ -100,7 +100,7 @@ class LLMAugmentTranslateCmd(BaseLangIndexCmd):
                 for g in group_map.values():
                     translator.clear_chat()
                     for d in g:
-                        if d['new_text'] is None:
+                        if d['new_text'] is None and is_translatable(d['old_text']):
                             raw_text = strip_or_none(strip_tags(d['old_text']))
                             if raw_text is None:
                                 continue

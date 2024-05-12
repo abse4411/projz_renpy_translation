@@ -65,7 +65,7 @@ class NewFileTranslationIndexCmd(BaseCmd):
                                        "if this args is not presented.")
         self._parser.add_argument("-t", "--tag", required=False, type=str, metavar='tag',
                                   help="A tag for for this TranslationIndex.")
-        self._parser.add_argument("-s", "--source", required=True, type=str, metavar='tool',
+        self._parser.add_argument("-s", "--source", required=True, type=str, metavar='tool_type',
                                   choices=available_convertors(),
                                   help="Which tool has generated this file.")
         self._parser.add_argument("-l", "--list", action='store_true',
