@@ -573,6 +573,10 @@ Note that: Translation Stats list translated/untranslated lines of dialogue and 
 ![i18n.png](imgs/i18n.png)
 ![i18n.png](imgs/i18n_1.png)
 
+> [!NOTE]  
+> 如果您在启动游戏或者显示I18n插件遇到问题, 你可以使用`ij 1 -t I18n -u`来取消注入。 
+> 或者你可以使用一个兼容版本的I18n插件，通过把[resources/codes/projz_i18n_inject_4oldversion.rpy](resources/codes/projz_i18n_inject_4oldversion.rpy)的内容覆盖原始的[resources/codes/projz_i18n_inject.rpy](resources/codes/projz_i18n_inject.rpy)文件内容，然后重新注入I18n插件：`ij 1 -t I18n`。
+
 > [!TIP]
 > 您可以在[config.yaml](config.yaml)文件配置生成I18N插件语言设置和字体内容，`inject`命令
 > 生成的语言取决于`game/tl`下的非`None`文件夹与[config.yaml](config.yaml)的`lang_map`配置的语言交集
