@@ -64,77 +64,77 @@ The codes or libs we use or refer to:
         <translation type="unfinished">Projz-RealTimeTranslator</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="837"/>
+        <location filename="../main.ui" line="916"/>
         <source>Translation Server</source>
         <translation type="unfinished">翻译服务器</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="879"/>
+        <location filename="../main.ui" line="958"/>
         <source>Host:</source>
         <translation type="unfinished">主机名：</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="909"/>
+        <location filename="../main.ui" line="988"/>
         <source>Port:</source>
         <translation type="unfinished">端口：</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="961"/>
+        <location filename="../main.ui" line="1040"/>
         <source>Status:</source>
         <translation type="unfinished">状态：</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="982"/>
+        <location filename="../main.ui" line="1061"/>
         <source>Stopped</source>
         <translation type="unfinished">已停止</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="997"/>
+        <location filename="../main.ui" line="1076"/>
         <source>Start</source>
         <translation type="unfinished">启动</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1009"/>
+        <location filename="../main.ui" line="1088"/>
         <source>Stop</source>
         <translation type="unfinished">停止</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1023"/>
+        <location filename="../main.ui" line="1102"/>
         <source>Translations</source>
         <translation type="unfinished">翻译</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1057"/>
+        <location filename="../main.ui" line="1136"/>
         <source>Queuing:</source>
         <translation type="unfinished">排队中：</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1112"/>
+        <location filename="../main.ui" line="1191"/>
         <source>Translated strings:</source>
         <translation type="unfinished">已翻译的字符串：</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1167"/>
+        <location filename="../main.ui" line="1246"/>
         <source>Translated dialogues:</source>
         <translation type="unfinished">已翻译的对话：</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1222"/>
+        <location filename="../main.ui" line="1301"/>
         <source>Total:</source>
         <translation type="unfinished">总计：</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1355"/>
+        <location filename="../main.ui" line="1434"/>
         <source>Font:</source>
         <translation type="unfinished">字体：</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1368"/>
+        <location filename="../main.ui" line="1447"/>
         <source>The font used to display text or save translations</source>
         <translation type="unfinished">在游戏中显示的字体</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1472"/>
+        <location filename="../main.ui" line="1551"/>
         <source>New updates are coming!</source>
         <translation type="unfinished">新功能即将到来！</translation>
     </message>
@@ -144,27 +144,27 @@ The codes or libs we use or refer to:
         <translation type="unfinished">翻译器</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="601"/>
+        <location filename="../main.ui" line="614"/>
         <source>Provider:</source>
         <translation type="unfinished">提供商：</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="629"/>
+        <location filename="../main.ui" line="642"/>
         <source>API:</source>
         <translation type="unfinished">API：</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="664"/>
+        <location filename="../main.ui" line="677"/>
         <source>Source language:</source>
         <translation type="unfinished">源语言：</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="700"/>
+        <location filename="../main.ui" line="713"/>
         <source>Target language:</source>
         <translation type="unfinished">目标语言：</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="773"/>
+        <location filename="../main.ui" line="880"/>
         <source>Apply</source>
         <translation type="unfinished">应用</translation>
     </message>
@@ -219,132 +219,132 @@ The codes or libs we use or refer to:
         <translation type="unfinished">取消注入</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1527"/>
+        <location filename="../main.ui" line="1606"/>
         <source>Light</source>
         <translation type="unfinished">亮</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1549"/>
+        <location filename="../main.ui" line="1628"/>
         <source>Dark</source>
         <translation type="unfinished">暗</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1669"/>
+        <location filename="../main.ui" line="1748"/>
         <source>Amber</source>
         <translation type="unfinished">Amber</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1674"/>
+        <location filename="../main.ui" line="1753"/>
         <source>Blue</source>
         <translation type="unfinished">Blue</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1594"/>
+        <location filename="../main.ui" line="1673"/>
         <source>Blue_500</source>
         <translation type="unfinished">Blue_500</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1679"/>
+        <location filename="../main.ui" line="1758"/>
         <source>Cyan</source>
         <translation type="unfinished">Cyan</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1604"/>
+        <location filename="../main.ui" line="1683"/>
         <source>Cyan_500</source>
         <translation type="unfinished">Cyan_500</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1684"/>
+        <location filename="../main.ui" line="1763"/>
         <source>Lightgreen</source>
         <translation type="unfinished">Lightgreen</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1614"/>
+        <location filename="../main.ui" line="1693"/>
         <source>Lightgreen_500</source>
         <translation type="unfinished">Lightgreen_500</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1619"/>
+        <location filename="../main.ui" line="1698"/>
         <source>Orange</source>
         <translation type="unfinished">Orange</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1694"/>
+        <location filename="../main.ui" line="1773"/>
         <source>Pink</source>
         <translation type="unfinished">Pink</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1629"/>
+        <location filename="../main.ui" line="1708"/>
         <source>Pink_500</source>
         <translation type="unfinished">Pink_500</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1699"/>
+        <location filename="../main.ui" line="1778"/>
         <source>Purple</source>
         <translation type="unfinished">Purple</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1639"/>
+        <location filename="../main.ui" line="1718"/>
         <source>Purple_500</source>
         <translation type="unfinished">Purple_500</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1704"/>
+        <location filename="../main.ui" line="1783"/>
         <source>Red</source>
         <translation type="unfinished">Red</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1649"/>
+        <location filename="../main.ui" line="1728"/>
         <source>Red_500</source>
         <translation type="unfinished">Red_500</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1709"/>
+        <location filename="../main.ui" line="1788"/>
         <source>Teal</source>
         <translation type="unfinished">Teal</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1659"/>
+        <location filename="../main.ui" line="1738"/>
         <source>Teal_500</source>
         <translation type="unfinished">Teal_500</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1714"/>
+        <location filename="../main.ui" line="1793"/>
         <source>Yellow</source>
         <translation type="unfinished">Yellow</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1689"/>
+        <location filename="../main.ui" line="1768"/>
         <source>Medical</source>
         <translation type="unfinished">Medical</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1719"/>
+        <location filename="../main.ui" line="1798"/>
         <source>English</source>
         <translation type="unfinished">英语</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1724"/>
+        <location filename="../main.ui" line="1803"/>
         <source>Simplified Chinese</source>
         <translation type="unfinished">简体中文</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1515"/>
+        <location filename="../main.ui" line="1594"/>
         <source>&amp;Help</source>
         <translation type="unfinished">帮助(&amp;H)</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1523"/>
+        <location filename="../main.ui" line="1602"/>
         <source>&amp;Theme</source>
         <translation type="unfinished">主题(&amp;T)</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1567"/>
+        <location filename="../main.ui" line="1646"/>
         <source>&amp;Language</source>
         <translation type="unfinished">语言(&amp;L)</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1579"/>
+        <location filename="../main.ui" line="1658"/>
         <source>&amp;About</source>
         <translation type="unfinished">关于(&amp;A)</translation>
     </message>
@@ -354,7 +354,7 @@ The codes or libs we use or refer to:
         <translation type="unfinished">RenPy游戏</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="784"/>
+        <location filename="../main.ui" line="797"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;You can also try &lt;a href=&quot;https://github.com/abse4411/projz_renpy_translation&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;RenyPy Translation Toolkit&lt;/span&gt;&lt;/a&gt; for translating the whole game.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;你也可以尝试&lt;a href=&quot;https://github.com/abse4411/projz_renpy_translation&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;RenyPy Translation Toolkit&lt;/span&gt;&lt;/a&gt;来翻译整个游戏。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
@@ -379,32 +379,32 @@ The codes or libs we use or refer to:
         <translation type="unfinished">否</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1272"/>
+        <location filename="../main.ui" line="1351"/>
         <source>Setttings</source>
         <translation type="unfinished">设置</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1316"/>
+        <location filename="../main.ui" line="1395"/>
         <source>Translate strings</source>
         <translation type="unfinished">翻译字符串</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1323"/>
+        <location filename="../main.ui" line="1402"/>
         <source>Translate dialogues</source>
         <translation type="unfinished">翻译对话</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1380"/>
+        <location filename="../main.ui" line="1459"/>
         <source>Re-Translate once if requesting.</source>
         <translation type="unfinished">重新翻译已存在的文本。</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1383"/>
+        <location filename="../main.ui" line="1462"/>
         <source>Re-tranlsate</source>
         <translation type="unfinished">重新翻译</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1444"/>
+        <location filename="../main.ui" line="1523"/>
         <source>Save current translations to the game root.
 By doing this, even if you close the translator, you can still load translations from the translation cache. 
 This translation cache file `projz_translations.json` will be saved to the game root.
@@ -415,24 +415,24 @@ Please note that, do not click the &quot;Undo injection&quot; button as this wil
 注意，请勿点击&quot;Undo injection&quot;按钮，这会使得我们翻译代码失效。</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1450"/>
+        <location filename="../main.ui" line="1529"/>
         <source>Save translations</source>
         <translation type="unfinished">保存翻译</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1457"/>
+        <location filename="../main.ui" line="1536"/>
         <source>Save the current translation as a TranslationIndex.
 By doing this, you can use various commands for FileTranslationIndex to quickly process these translations.</source>
         <translation type="unfinished">保存当前的翻译保存为TranslationIndex。
 这样您可以使用针对TranslationIndex各种命令来快速修改这些翻译。</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1461"/>
+        <location filename="../main.ui" line="1540"/>
         <source>Save TranslationIndex</source>
         <translation type="unfinished">保存TranslationIndex</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1729"/>
+        <location filename="../main.ui" line="1808"/>
         <source>&amp;Reload config file</source>
         <translation type="unfinished">重新加载配置文件(&amp;R)</translation>
     </message>
@@ -447,7 +447,7 @@ By doing this, you can use various commands for FileTranslationIndex to quickly 
         <translation type="unfinished">出错</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1734"/>
+        <location filename="../main.ui" line="1813"/>
         <source>Sponsors</source>
         <translation type="unfinished">赞助者</translation>
     </message>
@@ -457,19 +457,44 @@ By doing this, you can use various commands for FileTranslationIndex to quickly 
         <translation type="unfinished">清除历史记录</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1407"/>
+        <location filename="../main.ui" line="1486"/>
         <source>Empty queue</source>
         <translation type="unfinished">清空排队文本</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1414"/>
+        <location filename="../main.ui" line="1493"/>
         <source>Empty strings</source>
         <translation type="unfinished">清空字符串</translation>
     </message>
     <message>
-        <location filename="../main.ui" line="1421"/>
+        <location filename="../main.ui" line="1500"/>
         <source>Empty dialogues</source>
         <translation type="unfinished">清空对话</translation>
+    </message>
+    <message>
+        <location filename="../main.ui" line="816"/>
+        <source>Filter unwanted texts</source>
+        <translation type="unfinished">过滤不想翻译的文本</translation>
+    </message>
+    <message>
+        <location filename="../main.ui" line="845"/>
+        <source>Match case</source>
+        <translation type="unfinished">匹配大小写</translation>
+    </message>
+    <message>
+        <location filename="../main.ui" line="852"/>
+        <source>Regex</source>
+        <translation type="unfinished">正则模式</translation>
+    </message>
+    <message>
+        <location filename="../main.ui" line="859"/>
+        <source>Converse</source>
+        <translation type="unfinished">反向操作</translation>
+    </message>
+    <message>
+        <location filename="../main.ui" line="873"/>
+        <source>Clear</source>
+        <translation type="unfinished">清空</translation>
     </message>
 </context>
 <context>

@@ -29,7 +29,7 @@ from qt5.main import Ui_MainWindow
 from qt5.main_op import loadServerConfig, startServer, undoInjection, injectionGame, selectRenpyDir, startGame, \
     stopServer, applyTranslator, providerChanged, apiChanged, loadFontConfig, writeTranslations, fontChanged, \
     loadGameRootDirs, saveTranslationIndex, errorWrapper, retranslate, transDialogueChanged, transStringChanged, \
-    reloadConfig, clearHistory, clearTranslations
+    reloadConfig, clearHistory, clearTranslations, clearFilter, applyFilter
 from qt5.sponsor import Ui_SponsorsDialog
 from qt5.ui_config import uconfig
 from translation_provider.base import registered_providers
@@ -239,6 +239,8 @@ class MainWindow(QMainWindow, QtStyleTools):
         self.main.emptyQueue_button.clicked.connect(lambda: clearTranslations(self, self.main, 'queue'))
         self.main.emptyString_button.clicked.connect(lambda: clearTranslations(self, self.main, 'string'))
         self.main.emptyDialogue_button.clicked.connect(lambda: clearTranslations(self, self.main, 'dialogue'))
+        self.main.clearfiler_btn.clicked.connect(lambda: clearFilter(self, self.main))
+        self.main.applyfilter_btn.clicked.connect(lambda: applyFilter(self, self.main))
 
         # Select provider
         if providers:

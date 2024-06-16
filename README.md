@@ -95,6 +95,7 @@ There are two tools to help you translate a RenPy Game:
 
 10. [0.4.4] Now you can use the OpenAI Endpoint to translate. See [Use OpenAI Endpoint](#use-openai-endpoint).
 11. [0.4.5] New command 'llm translate' is available, which uses the OpenAI Endpoint to improve translation quality and reduce translation errors. Usage: `llm_translate {index or name} -l {lang} -m {model_name} -t {target_lang}`, or using default config: `llm_translate {index or name} -l {lang} -a`.
+12. [0.4.5-fix] 1. Fix bugs. 2. You can filter unwanted text in RealTime Translator.
 </details>
 
 # ✨RealTime Translator (Free and Open Source)

@@ -83,7 +83,7 @@
 9. [0.4.3] 现在你可以保存RealTime Translator的翻译为TranslationIndex，这意味着你可以用我们翻译工具来处理这些翻译。
 10. [0.4.4] 现在，您可以使用OpenAI端点进行翻译。见[使用OpenAI Endpoint翻译](#使用openai-endpoint翻译)。
 11. [0.4.5] 新命令`llm_translate`，使用OpenAI Endpoint翻译来提高翻译质量，并减少翻译错误。用法:`llm_translate {index_or_name} -l {lang} -m qwen:4b -t Chinese`，或者使用默认配置：`llm_translate {index or name} -l {lang} -a`
-
+12. [0.4.5-fix] 1. 一些问题修复。 2. 你可以在实时翻译器中过滤不想要翻译的文本。
 </details>
 
 # ✨实时翻译功能支持(免费+开源)

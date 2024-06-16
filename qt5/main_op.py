@@ -569,7 +569,32 @@ def clearTranslations(app, win: Ui_MainWindow, data_type: str):
             win.statusbar.showMessage('Dialogues are now empty.', 2000)
             win.emptyDialogue_button.setEnabled(True)
             win.dialoguenum_text.display(0)
-            win.totalnum_text.display(win.dialoguenum_text.intValue()+win.stringnum_text.intValue())
+            win.totalnum_text.display(win.dialoguenum_text.intValue() + win.stringnum_text.intValue())
+
+
+@errorAspect
+def clearFilter(app, win: Ui_MainWindow):
+    index = app.index.get()
+    if index:
+        index.clear_filter()
+        win.statusbar.showMessage('Clear filter', 2000)
+
+
+@errorAspect
+def applyFilter(app, win: Ui_MainWindow):
+    index = app.index.get()
+    if index:
+        filter_dict = {
+            'match_case': win.casecheck_btn.isChecked(),
+            'regex': win.regex_btn.isChecked(),
+            'converse': win.converse_btn.isChecked(),
+            'text': win.filter_text.text(),
+        }
+        if filter_dict['text'] is None or filter_dict['text'].strip() == '':
+            showErrorMsg(app, 'filter text should not be none or blank')
+            return
+        index.set_filter(filter_dict)
+        win.statusbar.showMessage(f'Set filter: {filter_dict}', 2000)
 
 # def clearLog(app, win: Ui_MainWindow):
 #     win.log_text.clear()

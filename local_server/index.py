@@ -16,6 +16,7 @@
 import json
 import logging
 import os
+import re
 import threading
 import time
 from copy import copy
@@ -106,6 +107,7 @@ class _WebTranslationIndex:
     STRING_TYPE = 'String'
 
     def __init__(self, project: Project, max_queue_size: int = 0):
+        self._fdict = None
         self._font = None
         self._project = project
         self._strings = SafeDict()
@@ -206,8 +208,27 @@ class _WebTranslationIndex:
             else:
                 logging.warning(f'Unknown pack: {p}')
 
+    def should_translate(self, text:str):
+        res = True
+        if self._fdict:
+            if self._fdict['regex']:
+                if self._fdict['regex'].search(text):
+                    res = False
+            else:
+                if self._fdict['match_case']:
+                    if self._fdict['text'] in text:
+                        res = False
+                else:
+                    text = text.lower()
+                    if self._fdict['text'] in text:
+                        res = False
+            if self._fdict['converse']:
+                res = not res
+        return res
+
     def translate(self, pack: dict) -> str:
-        t, tid = pack['type'], pack['identifier']
+        t, tid, text = pack['type'], pack['identifier'], pack['text']
+        print(pack)
         # print(f'translate {t}-{tid}: {pack["text"]}')
         if t == self.STRING_TYPE:
             if not self._tran_string:
@@ -216,12 +237,13 @@ class _WebTranslationIndex:
             if not self._tran_dialogue:
                 return None
         else:
-            print('translate')
             logging.warning(f'Unknown ~~ pack: {pack}')
-
+        if not self.should_translate(pack['substituted']):
+            print(f'Ignore: {pack["substituted"]}')
+            return None
         p = None
         if self._add_if_noexisting(tid):
-            print(f'Miss: {tid}-{pack["text"]}')
+            print(f'Miss: {tid}-{text}')
             self._queue.put(pack)
             # time.sleep(self._wait_time)
             # if t == self.STRING_TYPE:
@@ -271,6 +293,22 @@ class _WebTranslationIndex:
     def retranslate(self):
         with self._set_lock:
             self._golobal_ids.clear()
+
+    def set_filter(self, fdict:dict):
+        if fdict['regex']:
+            if fdict['match_case']:
+                regex = re.compile(fdict['text'])
+            else:
+                regex = re.compile(fdict['text'], re.IGNORECASE)
+            fdict['regex'] = regex
+        else:
+            fdict['regex'] = False
+            if not fdict['match_case']:
+                fdict['text'] = fdict['text'].lower()
+        self._fdict = fdict
+
+    def clear_filter(self):
+        self._fdict = None
 
     def empty_queue(self):
         while not self._queue.empty():
