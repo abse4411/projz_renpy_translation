@@ -539,7 +539,7 @@ Then, open it to correct these errors manually in the `new_text` column:
 The column `message` show the missing tags\variables\escape chars in `new_text` compared to the `raw_text`.
 After fixing them, use the `updateexcel` command to update translations:
 ```bash
-up 1 -l schinese
+ue 1 -l schinese
 ```
 
 ## 4.Generate translation rpys
