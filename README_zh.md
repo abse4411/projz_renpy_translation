@@ -511,7 +511,7 @@ inspect 1 -l schinese
 `message`列显示与`raw_text`相比，`new_text`中缺少的标签\变量\转义字符。
 修复后，使用`updateexcel`命令更新翻译：
 ```bash
-up 1 -l schinese
+ue 1 -l schinese
 ```
 
 ## 4.生成翻译rpy
