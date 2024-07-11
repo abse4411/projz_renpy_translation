@@ -60,7 +60,7 @@ sortedcontainers==2.4.0
 soupsieve==2.5
 tinydb==4.8.0
 tqdm==4.66.1
-translators==5.9.0
+translators==5.9.2
 trio==0.24.0
 trio-websocket==0.11.1
 typing_extensions==4.10.0

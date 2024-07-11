@@ -110,7 +110,7 @@ torchaudio==2.0.2+cu117
 torchvision==0.15.2+cu117
 tqdm==4.66.1
 transformers==4.33.0
-translators==5.9.0
+translators==5.9.2
 trio==0.22.2
 trio-websocket==0.10.3
 typing_extensions==4.7.1

@@ -482,7 +482,7 @@ Note that: Translation Stats list translated/untranslated lines of dialogue and 
 
 由于我们只是将原始文本发送给翻译器，因此翻译结果可能包含一些错误翻译内容，这些内容在运行游戏产生运行时错误。例如，以下原始文本：
 ```text
-Today are [day].
+Today is [day].
 ```
 翻译为（中文）后为：
 ```text

@@ -510,7 +510,7 @@ Note that: Translation Stats list translated/untranslated lines of dialogue and 
 
 Since we just send the raw text to the translator, the translation result may contain some content that cause a runtime error when playing game. For example, the following raw text:
 ```text
-Today are [day].
+Today is [day].
 ```
 may be translated (into Chinese) as:
 ```text
