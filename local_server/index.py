@@ -228,7 +228,7 @@ class _WebTranslationIndex:
 
     def translate(self, pack: dict) -> str:
         t, tid, text = pack['type'], pack['identifier'], pack['text']
-        print(pack)
+        # print(pack)
         # print(f'translate {t}-{tid}: {pack["text"]}')
         if t == self.STRING_TYPE:
             if not self._tran_string:
@@ -237,7 +237,7 @@ class _WebTranslationIndex:
             if not self._tran_dialogue:
                 return None
         else:
-            logging.warning(f'Unknown ~~ pack: {pack}')
+            logging.warning(f'Unknown pack: {pack}')
         if not self.should_translate(pack['substituted']):
             print(f'Ignore: {pack["substituted"]}')
             return None
