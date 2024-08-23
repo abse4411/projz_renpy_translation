@@ -63,6 +63,9 @@ class TranslationRunner(threading.Thread):
                 self._close_translator()
                 print('Translator is stopped by the user.')
                 return
+            if self._queue.empty():
+                time.sleep(self._sleep_time)
+                continue
             packs, texts, passed_packs = [], [], []
             try:
                 while not self._queue.empty():
@@ -77,11 +80,13 @@ class TranslationRunner(threading.Thread):
                         passed_packs.append(p)
                     if len(packs) == self._batch_size:
                         break
-                self._update_func(passed_packs)
-                new_texts = self._translator.translate_batch(texts)
-                for p, t in zip(packs, new_texts):
-                    p['new_text'] = t
-                self._update_func(packs)
+                if passed_packs:
+                    self._update_func(passed_packs)
+                if packs:
+                    new_texts = self._translator.translate_batch(texts)
+                    for p, t in zip(packs, new_texts):
+                        p['new_text'] = t
+                    self._update_func(packs)
             except Exception as e:
                 logging.exception(e)
                 self._close_translator()
@@ -91,7 +96,6 @@ class TranslationRunner(threading.Thread):
                 self._error = e
                 print('Translator is crashed!')
                 return
-            time.sleep(self._sleep_time)
 
     def error(self):
         e = self._error
@@ -107,6 +111,7 @@ class _WebTranslationIndex:
     STRING_TYPE = 'String'
 
     def __init__(self, project: Project, max_queue_size: int = 0):
+        self._batch_size = None
         self._fdict = None
         self._font = None
         self._project = project
@@ -161,7 +166,8 @@ class _WebTranslationIndex:
 
     def start(self, **kwargs):
         if self._translator:
-            self._runner = TranslationRunner(self._translator, self._queue, self._update_pack, **kwargs)
+            self._runner = TranslationRunner(self._translator, self._queue, self._update_pack,
+                                             batch_size=self._batch_size, **kwargs)
             self._runner.start()
 
     def _quote_with_fonttag(self, text):
@@ -170,9 +176,10 @@ class _WebTranslationIndex:
     def set_font(self, font: str):
         self._font = strip_or_none(font)
 
-    def set_translator(self, translator: Translator, font: str = None):
+    def set_translator(self, translator: Translator, font: str = None, **kwargs):
         self._translator = translator
         self._font = strip_or_none(font)
+        self._batch_size = kwargs.get('batch_size', 10)
 
     def _update_string(self, pack: dict):
         # print(f'[Update String]: {pack}')

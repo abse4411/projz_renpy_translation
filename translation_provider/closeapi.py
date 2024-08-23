@@ -18,6 +18,7 @@ from trans import Translator
 from translation_provider.base import Provider, register_provider
 from util import strip_or_none
 from util.renpy import strip_tags
+from util.translate import BatchTranslator
 
 
 class _InnerTranslator(Translator):
@@ -77,7 +78,11 @@ class OpenAIApi(Provider):
         return self.slangs, self.oconfig['langs']
 
     def translator_of(self, api: str, source_lang: str, target_lang: str) -> Translator:
-        return _InnerTranslator(api, source_lang, target_lang)
+        _separator = self.oconfig['batch_separator']
+        _max_len = self.oconfig['batch_max_textlen']
+        _batch_size = self.oconfig['batch_size']
+        return BatchTranslator(_InnerTranslator(api, source_lang, target_lang),
+                               _separator, _max_len, _batch_size)
 
 
 register_provider('CloseAI', OpenAIApi())

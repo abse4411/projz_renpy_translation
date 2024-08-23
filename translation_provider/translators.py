@@ -21,6 +21,8 @@ from translation_provider.base import Provider, register_provider
 
 import translators as ts
 
+from util.translate import BatchTranslator
+
 
 class TranslatorsApi(Provider):
 
@@ -57,7 +59,11 @@ class TranslatorsApi(Provider):
         if api in self.api_names():
             s, t = self.languages_of(api)
             if source_lang in s and target_lang in t:
-                return TranslatorsTranslator(api, source_lang, target_lang, self.trans_kwargs)
+                _separator = self.tconfig['batch_separator']
+                _max_len = self.tconfig['batch_max_textlen']
+                _batch_size = self.tconfig['batch_size']
+                return BatchTranslator(TranslatorsTranslator(api, source_lang, target_lang, self.trans_kwargs),
+                                       _separator, _max_len, _batch_size)
         return None
 
 

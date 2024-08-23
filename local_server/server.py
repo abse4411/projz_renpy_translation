@@ -146,7 +146,7 @@ class FlaskServer(threading.Thread):
             self._server.shutdown()
             self._server = None
 
-    def set_translator(self, translator: Translator, font:str):
+    def set_translator(self, translator: Translator, font:str,  **kwargs):
         self.index.stop()
-        self.index.set_translator(translator, font)
+        self.index.set_translator(translator, font,  **kwargs)
         self.index.start()

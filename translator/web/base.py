@@ -46,7 +46,7 @@ class WebConcurrentTranslator(ConcurrentTranslatorTemplate):
 
     def do_init(self, args, config: ProjzConfig):
         super().do_init(args, config)
-        super().create_taskrunner(_WEB_APIS[args.name], count_on_batch=False, wait_for_init=True,
+        super().create_taskrunner(_WEB_APIS[args.name], count_on_batch=True, wait_for_init=True,
                                   wait_prompt='Now you can do any operation on these opened browsers, '
                                               'like setting your translation setting: English -> Chinese.')
         return True

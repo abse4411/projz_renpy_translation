@@ -25,6 +25,7 @@ from config.base import ProjzConfig
 from trans.translators_api import TranslatorsTranslator
 from translator.base import CachedTranslatorTemplate
 from util import my_input, line_to_args
+from util.translate import BatchTranslator
 
 ts = None
 _preacceleration_done = False
@@ -33,7 +34,7 @@ _preacceleration_done = False
 class TranslatorsLibTranslator(CachedTranslatorTemplate):
     def __init__(self):
         super().__init__()
-        self._translotr = None
+        self._translator = None
         self.translator = None
         self._source = None
         self._target = None
@@ -63,7 +64,11 @@ class TranslatorsLibTranslator(CachedTranslatorTemplate):
             self.translator = args.name
             done = self.determine_translation_target()
         if done:
-            self._translotr = TranslatorsTranslator(self.translator, self._source, self._target)
+            _separator = tconfig['batch_separator']
+            _max_len = tconfig['batch_max_textlen']
+            _batch_size = tconfig['batch_size']
+            self._translator = BatchTranslator(TranslatorsTranslator(self.translator, self._source, self._target),
+                                               _separator, _max_len, _batch_size)
         return done
 
     def determine_translation_target(self):
@@ -108,13 +113,10 @@ class TranslatorsLibTranslator(CachedTranslatorTemplate):
                         logging.exception(e)
 
     def translate(self, text: str):
-        return self._translotr.translate(text)
+        return self._translator.translate(text)
 
     def translate_batch(self, texts: List[str]):
-        new_text = []
-        for t in tqdm.tqdm(texts, desc='Translating'):
-            new_text.append(self.translate(t))
-        return new_text
+        return self._translator.translate_batch(texts)
 
 
 register_cmd_translator('ts', TranslatorsLibTranslator)

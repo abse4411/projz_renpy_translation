@@ -416,7 +416,8 @@ def _updateTranslator(app, win: Ui_MainWindow, data: Tuple[Translator, str]):
         with app.server as server:
             if server and not server.is_stopped():
                 if translator is not None:
-                    server.set_translator(translator, font)
+                    batch_size = win.batchsize_box.value()
+                    server.set_translator(translator, font, batch_size=batch_size)
                     updateTextState('Running', app, win.translatorstatus_text)
                     win.statusbar.showMessage('Applied.', 2000)
                 else:

@@ -179,7 +179,7 @@ class ConcurrentTranslatorTemplate(TranslatorTemplate):
 
     def register_args(self, parser: ArgumentParser):
         super().register_args(parser)
-        parser.add_argument('-nw', '--num_workers', type=int, default=1,
+        parser.add_argument('-nw', '--num_workers', type=int, default=2,
                             help='The number of web translator instances to use. Larger value can improve the'
                                  'translation speed but use more resources (of CPU and Memory).')
 

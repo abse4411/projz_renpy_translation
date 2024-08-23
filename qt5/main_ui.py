@@ -29,7 +29,7 @@ from qt5.main import Ui_MainWindow
 from qt5.main_op import loadServerConfig, startServer, undoInjection, injectionGame, selectRenpyDir, startGame, \
     stopServer, applyTranslator, providerChanged, apiChanged, loadFontConfig, writeTranslations, fontChanged, \
     loadGameRootDirs, saveTranslationIndex, errorWrapper, retranslate, transDialogueChanged, transStringChanged, \
-    reloadConfig, clearHistory, clearTranslations, clearFilter, applyFilter
+    reloadConfig, clearHistory, clearTranslations, clearFilter, applyFilter, showErrorMsg
 from qt5.sponsor import Ui_SponsorsDialog
 from qt5.ui_config import uconfig
 from translation_provider.base import registered_providers
@@ -243,6 +243,9 @@ class MainWindow(QMainWindow, QtStyleTools):
         self.main.applyfilter_btn.clicked.connect(lambda: applyFilter(self, self.main))
 
         # Select provider
+        if 'translators' not in providers:
+            showErrorMsg(self, 'Are you using a VPN? That may make some translators unavailable. '
+                               'To disable this this message, please close your VPN.')
         if providers:
             self.main.translator_combobox.addItems(providers)
             # self.main.translator_combobox.setCurrentIndex(0)

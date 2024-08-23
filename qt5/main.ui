@@ -737,6 +737,26 @@
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_16">
              <item>
+              <widget class="QLabel" name="label_21">
+               <property name="toolTip">
+                <string>How many strings or dialogues sent to the translator at once.</string>
+               </property>
+               <property name="text">
+                <string>Batch size:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSpinBox" name="batchsize_box">
+               <property name="minimum">
+                <number>1</number>
+               </property>
+               <property name="value">
+                <number>10</number>
+               </property>
+              </widget>
+             </item>
+             <item>
               <widget class="QLabel" name="label">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -757,7 +777,7 @@
              <item>
               <widget class="QLabel" name="translatorstatus_text">
                <property name="sizePolicy">
-                <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
@@ -777,6 +797,12 @@
              </item>
              <item>
               <widget class="QPushButton" name="translatorapply_button">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
                <property name="font">
                 <font>
                  <pointsize>12</pointsize>
@@ -1586,7 +1612,7 @@ By doing this, you can use various commands for FileTranslationIndex to quickly 
      <x>0</x>
      <y>0</y>
      <width>818</width>
-     <height>22</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuHelp">

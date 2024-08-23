@@ -58,11 +58,17 @@ class TranslateCmd(BaseLangIndexCmd):
             print('No untranslated lines to translate.')
         else:
             res = []
+            ready_res = []
             if tids_and_texts:
                 for tid, raw_text in tids_and_texts:
                     if not is_translatable(raw_text):
+                        ready_res.append((tid, raw_text))
                         continue
-                    res.append([tid, raw_text])
+                    res.append((tid, raw_text))
+                if ready_res:
+                    index.update_translations(self.args.lang, ready_res,
+                                              untranslated_only=True, discord_blank=False,
+                                              say_only=self.config.say_only)
             tids_and_texts = res
         return tids_and_texts, index
 

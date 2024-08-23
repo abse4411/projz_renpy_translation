@@ -6,7 +6,10 @@ projz:
     write_cache_size: 200 # The number of lines translated by the translator to cache before writing to disk
     max_workers: 10 # Max number of threads for ConcurrentTranslatorTemplate
     web:
-      chrome_driver_path: 'D:\Users\Surface Book2\Downloads\chromedriver_win32\chromedriver.exe'
+      batch_separator: '@##@' # The separator add to between different texts in batch translator
+      batch_max_textlen: 4096 # Max len of the final text sent to the real translator
+      batch_size: 10 # how many texts are batched to send to the real translator at once
+      chrome_driver_path: 'D:\Users\Surface Book2\Downloads\chromedriver-win64\chromedriver.exe'
     ai:
       model_path: ''
       # available models: 'm2m100', 'mbart50', 'nllb200'
@@ -16,6 +19,9 @@ projz:
       from_language: 'English'
       to_language: 'Chinese'
     translators:
+      batch_separator: '@##@' # The separator add to between different texts in batch translator
+      batch_max_textlen: 4096 # Max len of the final text sent to the real translator
+      batch_size: 10 # how many texts are batched to send to the real translator at once
       api_name: 'bing'
       # Language code can be found at: resources/translation/translators_langcode.txt
       from_language: 'auto'
@@ -33,12 +39,17 @@ projz:
 #          http: 'http://127.0.0.1:10809'
 #          https: 'http://127.0.0.1:10809'
     open_ai:
+      batch_separator: '@##@' # The separator add to between different texts in batch translator
+      batch_max_textlen: 1024 # Max len of the final text sent to the real translator
+      batch_size: 5 # how many texts are batched to send to the real translator at once
       target_lang: 'Chinese'
       user_role: &user_role 'user'
       assistant_role: &assistant_role 'assistant'
-      max_turns: 8 # Specify the maximum number of rounds for the conversation.
+      max_turns: 3 # Specify the maximum number of rounds for the conversation.
       langs: ['Afrikaans','Albanian','Amharic','Arabic','Armenian','Asturian','Azerbaijani','Bashkir','Belarusian','Bengali','Bosnian','Breton','Bulgarian','Burmese','Catalan','Cebuano','Central Khmer','Chinese','Croatian','Czech','Danish','Dutch','English','Estonian','Finnish','Flemish','French','Fulah','Gaelic','Galician','Ganda','Georgian','German','Greek','Gujarati','Haitian','Haitian Creole','Hausa','Hebrew','Hindi','Hungarian','Icelandic','Igbo','Iloko','Indonesian','Irish','Italian','Japanese','Javanese','Kannada','Kazakh','Khmer','Korean','Lao','Latvian','Letzeburgesch','Lingala','Lithuanian','Luxembourgish','Macedonian','Malagasy','Malay','Malayalam','Marathi','Moldavian','Moldovan','Mongolian','Nepali','Northern Sotho','Norwegian','Occitan','Oriya','Panjabi','Pashto','Persian','Polish','Portuguese','Punjabi','Pushto','Romanian','Russian','Scottish Gaelic','Serbian','Sindhi','Sinhala','Sinhalese','Slovak','Slovenian','Somali','Spanish','Sundanese','Swahili','Swati','Swedish','Tagalog','Tamil','Thai','Tswana','Turkish','Ukrainian','Urdu','Uzbek','Valencian','Vietnamese','Welsh','Western Frisian','Wolof','Xhosa','Yiddish','Yoruba','Zulu']
-      models: ['qwen:0.5b','qwen:1.8b', 'qwen:4b', 'qwen:7b', 'qwen:14b', 'qwen:72b', 'gpt-4','gpt-4-0314','gpt-4-32k','gpt-4-32k-0314','gpt-3.5-turbo','gpt-3.5-turbo-0301']
+      models: ['qwen2:0.5b-instruct','qwen2:1.5b-instruct', 'qwen2:7b-instruct',
+               'qwen:0.5b-chat','qwen:1.8b-chat', 'qwen:4b-chat', 'qwen:7b-chat', 'qwen:14b-chat', 'qwen:72b-chat',
+               'gpt-4','gpt-4-0314','gpt-4-32k','gpt-4-32k-0314','gpt-3.5-turbo','gpt-3.5-turbo-0301']
       # Template Args
       # Args for initializing OpenAI() client
       init:
@@ -48,19 +59,25 @@ projz:
         # Your client should have an endpoint whose url ends with "chat/completions". E.g., http://localhost:11434/v1/chat/completions
         # Args for client.chat.completions.create(), see https://platform.openai.com/docs/api-reference/chat/create
         completions:
-          temperature: 0.2
-          top_p: 0.1
+#          temperature: 0.7
+#          top_p: 0.8
           stream: false
-          model: "qwen:0.5b"
+          model: "qwen2:1.5b-instruct"
           messages:
             -
               role: "system"
-              content: "You are a professional translator. You are now required to translate the text given by the user based on the context of the chat. Content enclosed in square brackets (For example, [lisa_alias], [day]) does not need to be translated. No explanation is needed for the translation result."
-              # content: "你是一个专业的翻译家。现在要求你结合聊天上下文信息进行翻译。以方括号括起来的内容(例如: [lisa_alias], [day])不需要翻译。不要对翻译结果做任何解释。"
+              content: "You are a helpful assistant."
+              # content: "You are a helpful assistant."
             -
               role: *user_role
-              # content: "把下面的文本翻译为{target_lang}:\n{text}"
-              content: "Translate the following text into {target_lang}:\n{text}"
+#              content: "按下面的要求翻译文本:\n\
+#                        1. 方括号或者花括号括起来的文本(例如[my_name], {size})不需要翻译.\n\
+#                        2. 不需要对翻译结果做出解释.\n\
+#                        现在把下面的文本翻译为{target_lang}:\n{text}"
+              content: "Translate the text according to the following requirements:\n\
+                        1. Text enclosed in square brackets or curly braces (e.g., [my_name], {{size}}) does not need to be translated.\n\
+                        2. No explanation of the translation result is required.\n\
+                        Now translate the following text into {target_lang}:\n{text}"
     realtime:
       host: '127.0.0.1'
       port: 8888

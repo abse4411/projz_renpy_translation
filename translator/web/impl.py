@@ -28,6 +28,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 from translator.base import CachedTranslatorTemplate
 from translator.web.base import register_translator
+from util.translate import BatchTranslator
 
 
 def _init_chrome(config: ProjzConfig):
@@ -52,10 +53,16 @@ class BaseChromeTranslator(CachedTranslatorTemplate):
     def __init__(self):
         super().__init__()
         self._browser = None
+        self._batch_translator = None
 
     def do_init(self, args, config: ProjzConfig):
         super().do_init(args, config)
         self._browser = _init_chrome(config)
+        tconfig = config['translator']['web']
+        _separator = tconfig['batch_separator']
+        _max_len = tconfig['batch_max_textlen']
+        _batch_size = tconfig['batch_size']
+        self._batch_translator = BatchTranslator(self, _separator, _max_len, _batch_size, False)
         return True
 
     def close(self):
@@ -80,6 +87,9 @@ class BaseChromeTranslator(CachedTranslatorTemplate):
         self.clear()
         return new_text
 
+    def translate_batch(self, texts: List[str]) -> List[str]:
+        return self._batch_translator.translate_batch(texts)
+
 
 class GoogleTranslator(BaseChromeTranslator):
     def __init__(self):
@@ -97,7 +107,7 @@ class GoogleTranslator(BaseChromeTranslator):
         except:
             pass
         self.inputArea = self._browser.find_element(By.XPATH,
-                                                    '/html/body/c-wiz/div/div[2]/c-wiz/div[2]/c-wiz/div[1]/div[2]/div[2]/c-wiz[1]/span/span/div/textarea')
+                                                    '/html/body/c-wiz/div/div[2]/c-wiz/div[2]/c-wiz/div[1]/div[2]/div[2]/div/c-wiz/span/span/div/textarea')
         return True
 
     def set_input(self, rawtext):
@@ -105,7 +115,7 @@ class GoogleTranslator(BaseChromeTranslator):
         time.sleep(random.uniform(0.2, 1))
 
     def get_output(self, rawtext) -> Optional[str]:
-        xpath = '/html/body/c-wiz/div/div[2]/c-wiz/div[2]/c-wiz/div[1]/div[2]/div[2]/c-wiz[2]/div/div[6]/div/div[1]'
+        xpath = '/html/body/c-wiz/div/div[2]/c-wiz/div[2]/c-wiz/div[1]/div[2]/div[2]/c-wiz/div/div[6]/div/div[1]'
         WebDriverWait(self._browser, 10).until(
             lambda broswer: self._browser.find_element(By.XPATH, xpath))
         time.sleep(random.uniform(0.2, 1))
@@ -116,7 +126,7 @@ class GoogleTranslator(BaseChromeTranslator):
     def clear(self):
         try:
             self._browser.find_element(By.XPATH,
-                                       '/html/body/c-wiz/div/div[2]/c-wiz/div[2]/c-wiz/div[1]/div[2]/div[3]/c-wiz[1]/div[1]/div/div[1]/span/button').click()
+                                       '/html/body/c-wiz/div/div[2]/c-wiz/div[2]/c-wiz/div[1]/div[2]/div[2]/div/c-wiz/div[1]/div/div[1]/span/button').click()
         except:
             pass
         try:

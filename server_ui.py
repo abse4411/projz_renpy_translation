@@ -28,39 +28,6 @@ from trans import Translator
 from translation_provider.base import Provider, register_provider
 
 
-class FakeTranslator(Translator):
-    def __init__(self, suffix=''):
-        self._suffix = suffix
-
-    def translate(self, text: str):
-        # time.sleep(1)
-        return text + self._suffix
-
-
-class FakeProvider(Provider):
-
-    def default_api(self) -> str:
-        return 'bing'
-
-    def default_source_lang(self) -> str:
-        return 'auto'
-
-    def default_target_lang(self) -> str:
-        return 'zh-Hans'
-
-    def api_names(self) -> List[str]:
-        return ['google', 'bing']
-
-    def languages_of(self, api: str) -> Tuple[List[str], List[str]]:
-        langs = ['zh-Hans', 'zh-Hant', 'en', 'jp', 'kr', 'ru', 'fr', 'auto']
-        return langs, langs
-
-    def translator_of(self, api: str, source_lang: str, target_lang: str) -> Translator:
-        return FakeTranslator(f'({api}:{source_lang}-{target_lang})')
-
-
-register_provider('Foo', FakeProvider())
-
 # package cmd: pyinstaller -i imgs/proz_icon_simple.ico server_ui.py
 if __name__ == "__main__":
     import log

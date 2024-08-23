@@ -14,12 +14,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 from argparse import ArgumentParser
+from typing import List
 
 from command.translation.base import register_cmd_translator
 from config.base import ProjzConfig
 from trans.openai_api import OpenAITranslator
 from translator.base import CachedTranslatorTemplate
 from util import strip_or_none, my_input, line_to_args
+from util.translate import BatchTranslator
 
 
 class OpenAILibTranslator(CachedTranslatorTemplate):
@@ -39,7 +41,7 @@ class OpenAILibTranslator(CachedTranslatorTemplate):
     def determine_translation_target(self):
         while True:
             args = my_input(
-                'Please enter a language you want to translate into (The value of {target_lang} in prompt): ')
+                'Please enter a language (The value of {target_lang} in prompt, e.g., Chinese, 中文) you want to translate into: ')
             args = line_to_args(args.strip())
             if len(args) >= 1:
                 if len(args) == 1:
@@ -52,7 +54,7 @@ class OpenAILibTranslator(CachedTranslatorTemplate):
     def determine_translation_model(self):
         while True:
             args = my_input(
-                'Please enter a mode name you want to use: ')
+                'Please enter a model name (e.g., qwen:7b-instruct) you want to use: ')
             args = line_to_args(args.strip())
             if len(args) >= 1:
                 if len(args) == 1:
@@ -64,8 +66,8 @@ class OpenAILibTranslator(CachedTranslatorTemplate):
 
     def do_init(self, args, config: ProjzConfig):
         super().do_init(args, config)
+        oconfig = config['translator']['open_ai']
         if self.args.auto:
-            oconfig = config['translator']['open_ai']
             target_lang = oconfig['target_lang']
             model = oconfig['chat']['completions']['model']
             print(f'target_lang: {target_lang}')
@@ -79,14 +81,21 @@ class OpenAILibTranslator(CachedTranslatorTemplate):
                 return False
             target_lang = self._target
             model = self._model
-        self._open_ai = OpenAITranslator(model=model, target_lang=target_lang)
+        _separator = oconfig['batch_separator']
+        _max_len = oconfig['batch_max_textlen']
+        _batch_size = oconfig['batch_size']
+        self._open_ai = BatchTranslator(OpenAITranslator(model=model, target_lang=target_lang),
+                                        _separator, _max_len, _batch_size)
         return True
 
     def translate(self, text: str):
-        stripped_text = strip_or_none(strip_tags(text))
+        stripped_text = strip_or_none(text)
         if stripped_text is not None:
             return self._open_ai.translate(stripped_text)
         return text
+
+    def translate_batch(self, texts: List[str]) -> List[str]:
+        return self._open_ai.translate_batch(texts)
 
     def close(self):
         self._open_ai.close()
