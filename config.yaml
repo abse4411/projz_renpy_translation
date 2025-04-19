@@ -62,7 +62,7 @@ projz:
 #          temperature: 0.7
 #          top_p: 0.8
           stream: false
-          model: "qwen2:1.5b-instruct"
+          model: "qwen2.5:1.5b-instruct"
           messages:
             -
               role: "system"

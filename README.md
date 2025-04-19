@@ -1023,7 +1023,7 @@ The codes or libs we use or refer to:
 * AI translation: [dl-translate](https://github.com/xhluca/dl-translate), [MIT License](https://github.com/xhluca/dl-translate?tab=MIT-1-ov-file)
 * [UlionTse/translators](https://github.com/UlionTse/translators), [GPL-3.0 License](https://github.com/UlionTse/translators?tab=GPL-3.0-1-ov-file)
 * Pre-translated RPY file: [RenPy](https://github.com/renpy/renpy/tree/master/launcher/game/tl), [MIT License for these rpy files](https://www.renpy.org/doc/html/license.html)
-* [resources/codes/projz_injection.py](resources/codes/projz_injection.py): [RenPy](https://github.com/renpy/renpy/blob/master/renpy/translation/generation.py), [MIT License for the code file](https://www.renpy.org/doc/html/license.html)
+* [resources/codes/projz_injection.py](resources/codes/projz_injection.rpy): [RenPy](https://github.com/renpy/renpy/blob/master/renpy/translation/generation.py), [MIT License for the code file](https://www.renpy.org/doc/html/license.html)
 * UI: PyQt5, it contains dual licenses: the GNU GPL v3 and the Riverbank Commercial License. See [here](https://www.riverbankcomputing.com/software/pyqt/).
 * UI theme: Qt-Material, [BSD-2-Clause license](https://github.com/UN-GCPDS/qt-material?tab=BSD-2-Clause-1-ov-file)
 * Other python libs：[requirements_full.txt](./requirements_full.txt)

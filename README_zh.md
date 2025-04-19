@@ -931,7 +931,7 @@ except Exception as e:
 * 使用的AI翻译库：[dl-translate](https://github.com/xhluca/dl-translate), [MIT License](https://github.com/xhluca/dl-translate?tab=MIT-1-ov-file)
 * [UlionTse/translators](https://github.com/UlionTse/translators), [GPL-3.0 License](https://github.com/UlionTse/translators?tab=GPL-3.0-1-ov-file)
 * 预翻译RPY文件来源：[RenPy](https://github.com/renpy/renpy/tree/master/launcher/game/tl), [MIT License for these rpy files](https://www.renpy.org/doc/html/license.html)
-* [resources/codes/projz_injection.py](resources/codes/projz_injection.py): [RenPy](https://github.com/renpy/renpy/blob/master/renpy/translation/generation.py), [MIT License for the code file](https://www.renpy.org/doc/html/license.html)
+* [resources/codes/projz_injection.py](resources/codes/projz_injection.rpy): [RenPy](https://github.com/renpy/renpy/blob/master/renpy/translation/generation.py), [MIT License for the code file](https://www.renpy.org/doc/html/license.html)
 * UI: PyQt5, 包含两个License: the GNU GPL v3 and the Riverbank Commercial License, 见[这里](https://www.riverbankcomputing.com/software/pyqt/).
 * UI 主题: Qt-Material, [BSD-2-Clause license](https://github.com/UN-GCPDS/qt-material?tab=BSD-2-Clause-1-ov-file)
 * 其他使用的python库见：[requirements_full.txt](./requirements_full.txt)

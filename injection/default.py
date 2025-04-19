@@ -88,13 +88,9 @@ def try_running(try_fn, except_fn=None, final_fn=None, return_try=True, except_r
 class ProjzCmdInjection(BaseChainInjector):
     def __init__(self, project_path: str):
         super().__init__()
-        renpy_init_py = os.path.join(project_path, RENPY_PY_DIR, '__init__.py')
-        injection_py = os.path.join(project_path, RENPY_PY_DIR, 'translation', 'projz_injection.py')
-        self.pyi = PyCodeInjector(renpy_init_py,
-                                  anchor_codes=['import renpy.translation.generation'],
-                                  target_codes=['import renpy.translation.projz_injection'], insert_before=True)
-        self.fi = PyFileInjector(source_filename=r'resources/codes/projz_injection.py', target_filename=injection_py)
-        self.set_chain([self.pyi, self.fi])
+        injection_py = os.path.join(project_path, RENPY_GAME_DIR, 'projz_injection.rpy')
+        self.fi = RpyFileInjector(source_filename=r'resources/codes/projz_injection.rpy', target_filename=injection_py)
+        self.set_chain([self.fi])
 
 
 class FontInjection(BaseChainInjector):
@@ -272,14 +268,9 @@ screen preferences():
 class OnlinePyInjection(BaseInjector):
 
     def __init__(self, project_path):
-        renpy_init_py = os.path.join(project_path, RENPY_PY_DIR, '__init__.py')
-        self.import_injection = PyCodeInjector(renpy_init_py,
-                                               anchor_codes=['post_import()'],
-                                               target_codes=['import renpy.translation.projz_translation'],
-                                               insert_before=True)
-        injection_py = os.path.join(project_path, RENPY_PY_DIR, 'translation', 'projz_translation.py')
+        injection_py = os.path.join(project_path, RENPY_GAME_DIR, 'projz_translation.rpy')
         rconfig = default_config['translator']['realtime']
-        with default_read(r'resources/codes/projz_translation.py') as f:
+        with default_read(r'resources/codes/projz_translation.rpy') as f:
             py_content = f.read()
         py_content = (py_content.replace('{projz_host}', str(rconfig.get('host', '127.0.0.1')).strip())
                       .replace('{projz_port}', str(rconfig.get('port', 8888)).strip())
@@ -289,11 +280,11 @@ class OnlinePyInjection(BaseInjector):
                       .replace('{projz_dialogue_request_time_out}',
                                str(rconfig.get('dialogue_request_time_out', 1.0))).strip())
         self.code_injection = StrFileInjector(
-            PyFileInjector(source_filename=r'resources/codes/projz_translation.py', target_filename=injection_py),
+            RpyFileInjector(source_filename=r'resources/codes/projz_translation.rpy', target_filename=injection_py),
             content=py_content)
 
     def __call__(self, *args, **kwargs):
-        return call_chain([self.import_injection, self.code_injection])
+        return call_chain([self.code_injection])
 
     def undo(self, *args, **kwargs):
-        return undo_chain([self.import_injection, self.code_injection])
+        return undo_chain([self.code_injection])

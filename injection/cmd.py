@@ -18,7 +18,7 @@ from typing import List, Any
 from injection import Project
 
 """
-    This file provides a series of APIs for external call of resources/codes/projz_injection.py by injection.renpy.Project 
+    This file provides a series of APIs for external call of resources/codes/projz_injection.rpy by injection.renpy.Project 
 """
 
 
