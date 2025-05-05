@@ -28,7 +28,7 @@ from injection import Project
 from injection.base.base import UndoOnFailedCallInjector, undo_chain
 from injection.default import FontInjection, OnlinePyInjection
 from local_server.safe import SafeDict
-from store.misc import quote_with_fonttag
+from store.misc import quote_with_fonttag, quote_with_colortag
 from store.web_index import WebTranslationIndex
 from trans import Translator
 from util import strip_or_none, exists_file
@@ -130,6 +130,8 @@ class _WebTranslationIndex:
         self._wait_time = float(default_config['translator']['realtime'].get('translator_wait_time', 0.5))
         self._tran_string = False
         self._tran_dialogue = True
+        self._text_color = None
+        self._dialogue_color = None
 
     def string_translatable(self, enable: bool):
         self._tran_string = enable
@@ -175,6 +177,10 @@ class _WebTranslationIndex:
 
     def set_font(self, font: str):
         self._font = strip_or_none(font)
+
+    def set_color(self, text_color: str, dialogue_color: str):
+        self._dialogue_color = dialogue_color
+        self._text_color = text_color
 
     def set_translator(self, translator: Translator, font: str = None, **kwargs):
         self._translator = translator
@@ -280,8 +286,13 @@ class _WebTranslationIndex:
                 if old_text != new_text:
                     self._queue.put(pack)
                     return None
-                print(f'Hit: {tid}-{p["text"]}')
-                return self._quote_with_fonttag(strip_tags(p['new_text']))
+                res_text = self._quote_with_fonttag(strip_tags(p['new_text']))
+                print(f'Hit: {tid}-{p["text"]}=>{res_text}')
+                if t == self.STRING_TYPE and self._text_color!=None:
+                    res_text = quote_with_colortag(self._text_color, res_text)
+                elif t == self.SAY_TYPE and self._dialogue_color!=None:
+                    res_text = quote_with_colortag(self._dialogue_color, res_text)
+                return res_text
         return None
 
     def stop(self):
@@ -337,11 +348,11 @@ class _WebTranslationIndex:
         new_s, new_d = dict(), dict()
         for k, v in s.items():
             new_v = copy(v)
-            new_v['new_text'] = self._quote_with_fonttag(strip_tags(new_v['new_text']))
+            new_v['new_text'] = quote_with_colortag(self._text_color, self._quote_with_fonttag(strip_tags(new_v['new_text'])))
             new_s[k] = new_v
         for k, v in d.items():
             new_v = copy(v)
-            new_v['new_text'] = self._quote_with_fonttag(strip_tags(new_v['new_text']))
+            new_v['new_text'] = quote_with_colortag(self._dialogue_color, self._quote_with_fonttag(strip_tags(new_v['new_text'])))
             new_d[k] = new_v
         with open(save_json, 'w', encoding='utf-8') as f:
             json.dump({'String': new_s, 'Say': new_d}, f, ensure_ascii=False, indent=2)

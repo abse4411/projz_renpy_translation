@@ -18,14 +18,17 @@ import os
 import time
 from typing import Tuple
 
-from PyQt5.QtCore import pyqtSignal, QThread
-from PyQt5.QtWidgets import QFileDialog, QMessageBox
+from PyQt5.QtCore import pyqtSignal, QThread, Qt
+from PyQt5.QtGui import QColor, QPalette
+from PyQt5.QtWidgets import QFileDialog, QMessageBox, QColorDialog, QPushButton
 
 from config import default_config
 from local_server.index import _WebTranslationIndex
 from local_server.server import FlaskServer
 from qt5.main import Ui_MainWindow
+from qt5.toast import show_toast
 from qt5.ui_config import uconfig
+from store.misc import is_valid_hex_color
 from trans import Translator
 from translation_provider.base import get_provider
 from util import exists_dir, strip_or_none, open_item, exists_file, file_name
@@ -57,7 +60,8 @@ def errorAspect(func):
             return func(app, win, *args, **kwargs)
         except Exception as e:
             logging.exception(e)
-            showErrorMsg(app, str(e))
+            show_toast(str(e), parent=app,
+                       text_color=win.selectdir_button.palette().color(QPalette.ButtonText))
 
     return wrapper
 
@@ -69,6 +73,119 @@ def selectRenpyDir(app, win: Ui_MainWindow):
         # win.gameroot_combox.addItem()
         win.gameroot_combox.setCurrentText(str(dirname))
 
+_COLOR_MAP = {
+    "Default": None,
+    "Black": '#000000',
+    "White": '#FFFFFF',
+    "Green": '#2ecc71',
+    "Blue": '#3498db',
+    "Red": '#e74c3c',
+    "Yellow": '#f1c40f',
+    "Purple": '#9b59b6',
+    "Gray": '#95a5a6',
+    "Orange": '#e67e22',
+}
+
+def set_button_background(button: QPushButton, color=None, default_palette=None):
+    """
+    设置 QPushButton 的背景颜色（不使用 setStyleSheet）
+
+    参数:
+        button (QPushButton): 要设置的按钮对象
+        color (str or None): 颜色值，支持颜色名称、#RGB、#RRGGBB 等格式；
+                             如果为 None，则恢复默认背景。
+    """
+    palette = button.palette()
+    if color is None:
+        # 恢复默认背景颜色
+        palette = default_palette
+        button.setFlat(False)  # 关键点
+    else:
+        # 设置指定颜色
+        q_color = QColor(color)
+        if not q_color.isValid():
+            raise ValueError(f"无效的颜色值: {color}")
+        palette.setColor(QPalette.Button, q_color)
+        button.setFlat(True)  # 关键点
+
+    # button.setFlat(True)  # 关键点
+    button.setAutoFillBackground(True)
+    button.setPalette(palette)
+    button.update()
+
+@errorAspect
+def textColorChanged(app, win: Ui_MainWindow):
+    color = win.textcolor_combo.currentText()
+    # print(f"Selecting textColorChanged color: {color}")
+    index = app.index.get()
+    if color in _COLOR_MAP:
+        color = _COLOR_MAP[color]
+        # print(f"_COLOR_MAP color: {color}")
+        app._text_color = color
+    else:
+        if not is_valid_hex_color(color):
+            app.show_toast(f"Invalid color code: {color}")
+        else:
+            app._text_color = color
+    # print(f"app._text_color: {color}")
+    set_button_background(win.textcolor_pickbutton, app._text_color, win.selectdir_button.palette())
+    if index:
+        index.set_color(app._text_color, app._dialogue_color)
+
+@errorAspect
+def dialogueColorChanged(app, win: Ui_MainWindow):
+    color = win.dialoguecolor_combo.currentText()
+    # print(f"Selecting dialogueColorChanged color: {color}")
+    index = app.index.get()
+    if color in _COLOR_MAP:
+        color = _COLOR_MAP[color]
+        # print(f"_COLOR_MAP color: {color}")
+        app._dialogue_color = color
+    else:
+        if not is_valid_hex_color(color):
+            app.show_toast(f"Invalid color code: {color}")
+        else:
+            app._dialogue_color = color
+    set_button_background(win.dialoguecolor_button, app._dialogue_color, win.selectdir_button.palette())
+    if index:
+        index.set_color(app._text_color, app._dialogue_color)
+
+
+@errorAspect
+def selectTextColor(app, win: Ui_MainWindow):
+    if app._text_color is not None:
+        init_color = QColor(app._text_color)
+    else:
+        init_color = Qt.white
+    color = QColorDialog.getColor(init_color)
+    # print(f"Selecting text color: {color}")
+    if not color.isValid():
+        return
+    color = color.name()
+    if not is_valid_hex_color(color):
+        show_toast(f"Invalid color code: {color}", parent=win)
+    else:
+        if not win.textcolor_combo.findText(color)>-1:
+            win.textcolor_combo.addItem(color)
+        win.textcolor_combo.setCurrentText(color)
+
+@errorAspect
+def selectDialoguetColor(app, win: Ui_MainWindow):
+    if app._dialogue_color is not None:
+        init_color = QColor(app._dialogue_color)
+    else:
+        init_color = Qt.white
+    color = QColorDialog.getColor(init_color)
+    # print(f"Selecting dialogue color: {color}")
+    if not color.isValid():
+        return
+    color = color.name()
+    if not is_valid_hex_color(color):
+        show_toast(f"Invalid color code: {color}", parent=win)
+    else:
+        if not win.dialoguecolor_combo.findText(color)>-1:
+            win.dialoguecolor_combo.addItem(color)
+        win.dialoguecolor_combo.setCurrentText(color)
 
 @errorAspect
 def startGame(app, win: Ui_MainWindow):
@@ -419,7 +536,7 @@ def _updateTranslator(app, win: Ui_MainWindow, data: Tuple[Translator, str]):
                     batch_size = win.batchsize_box.value()
                     server.set_translator(translator, font, batch_size=batch_size)
                     updateTextState('Running', app, win.translatorstatus_text)
-                    win.statusbar.showMessage('Applied.', 2000)
+                    app.show_toast('Applied.', 2000)
                 else:
                     showErrorMsg(app, f'Initializing translator failed!')
                 win.translatorapply_button.setEnabled(True)
@@ -448,7 +565,7 @@ def applyTranslator(app, win: Ui_MainWindow):
             font = None
         status_str = f'Apply a translator: {provider}/{api}, translation target: {source}->{target}'
         print(status_str)
-        win.statusbar.showMessage(status_str, 2000)
+        app.show_toast(status_str, 1000)
         if provider and api and source and target:
             initThread = InitTranslator(provider, api, source, target, font)
             initThread.trigger.connect(lambda x: _updateTranslator(app, win, x))
@@ -537,13 +654,13 @@ def transStringChanged(app, win: Ui_MainWindow):
 @errorAspect
 def reloadConfig(app, win: Ui_MainWindow):
     default_config.reload()
-    win.statusbar.showMessage('Config file was reloaded.', 2000)
+    app.show_toast('Config file was reloaded.', 2000)
 
 
 @errorAspect
 def clearHistory(app, win: Ui_MainWindow):
     win.gameroot_combox.clear()
-    win.statusbar.showMessage('History of game dirs was clear.', 2000)
+    app.show_toast('History of game dirs was clear.', 2000)
     uconfig.put_and_save('dir_history', [])
 
 
@@ -554,20 +671,20 @@ def clearTranslations(app, win: Ui_MainWindow, data_type: str):
         if data_type == 'queue':
             win.emptyQueue_button.setDisabled(True)
             index.empty_queue()
-            win.statusbar.showMessage('Queue is now empty.', 2000)
+            app.show_toast('Queue is now empty.', 2000)
             win.emptyQueue_button.setEnabled(True)
             win.queue_text.display(0)
         elif data_type == 'string':
             win.emptyString_button.setDisabled(True)
             index.empty_strings()
-            win.statusbar.showMessage('Strings are now empty.', 2000)
+            app.show_toast('Strings are now empty.', 2000)
             win.emptyString_button.setEnabled(True)
             win.stringnum_text.display(0)
             win.totalnum_text.display(win.dialoguenum_text.intValue() + win.stringnum_text.intValue())
         elif data_type == 'dialogue':
             win.emptyDialogue_button.setDisabled(True)
             index.empty_dialogue()
-            win.statusbar.showMessage('Dialogues are now empty.', 2000)
+            app.show_toast('Dialogues are now empty.', 2000)
             win.emptyDialogue_button.setEnabled(True)
             win.dialoguenum_text.display(0)
             win.totalnum_text.display(win.dialoguenum_text.intValue() + win.stringnum_text.intValue())
@@ -578,7 +695,7 @@ def clearFilter(app, win: Ui_MainWindow):
     index = app.index.get()
     if index:
         index.clear_filter()
-        win.statusbar.showMessage('Clear filter', 2000)
+        app.show_toast('Clear filter', 2000)
 
 
 @errorAspect
@@ -595,7 +712,7 @@ def applyFilter(app, win: Ui_MainWindow):
             showErrorMsg(app, 'filter text should not be none or blank')
             return
         index.set_filter(filter_dict)
-        win.statusbar.showMessage(f'Set filter: {filter_dict}', 2000)
+        app.show_toast(f'Set filter: {filter_dict}', 2000)
 
 # def clearLog(app, win: Ui_MainWindow):
 #     win.log_text.clear()

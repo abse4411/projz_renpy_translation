@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>818</width>
-    <height>445</height>
+    <width>859</width>
+    <height>455</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -574,7 +574,7 @@
          <property name="spacing">
           <number>0</number>
          </property>
-         <item row="3" column="0">
+         <item row="4" column="0">
           <spacer name="verticalSpacer">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
@@ -586,6 +586,85 @@
             </size>
            </property>
           </spacer>
+         </item>
+         <item row="1" column="0">
+          <widget class="QGroupBox" name="groupBox_6">
+           <property name="toolTip">
+            <string/>
+           </property>
+           <property name="title">
+            <string>Filter unwanted texts</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_9">
+            <property name="spacing">
+             <number>0</number>
+            </property>
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QLineEdit" name="filter_text"/>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_22">
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <item>
+               <widget class="QCheckBox" name="casecheck_btn">
+                <property name="text">
+                 <string>Match case</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="regex_btn">
+                <property name="text">
+                 <string>Regex</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="converse_btn">
+                <property name="text">
+                 <string>Converse</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_21">
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <item>
+               <widget class="QPushButton" name="clearfiler_btn">
+                <property name="text">
+                 <string>Clear</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="applyfilter_btn">
+                <property name="text">
+                 <string>Apply</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
          </item>
          <item row="0" column="0">
           <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0,0">
@@ -833,83 +912,14 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="0">
-          <widget class="QGroupBox" name="groupBox_6">
-           <property name="toolTip">
-            <string/>
+         <item row="3" column="0">
+          <widget class="QLabel" name="label_18">
+           <property name="text">
+            <string>New updates are coming!</string>
            </property>
-           <property name="title">
-            <string>Filter unwanted texts</string>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
            </property>
-           <layout class="QVBoxLayout" name="verticalLayout_9">
-            <property name="spacing">
-             <number>0</number>
-            </property>
-            <property name="leftMargin">
-             <number>0</number>
-            </property>
-            <property name="topMargin">
-             <number>0</number>
-            </property>
-            <property name="rightMargin">
-             <number>0</number>
-            </property>
-            <property name="bottomMargin">
-             <number>0</number>
-            </property>
-            <item>
-             <widget class="QLineEdit" name="filter_text"/>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_22">
-              <property name="bottomMargin">
-               <number>0</number>
-              </property>
-              <item>
-               <widget class="QCheckBox" name="casecheck_btn">
-                <property name="text">
-                 <string>Match case</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="regex_btn">
-                <property name="text">
-                 <string>Regex</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="converse_btn">
-                <property name="text">
-                 <string>Converse</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_21">
-              <property name="bottomMargin">
-               <number>0</number>
-              </property>
-              <item>
-               <widget class="QPushButton" name="clearfiler_btn">
-                <property name="text">
-                 <string>Clear</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="applyfilter_btn">
-                <property name="text">
-                 <string>Apply</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-           </layout>
           </widget>
          </item>
         </layout>
@@ -1476,6 +1486,171 @@
                      </item>
                     </layout>
                    </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_20">
+                     <property name="topMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="bottomMargin">
+                      <number>0</number>
+                     </property>
+                     <item>
+                      <widget class="QLabel" name="label_22">
+                       <property name="text">
+                        <string>Text color：</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QComboBox" name="textcolor_combo">
+                       <property name="editable">
+                        <bool>false</bool>
+                       </property>
+                       <property name="currentText">
+                        <string>Default</string>
+                       </property>
+                       <item>
+                        <property name="text">
+                         <string>Default</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>Black</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>White</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>Green</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>Blue</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>Red</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>Yellow</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>Purple</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>Gray</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>Orange</string>
+                        </property>
+                       </item>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="textcolor_pickbutton">
+                       <property name="text">
+                        <string>Pick</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_23">
+                     <property name="topMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="bottomMargin">
+                      <number>0</number>
+                     </property>
+                     <item>
+                      <widget class="QLabel" name="label_23">
+                       <property name="text">
+                        <string>Dialogue color:</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QComboBox" name="dialoguecolor_combo">
+                       <property name="editable">
+                        <bool>false</bool>
+                       </property>
+                       <item>
+                        <property name="text">
+                         <string>Default</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>Black</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>White</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>Green</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>Blue</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>Red</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>Yellow</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>Purple</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>Gray</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>Orange</string>
+                        </property>
+                       </item>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="dialoguecolor_button">
+                       <property name="text">
+                        <string>Pick</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
                   </layout>
                  </widget>
                 </item>
@@ -1572,16 +1747,6 @@ By doing this, you can use various commands for FileTranslationIndex to quickly 
                </layout>
               </item>
               <item>
-               <widget class="QLabel" name="label_18">
-                <property name="text">
-                 <string>New updates are coming!</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item>
                <spacer name="verticalSpacer_2">
                 <property name="orientation">
                  <enum>Qt::Vertical</enum>
@@ -1611,7 +1776,7 @@ By doing this, you can use various commands for FileTranslationIndex to quickly 
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>818</width>
+     <width>859</width>
      <height>23</height>
     </rect>
    </property>

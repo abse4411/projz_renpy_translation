@@ -19,6 +19,7 @@ from functools import partial
 from queue import Queue
 
 from PyQt5.QtCore import QObject, pyqtSignal, QThread, QTranslator
+from PyQt5.QtGui import QPalette
 from PyQt5.QtWidgets import QMainWindow, QDialog, QApplication
 from qt_material import QtStyleTools
 
@@ -29,8 +30,10 @@ from qt5.main import Ui_MainWindow
 from qt5.main_op import loadServerConfig, startServer, undoInjection, injectionGame, selectRenpyDir, startGame, \
     stopServer, applyTranslator, providerChanged, apiChanged, loadFontConfig, writeTranslations, fontChanged, \
     loadGameRootDirs, saveTranslationIndex, errorWrapper, retranslate, transDialogueChanged, transStringChanged, \
-    reloadConfig, clearHistory, clearTranslations, clearFilter, applyFilter, showErrorMsg
+    reloadConfig, clearHistory, clearTranslations, clearFilter, applyFilter, showErrorMsg, selectTextColor, \
+    selectDialoguetColor, textColorChanged, dialogueColorChanged
 from qt5.sponsor import Ui_SponsorsDialog
+from qt5.toast import show_toast
 from qt5.ui_config import uconfig
 from translation_provider.base import registered_providers
 
@@ -241,6 +244,10 @@ class MainWindow(QMainWindow, QtStyleTools):
         self.main.emptyDialogue_button.clicked.connect(lambda: clearTranslations(self, self.main, 'dialogue'))
         self.main.clearfiler_btn.clicked.connect(lambda: clearFilter(self, self.main))
         self.main.applyfilter_btn.clicked.connect(lambda: applyFilter(self, self.main))
+        self.main.textcolor_pickbutton.clicked.connect(lambda: selectTextColor(self, self.main))
+        self.main.dialoguecolor_button.clicked.connect(lambda: selectDialoguetColor(self, self.main))
+        self.main.textcolor_combo.currentIndexChanged.connect(lambda: textColorChanged(self, self.main))
+        self.main.dialoguecolor_combo.currentIndexChanged.connect(lambda: dialogueColorChanged(self, self.main))
 
         # Select provider
         if 'translators' not in providers:
@@ -251,6 +258,8 @@ class MainWindow(QMainWindow, QtStyleTools):
             # self.main.translator_combobox.setCurrentIndex(0)
         self.main.api_combobox.currentIndexChanged.connect(lambda: apiChanged(self, self.main))
         errorWrapper(self, lambda: apiChanged(self, self.main))
+        self._text_color = None
+        self._dialogue_color = None
 
     # def handleOutput(self, text, stdout):
     #     log_text = self.main.log_text
@@ -275,6 +284,10 @@ class MainWindow(QMainWindow, QtStyleTools):
         #     del self.stderr
         # self.logThread.stop()
         event.accept()
+
+    def show_toast(self, message:str,duration=2000):
+        show_toast(message, parent=self, duration=duration,
+                   text_color=self.main.retranslate_button.palette().color(QPalette.ButtonText))
 
     # def updateLog(self, text: str, isStd: bool, cnt: int):
     #     log_text = self.main.log_text
