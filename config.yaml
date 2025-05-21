@@ -40,8 +40,10 @@ projz:
 #          https: 'http://127.0.0.1:10809'
     open_ai:
       batch_separator: '@##@' # The separator add to between different texts in batch translator
-      batch_max_textlen: 1024 # Max len of the final text sent to the real translator
-      batch_size: 5 # how many texts are batched to send to the real translator at once
+      batch_max_textlen: 8192 # Max len of the final text sent to the real translator
+      batch_size: 10 # how many texts are batched to send to the real translator at once
+      remove_think: True # Remove thinking content for reasoning models
+      end_think_str: </think> # remove thinking content with the end_think_str, i.e., new_text = new_text.split(self.end_think_str)[-1]
       target_lang: 'Chinese'
       user_role: &user_role 'user'
       assistant_role: &assistant_role 'assistant'
@@ -74,10 +76,16 @@ projz:
 #                        1. 方括号或者花括号括起来的文本(例如[my_name], {size})不需要翻译.\n\
 #                        2. 不需要对翻译结果做出解释.\n\
 #                        现在把下面的文本翻译为{target_lang}:\n{text}"
-              content: "Translate the text according to the following requirements:\n\
-                        1. Text enclosed in square brackets or curly braces (e.g., [my_name], {{size}}) does not need to be translated.\n\
-                        2. No explanation of the translation result is required.\n\
-                        Now translate the following text into {target_lang}:\n{text}"
+              content: "You are required to translate the giving input text into {target_lang}:\n\
+                        Input: ...(input text)\n\
+                        Output: ...(your translated text)\n\n\
+                        Also, the translation following requirements following requirements while translating:\n\
+                          1. Text enclosed in square brackets or curly braces (e.g., [my_name], {{size}}) does not need to be translated.\n\
+                          2. No explanation of the translation result is required.\n\
+                        
+                        Now start translating:\n\
+                        Input: {text}\n\
+                        Output: "
     realtime:
       host: '127.0.0.1'
       port: 8888

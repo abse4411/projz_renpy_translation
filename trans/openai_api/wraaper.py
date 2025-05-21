@@ -62,6 +62,8 @@ class OpenAITranslator(Translator):
         self._verbose = verbose
         config = default_config['translator']['open_ai']
 
+        self.remove_think = config['remove_think']
+        self.end_think_str = config['end_think_str']
         init_args = config['init']
         self._compl_args = copy.deepcopy(config['chat']['completions'])
         # set default model
@@ -110,7 +112,9 @@ class OpenAITranslator(Translator):
         # Put them to the message history
         self._msg_manager.put(user_msg, assistant_msg)
 
-        new_text = assistant_msg['content'].rstrip()
+        new_text = assistant_msg['content'].strip()
+        if self.remove_think:
+            new_text = new_text.split(self.end_think_str)[-1]
         use_token = chat_completion.usage.total_tokens
         self.token_count += use_token
         if self._verbose:
