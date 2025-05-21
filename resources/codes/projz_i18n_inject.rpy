@@ -133,6 +133,27 @@ init python:
     _old_do_display = None
     _DialogueTextTags_ref = None
 
+    import re
+    def remove_tags(text, tag):
+        start_tag_pattern = r'\{' + tag + r'=?[^{}]*\}'
+        end_tag_pattern = r'\{/' + tag + r'\}'
+
+        # 使用正则替换删除标签
+        text = re.sub(start_tag_pattern, '', text)
+        text = re.sub(end_tag_pattern, '', text)
+        return text
+
+    def wrap_with_tag(text, tag, attr=None):
+        if attr is not None:
+            start_tag = u'{{{0}={1}}}'.format(tag, attr)
+        else:
+            start_tag = u'{{{0}}}'.format(tag)
+
+        end_tag = u'{{/{0}}}'.format(tag)
+
+        return u'{0}{1}{2}'.format(start_tag, text, end_tag)
+
+
     def global_set_text(self, text, scope=None, substitute=False, update=True):
         res = old_set_text(self, text, scope, substitute, update)
         if not (substitute is True or substitute is None):
@@ -142,7 +163,8 @@ init python:
         old_text = self.text[0]
         current_font = projz_get(projz_global_font)
         if current_font is not None and old_text is not None and old_text.strip()!='':
-            new_text = u'{font='+str(current_font) + u'}' + old_text + u'{font}'
+            new_text = wrap_with_tag(remove_tags(old_text, u'font'), u'font', str(current_font))
+            # new_text = u'{font='+str(current_font) + u'}' + old_text + u'{font}'
             self.text = [new_text]
         return res
 
@@ -150,7 +172,8 @@ init python:
         current_font = projz_get(projz_global_font)
         if current_font is not None:
             if (thing == 'what' or thing == 'who') and body is not None and body.strip()!='':
-                body = u'{font='+str(current_font) + u'}' + body + u'{font}'
+                body = wrap_with_tag(remove_tags(body, u'font'), u'font', str(current_font))
+                # body = u'{font='+str(current_font) + u'}' + body + u'{font}'
         return _old_prefix_suffix(self, thing, prefix, body, suffix)
 
     def global_do_display(self, who, what, **display_args):
@@ -159,9 +182,11 @@ init python:
             return _old_do_display(self, who, what, **display_args)
 
         if what is not None and what.strip() != '':
-            what = u'{font='+str(current_font) + u'}' + what + u'{font}'
+            what = wrap_with_tag(remove_tags(what, u'font'), u'font', str(current_font))
+            # what = u'{font='+str(current_font) + u'}' + what + u'{font}'
         if who is not None and who.strip() != '':
-            who = u'{font='+str(current_font) + u'}' + who + u'{font}'
+            who = wrap_with_tag(remove_tags(who, u'font'), u'font', str(current_font))
+            # who = u'{font='+str(current_font) + u'}' + who + u'{font}'
         old_dtt = display_args.get('dtt', None)
         new_dtt = None
         if _DialogueTextTags_ref and isinstance(old_dtt, _DialogueTextTags_ref):
@@ -316,6 +341,9 @@ screen projz_i18n_settings():
     tag menu
     use game_menu(_("I18n settings"), scroll="viewport"):
         vbox:
+            vbox:
+                textbutton _("Return") action Return()
+                textbutton _("Hide") action Hide('projz_i18n_settings')
             hbox:
                 box_wrap True
                 vbox:

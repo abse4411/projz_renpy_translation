@@ -200,10 +200,30 @@ init -7 python in _projz_translation:
             return True
         return True
 
+    import re
+    def remove_tags(text, tag):
+        start_tag_pattern = r'\{' + tag + r'=?[^{}]*\}'
+        end_tag_pattern = r'\{/' + tag + r'\}'
+
+        # 使用正则替换删除标签
+        text = re.sub(start_tag_pattern, '', text)
+        text = re.sub(end_tag_pattern, '', text)
+        return text
+
+    def wrap_with_tag(text, tag, attr=None):
+        if attr is not None:
+            start_tag = u'{{{0}={1}}}'.format(tag, attr)
+        else:
+            start_tag = u'{{{0}}}'.format(tag)
+
+        end_tag = u'{{/{0}}}'.format(tag)
+
+        return u'{0}{1}{2}'.format(start_tag, text, end_tag)
 
     def is_translatable(string):
         if string:
             string = string.strip()
+            string = remove_tags(string, u'')
             for ch in u'1234567890+-*=_)(&^%$#@!`~<,>.…·?/:;"\'|\\}{【】“”、；：？《，》。！￥（）—\t \a\r\n\b\f\v\0':
                 string = string.replace(ch, '')
             string = string.strip()
