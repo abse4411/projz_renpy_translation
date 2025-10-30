@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import logging
+import re
 
 import tqdm
 
@@ -24,6 +25,72 @@ from store.group import group_translations_by, ALL
 from trans.openai_api import OpenAITranslator
 from util import strip_or_none
 from util.renpy import strip_tags, is_translatable
+
+
+def extract_renpy_tags(text):
+    """
+    Extract RenPy tags and replace them with placeholders so the LLM won't break game syntax during translation.
+    For games like RenPy, the extracted text often contains syntax elements like { } and [ ].
+    If the translation source does not handle these correctly and breaks the syntax, it will cause the game to crash.
+    Therefore, these character combinations that might cause game crashes are protected with placeholders.
+    
+    Supported patterns:
+    - Tags in {xxx} or {/xxx} format (e.g., {size=10}, {/size}, {color=#fff})
+    - Tags in [xxx] format (e.g., [name], [player])
+    
+    Args:
+        text: original text
+        
+    Returns:
+        (placeholder_text, tag_map): text with placeholders and tag mapping
+    """
+    tags = {}
+    placeholder_text = text
+    counter = 0
+    
+    # Pattern 1: Match tags in {xxx} or {/xxx} format
+    curly_pattern = r'\{[^}]+\}'
+    # Pattern 2: Match tags in [xxx] format
+    square_pattern = r'\[[^\]]+\]'
+    
+    # Combine both patterns, process in order of appearance
+    combined_pattern = f'({curly_pattern}|{square_pattern})'
+    
+    # Find all tags
+    matches = list(re.finditer(combined_pattern, text))
+    
+    # Replace from end to start to avoid position offset
+    for match in reversed(matches):
+        tag_content = match.group()
+        # Use special placeholder to ensure LLM won't translate it
+        placeholder = f"__RENPYTAG{counter}__"
+        tags[placeholder] = tag_content
+        start, end = match.span()
+        placeholder_text = placeholder_text[:start] + placeholder + placeholder_text[end:]
+        counter += 1
+    
+    return placeholder_text, tags
+
+
+def restore_renpy_tags(translated_text, tag_map):
+    """
+    Restore placeholders in the translated text to original RenPy tags
+    
+    Args:
+        translated_text: translated text
+        tag_map: tag mapping
+        
+    Returns:
+        text with restored tags
+    """
+    result = translated_text
+    # Restore in placeholder order (descending to avoid replacement conflicts)
+    sorted_placeholders = sorted(tag_map.keys(), 
+                                 key=lambda x: int(re.search(r'\d+', x).group()), 
+                                 reverse=True)
+    for placeholder in sorted_placeholders:
+        result = result.replace(placeholder, tag_map[placeholder])
+    return result
 
 
 class _InnerTranslator(OpenAITranslator):
@@ -38,6 +105,39 @@ class _InnerTranslator(OpenAITranslator):
         assistant_msg = {'role': self.assistant_role, 'content': new_text}
         # Put them to the message history
         self._msg_manager.put(user_msg, assistant_msg)
+
+    def translate_with_tag_protection(self, text):
+        """
+        Translate text while protecting RenPy tags from being altered
+        
+        Supported protected tags:
+        - Curly brace tags: {size=10}, {/size}, {color=#fff}, etc.
+        - Square bracket tags: [name], [player], etc.
+        
+        Args:
+            text: text to be translated
+            
+        Returns:
+            translated text with tags restored
+        """
+        # Check if text contains tags that need protection
+        has_curly = re.search(r'\{[^}]+\}', text)
+        has_square = re.search(r'\[[^\]]+\]', text)
+        
+        if not (has_curly or has_square):
+            # No tags, translate directly
+            return self.translate(text)
+        
+        # Extract tags and replace with placeholders
+        clean_text, tag_map = extract_renpy_tags(text)
+        
+        # Translate text with placeholders
+        translated = self.translate(clean_text)
+        
+        # Restore tags
+        result = restore_renpy_tags(translated, tag_map)
+        
+        return result
 
     def clear_chat(self):
         self._msg_manager.clear()
@@ -56,6 +156,8 @@ class LLMAugmentTranslateCmd(BaseLangIndexCmd):
                                   help="Accept blank translated lines from the translator when updating translations.")
         self._parser.add_argument('--limit', type=int, default=-1,
                                   help='The max number of lines to be translated. Negative values mean no limit.')
+        self._parser.add_argument('--protect-tags', action='store_true', default=True,
+                                  help='Protect RenPy tags like {size=10}...{/size} and [name] during translation.')
 
     def invoke(self):
         if self.args.auto:
@@ -74,6 +176,12 @@ class LLMAugmentTranslateCmd(BaseLangIndexCmd):
             logging.warning(f'Low write_cache_size({cache_size}) means more frequent disk I/O operations,'
                             f' it may cause a high system load.')
         cache_size = max(cache_size, 100)
+
+        # Display tag protection status
+        if self.args.protect_tags:
+            print('RenPy tag protection: ENABLED (protecting {xxx} and [xxx] patterns)')
+        else:
+            print('RenPy tag protection: DISABLED')
 
         n_untrans = 0
         index = self.get_translation_index()
@@ -95,6 +203,11 @@ class LLMAugmentTranslateCmd(BaseLangIndexCmd):
         translator = _InnerTranslator(model, target_lang)
         tlist = []
         accept_blank = self.args.accept_blank
+        protect_tags = self.args.protect_tags
+        
+        # Statistics
+        protected_count = 0
+        
         try:
             with tqdm.tqdm(total=n_untrans, desc='Translating') as t:
                 for g in group_map.values():
@@ -107,7 +220,20 @@ class LLMAugmentTranslateCmd(BaseLangIndexCmd):
                             else:
                                 t.update(1)
                                 cnt += 1
-                                new_text = translator.translate(raw_text)
+                                
+                                # Decide whether to protect tags based on argument
+                                if protect_tags:
+                                    # Check if text contains tags that need protection
+                                    has_tags = (re.search(r'\{[^}]+\}', raw_text) or 
+                                               re.search(r'\[[^\]]+\]', raw_text))
+                                    if has_tags:
+                                        new_text = translator.translate_with_tag_protection(raw_text)
+                                        protected_count += 1
+                                    else:
+                                        new_text = translator.translate(raw_text)
+                                else:
+                                    new_text = translator.translate(raw_text)
+                                
                                 if new_text == raw_text:
                                     print(f'Discard untranslated line: {raw_text}')
                                 else:
@@ -133,7 +259,12 @@ class LLMAugmentTranslateCmd(BaseLangIndexCmd):
 
         finally:
             translator.close()
+            if protected_count > 0:
+                print(f'\nTotal lines with protected RenPy tags: {protected_count}')
+        
         if tlist:
             index.update_translations(self.args.lang, tlist,
                                       untranslated_only=True, discord_blank=accept_blank,
                                       say_only=self.config.say_only)
+            print('Flushing...')
+            flush()
